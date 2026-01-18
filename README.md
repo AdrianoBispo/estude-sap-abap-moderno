@@ -44,7 +44,7 @@ Contribuições são bem-vindas! Se você encontrar erros, tiver sugestões de m
   - [Tutorial SAP - Crie um aplicativo de viagem com SAP Fiori Elements baseado no serviço OData V4 RAP](https://developers.sap.com/tutorials/abap-environment-extend-cds-view.html)
   - [Tutorial SAP - Estenda um Core Data Services Personalizado no Ambiente ABAP](https://developers.sap.com/tutorials/abap-environment-extend-cds-view.html)
   - [Tutorial SAP - Crie um aplicativo de Manutenção de Tabelas baseado em SAP Fiori](https://developers.sap.com/mission.abap-dev-factory-calendar.html)
-  - [Tutorial SAP - [RAP100] - Construa um App SAP Fiori Usando o ABAP RESTful Application Programming Model](https://developers.sap.com/mission.abap-dev-factory-calendar.html)
+  - [Tutorial SAP - \[RAP100\] - Construa um App SAP Fiori Usando o ABAP RESTful Application Programming Model](https://developers.sap.com/mission.sap-fiori-abap-rap100.html)
   - [Tutorial SAP - Use o Mockserver e a Biblioteca de Teste OPA com SAP Fiori Elements para aplicações OData V4](https://developers.sap.com/group.fiori-elements-mockserver-opa.html)
   - [Tutorial SAP - Trabalhe com projetos de adaptação SAPUI5 para fazer alterações e estender o código-fonte de uma variante de aplicação SAP Fiori no SAP S/4HANA Cloud Public Edition](https://developers.sap.com/group.sapui5-adaptation-projects.html)
 
