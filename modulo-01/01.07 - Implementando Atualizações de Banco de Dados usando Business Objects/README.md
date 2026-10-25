@@ -74,7 +74,7 @@ MODIFY ENTITIES OF Nome_Da_Definicao_De_Comportamento
 
 * **REPORTED:** Contém as mensagens de erro (T100) associadas às falhas. É aqui que você descobre *por que* falhou (ex: "Cliente inválido").  
 
-* **MAPPED:** (Usado no `CREATE`) Contém o mapeamento entre o ID temporário (`%cid`) e o ID final gerado pelo sistema, vital para numeração tardia (_Late Numbering_).
+* **MAPPED:** (Usado no `CREATE`) Contém o mapeamento entre o ID temporário (`%cid`) e a chave atribuída pelo BO. Com numeração antecipada (_Early Numbering_), a chave definitiva já vem no MAPPED; com numeração tardia (_Late Numbering_), a chave final só é atribuída na Save Phase e o MAPPED contém uma chave preliminar (`%pid`).
 
 ## 4. Transacionalidade: COMMIT ENTITIES
 
@@ -82,9 +82,9 @@ Uma diferença crítica entre o ABAP Clássico e o RAP é o gerenciamento da tra
 
 No clássico, `COMMIT WORK` disparava a gravação física imediata. No RAP, o processo é dividido em duas fases distintas:
 
-1. **Interaction Phase (Fase de Interação):** Onde ocorrem os `MODIFY ENTITIES`. Os dados são validados e colocados no **Transactional Buffer** (memória do servidor de aplicação). Nada foi gravado no banco ainda.  
+1. **Interaction Phase (Fase de Interação):** Onde ocorrem os `MODIFY ENTITIES`. O framework executa verificações imediatas (autorização, feature control, prechecks e determinações *on modify*) e coloca os dados no **Transactional Buffer** (memória do servidor de aplicação). Nada foi gravado no banco ainda.  
 
-2. **Save Phase (Fase de Salvamento):** Disparada pelo comando `COMMIT ENTITIES`. O framework pega os dados do buffer, executa validações finais ("Save Validations") e, se tudo estiver ok, persiste no banco de dados.
+2. **Save Phase (Fase de Salvamento):** Disparada pelo comando `COMMIT ENTITIES`. O framework pega os dados do buffer, executa as validações e determinações *on save* e, se tudo estiver ok, persiste no banco de dados.
 
 **Sintaxe de Commit:**
 
@@ -123,13 +123,14 @@ CLASS zcl_eml_demo IMPLEMENTATION.
     " ---------------------------------------------------------------------  
     " PASSO 1: Preparação dos Dados para CRIAÇÃO  
     " ---------------------------------------------------------------------  
-    " O %cid (Content ID) é um identificador temporário obrigatório (string)
-
+    " O %cid (Content ID) é um identificador temporário obrigatório
     " que permite referenciar esta linha antes dela ter um número final.
-
     " O %control indica quais campos estamos fornecendo.  
+    " TABLE FOR CREATE é o tipo derivado (Derived Type) gerado pelo RAP para a entidade.
       
-    DATA(lt_travel_create) = VALUE /dmo/t_travel_create_in(  
+    DATA lt_travel_create TYPE TABLE FOR CREATE /DMO/I_Travel_M.
+
+    lt_travel_create = VALUE #(  
       ( %cid = 'TEMP_ID_001'  
         agency_id     = '070001'  
         customer_id   = '000001'  
@@ -138,7 +139,7 @@ CLASS zcl_eml_demo IMPLEMENTATION.
         booking_fee   = '20.00'  
         currency_code = 'EUR'  
         description   = 'Viagem criada via EML'  
-        status        = 'O' " Open  
+        overall_status = 'O' " Open  
         %control-agency_id     = if_abap_behv=>mk-on  
         %control-customer_id   = if_abap_behv=>mk-on  
         %control-begin_date    = if_abap_behv=>mk-on  
@@ -146,15 +147,17 @@ CLASS zcl_eml_demo IMPLEMENTATION.
         %control-booking_fee   = if_abap_behv=>mk-on  
         %control-currency_code = if_abap_behv=>mk-on  
         %control-description   = if_abap_behv=>mk-on  
-        %control-status        = if_abap_behv=>mk-on  
+        %control-overall_status = if_abap_behv=>mk-on  
        )  
     ).
 
     " ---------------------------------------------------------------------  
     " PASSO 2: Executar o MODIFY (Interaction Phase)  
     " ---------------------------------------------------------------------  
-    " Aqui, o framework executa validações. Se a agência não existir,  
-    " ls_failed será preenchido.  
+    " Aqui, o framework executa as verificações da fase de interação
+    " (autorização, feature control, prechecks). Se alguma falhar,
+    " ls_failed será preenchido. Validações "on save" (ex: agência existente)
+    " só rodam no COMMIT ENTITIES.  
       
     MODIFY ENTITIES OF /DMO/I_Travel_M  
       ENTITY Travel  
@@ -168,7 +171,7 @@ CLASS zcl_eml_demo IMPLEMENTATION.
     IF ls_failed IS NOT INITIAL.  
       " Tratamento de Erro na Criação  
       " Leríamos ls_reported para mostrar a mensagem ao usuário.  
-      out->write( 'Erro: Falha na criação da viagem (Validação).' ).  
+      out->write( 'Erro: Falha na criação da viagem.' ).  
         
       " Exemplo de como ler mensagens de erro do REPORTED  
       LOOP AT ls_reported-travel INTO DATA(ls_msg).  
@@ -179,8 +182,7 @@ CLASS zcl_eml_demo IMPLEMENTATION.
     ENDIF.
 
     " Se chegou aqui, a criação foi bem sucedida NO BUFFER.
-
-    " Podemos acessar a chave gerada através da estrutura MAPPED.
+    " /DMO/I_Travel_M usa Early Numbering: a chave gerada já está no MAPPED.
 
     DATA(lv_new_travel_id) = ls_mapped-travel[ 1 ]-travel_id.  
     out->write( |Viagem criada no buffer com ID: { lv_new_travel_id }| ).
@@ -216,6 +218,7 @@ CLASS zcl_eml_demo IMPLEMENTATION.
     IF ls_commit_failed IS INITIAL.  
       out->write( 'Sucesso Total! Dados gravados no banco de dados.' ).  
     ELSE.  
+      " Ex: validações "on save" (agência/cliente inexistente, datas inválidas)  
       out->write( 'Erro durante a fase de salvamento (Save Sequence).' ).  
     ENDIF.
 
@@ -236,7 +239,7 @@ ENDCLASS.
 
 ## Glossário Técnico
 
-* **EML (Entity Manipulation Language):** Extensão da linguagem ABAP utilizada para interagir com Business Objects no modelo RAP. Permite operações transacionais (MODIFY) e leitura com privilégios (READ).  
+* **EML (Entity Manipulation Language):** Extensão da linguagem ABAP utilizada para interagir com Business Objects no modelo RAP. Permite operações transacionais (MODIFY) e leitura transacional (READ ENTITIES), que também enxerga o conteúdo ainda não salvo do buffer.  
 
 * **Business Object (BO):** Representação virtual de uma entidade de negócio (ex: Viagem) que encapsula dados (CDS) e comportamento (Behavior Pool).  
 

@@ -42,7 +42,7 @@ O operador de declaração inline DATA(...) não é mágica; ele instrui o compi
 ```
 
 * Casting durante a Declaração:  
-  Às vezes, a inferência automática não é suficiente (ex: o método retorna um tipo genérico DATA, mas você sabe que é um objeto específico). Você pode combinar inline com casting:  
+  Às vezes, a inferência automática não é suficiente (ex: o método retorna uma referência genérica, como `TYPE REF TO object`, mas você sabe que é um objeto específico). Você pode combinar inline com casting:  
 ``` ABAP
   DATA(lo_alv) = CAST cl_gui_alv_grid( lo_container->get_content( ) ).
 ```
@@ -114,9 +114,11 @@ Os templates suportam parâmetros de formatação que eliminam a necessidade de 
   " Formato do Usuário (ex: 31.12.2023 no Brasil, 12/31/2023 nos EUA)  
   out->write( |Data User: { lv_hoje DATE = USER }| ). 
 
-  " Formato de Moeda  
-  DATA(lv_salary) = 5000.  
-  out->write( |Salário: { lv_salary CURRENCY = 'BRL' NUMBER = USER }| ). 
+  " Formato de Moeda: CURRENCY define as casas decimais pela moeda.
+  " Atenção: com tipo i, o separador decimal é INSERIDO conforme a moeda
+  " (5000 com BRL viraria 50,00). Por isso usamos um tipo p com 2 decimais.
+  DATA lv_salary TYPE p LENGTH 15 DECIMALS 2 VALUE '5000.00'.  
+  out->write( |Salário: { lv_salary CURRENCY = 'BRL' NUMBER = USER }| ). " 5.000,00
 ```
 
 * Conversão ALPHA (Zeros à Esquerda):  
@@ -125,7 +127,9 @@ Os templates suportam parâmetros de formatação que eliminam a necessidade de 
   DATA(lv_matnr) = '123'.
 
   " ALPHA = IN: Adiciona zeros (Output: 000000000000000123)  
-  DATA(lv_db_format) = |{ lv_matnr ALPHA = IN }|. 
+  " Sem WIDTH, o resultado mantém o tamanho do operando ('123' tem 3 posições
+  " e continuaria '123'); por isso informamos o tamanho desejado.
+  DATA(lv_db_format) = |{ lv_matnr ALPHA = IN WIDTH = 18 }|. 
 
   " ALPHA = OUT: Remove zeros (Output: 123)  
   DATA(lv_screen_format) = |{ lv_db_format ALPHA = OUT }|. 
@@ -158,7 +162,7 @@ Usado para atribuir valores baseados em condições. Diferente do `IF`, ele deve
 ```
 
 * Moderno (Conciso):  
-  Note o uso de # que significa "infira o tipo da variável à esquerda".  
+  Com declaração inline o tipo do resultado precisa ser explícito (aqui, `string`). O `#` ("infira o tipo pelo contexto") só pode ser usado quando o destino já tem tipo conhecido (ex: `lv_fase = COND #( ... )` com `lv_fase` declarada antes).  
 ``` ABAP
   DATA(lv_fase) = COND string( WHEN lv_idade < 12 THEN 'Criança'  
                                WHEN lv_idade < 18 THEN 'Adolescente'  
@@ -316,11 +320,11 @@ ENDCLASS.
 | :---- | :---- | :---- |
 | **Declaração** | `DATA: lv_val TYPE i.` | `DATA(lv_val) = 10.` |
 | **Ponteiro** | `FIELD-SYMBOLS <fs> TYPE any.` | `ASSIGNING FIELD-SYMBOL(<fs>).` |
-| **Concatenação** | `CONCATENATE a b INTO c.` | `DATA(c) = \| {a} {b}\|` |
+| **Concatenação** | `CONCATENATE a b INTO c.` | `DATA(c) = \|{ a } { b }\|.` |
 | **Condicional** | `IF a EQ b.` | `IF a = b.` |
 | **Atribuição Lógica** | Bloco `IF`/`ELSE` de várias linhas | `DATA(x) = COND #( WHEN a > b ... ).` |
 | **Estrutura** | `ls_data-campo = val.` (linha a linha) | `ls_data = VALUE #( campo = val ).` |
-| **Conversão Alpha** | `CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'` | `DATA(lv_db_format) = \|{ lv_matnr ALPHA = IN }\|.` (Adiciona zeros. Output: 000000000000000123) e `DATA(lv_screen_format) = \|{ lv_db_format ALPHA = OUT }\|.` (Remove zeros. Output: 123) |
+| **Conversão Alpha** | `CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'` | `DATA(lv_db_format) = \|{ lv_matnr ALPHA = IN WIDTH = 18 }\|.` (Adiciona zeros. Output: 000000000000000123) e `DATA(lv_screen_format) = \|{ lv_db_format ALPHA = OUT }\|.` (Remove zeros. Output: 123) |
 | **Verificar Tabela** | `READ TABLE ... TRANSPORTING NO FIELDS` | `IF line_exists( ... )`. |
 
 ## Glossário Técnico
