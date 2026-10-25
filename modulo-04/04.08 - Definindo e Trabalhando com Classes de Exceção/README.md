@@ -25,12 +25,12 @@ No ABAP OO, nem todo erro é igual. Ao criar uma classe de exceção (ZCX_...), 
 
 * **CX_NO_CHECK (Sem Verificação - Unchecked Exception):**  
   * **Definição:** O compilador ignora a verificação. O erro pode ocorrer a qualquer momento e subir a pilha até derrubar o programa (Dump).  
-  * **Uso Ideal:** Erros técnicos graves ou inesperados onde a recuperação é improvável ou impossível no ponto da chamada. Ex: "Memória Cheia", "Divisão por Zero", "Ponteiro Nulo".  
+  * **Uso Ideal:** Erros técnicos graves que podem ocorrer a qualquer momento e onde a recuperação é improvável ou impossível no ponto da chamada. Ex: "Memória Cheia", estados inconsistentes do sistema.  
   * **Regra:** O tratamento é opcional. Geralmente, deixamos esses erros subirem até uma camada global de tratamento de exceções (Global Exception Handler) para logar e abortar graciosamente.  
 
 * **CX_DYNAMIC_CHECK (Verificação Dinâmica):**  
-  * **Definição:** Híbrido. Pode ser tratada ou não. Se não tratada, vira um erro de tempo de execução.  
-  * **Uso:** Menos comum em aplicações de negócio. Usado em frameworks genéricos onde a existência da exceção só é conhecida em runtime.
+  * **Definição:** Híbrido. O compilador não obriga o tratamento; a verificação ocorre em runtime: se a exceção for disparada e não for tratada nem declarada no `RAISING` do procedimento, o sistema dispara `CX_SY_NO_HANDLER` (Dump se não tratada).  
+  * **Uso:** Erros que podem ser evitados com verificações prévias (pré-condições). A maioria das exceções predefinidas do runtime é desse tipo: `CX_SY_ZERODIVIDE` (Divisão por Zero), `CX_SY_REF_IS_INITIAL` (Referência Nula), `CX_SY_CONVERSION_NO_NUMBER`, `CX_SY_ITAB_LINE_NOT_FOUND`.
 
 ## 2. Mensagens T100: Falando a língua do usuário
 
@@ -63,7 +63,7 @@ CLASS zcx_no_funds DEFINITION
     INTERFACES if_t100_dyn_msg . " Permite usar a sintaxe MESSAGE ... RAISE
 
     " Atributo público para guardar o valor que causou o erro.  
-    " Isso permite que o quem capturou o erro (CATCH) leia o valor para exibir ou logar.  
+    " Isso permite que quem capturou o erro (CATCH) leia o valor para exibir ou logar.  
     DATA mv_amount TYPE p LENGTH 15 DECIMALS 2 .
 
     " Definição da Chave da Mensagem (Constante estruturada)  
@@ -88,9 +88,7 @@ ENDCLASS.
 CLASS zcx_no_funds IMPLEMENTATION.  
   METHOD constructor.  
     " Chama o construtor da superclasse (vital para gerenciar a pilha de erros)  
-    CALL METHOD super->constructor  
-      EXPORTING  
-        previous = previous.  
+    super->constructor( previous = previous ).  
       
     " Salva o valor recebido no atributo da instância  
     me->mv_amount = amount.  
@@ -156,6 +154,8 @@ TRY.
 ENDTRY.
 ```
 
+*Observação:* como o `CATCH cx_root` acima captura qualquer exceção, neste exemplo específico o bloco `CLEANUP` nunca seria executado. Ele só faz sentido quando alguma exceção pode escapar deste `TRY` (ou seja, quando não há um `CATCH` que a capture localmente).
+
 ## 4. A Interface Moderna `IF_T100_DYN_MSG`
 
 No ABAP 7.50+, a SAP introduziu uma interface ainda mais flexível. Ela permite disparar exceções usando a sintaxe clássica de MESSAGE (que os desenvolvedores amam pela simplicidade) convertida automaticamente em Objeto de Exceção.
@@ -177,8 +177,8 @@ RAISE EXCEPTION TYPE zcx_generic_error
 | Tipo (CX_...) | Classificação | Obrigatório Tratar? | Exemplo de Uso |
 | :---- | :---- | :---- | :---- |
 | **STATIC_CHECK** | Checada (Checked) | **Sim** (O compilador cobra na ativação). | Regras de Negócio (Cliente não existe, Saldo baixo). O consumidor deve saber lidar. |
-| **NO_CHECK** | Não Checada (Unchecked) | **Não** (O compilador ignora). | Erros Técnicos (Divisão por zero, Null Pointer, Memória). Geralmente não recuperáveis localmente. |
-| **DYNAMIC_CHECK** | Híbrida | Não (Mas pode ser verificado em runtime). | Casos específicos de frameworks dinâmicos ou interfaces genéricas. |
+| **NO_CHECK** | Não Checada (Unchecked) | **Não** (O compilador ignora). | Erros Técnicos graves (ex: falta de memória). Geralmente não recuperáveis localmente. |
+| **DYNAMIC_CHECK** | Híbrida | Não (Mas a declaração no `RAISING` é verificada em runtime). | Erros evitáveis por pré-condições (Divisão por zero, Referência nula, Linha não encontrada). |
 
 ## Glossário Técnico
 

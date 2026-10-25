@@ -32,7 +32,7 @@ O ATC atua como um "inspetor de qualidade" automatizado. Ele utiliza a engine do
 
 ### O que o ATC verifica (Categorias Principais):
 
-* **Sintaxe e Modernização:** Uso de comandos obsoletos (ex: `MOVE`, `COMPUTE`, `SELECT *`) em vez das novas sintaxes (Inline, Expressions).  
+* **Sintaxe e Modernização:** Uso de comandos obsoletos (ex: `MOVE`, `COMPUTE`, `CALL METHOD`) em vez das novas sintaxes (Inline, Expressions).  
 
 * **Performance (HANA):** Detecta *SELECTs dentro de LOOPs* (o pecado capital da performance), leitura de tabelas inteiras sem filtro e índices ausentes.  
 
@@ -48,9 +48,10 @@ O ATC atua como um "inspetor de qualidade" automatizado. Ele utiliza a engine do
 
 * **Quick Fixes (`Ctrl+1`):** No ADT, muitos erros (como falta de ordenação no `SELECT`) podem ser corrigidos automaticamente pela ferramenta.  
 
-* **Pragmas:** Para silenciar um aviso falso-positivo, usamos pragmas (comandos ##...). Exemplo: Se você declarar uma variável que propositalmente não será usada agora:  
+* **Pragmas:** Para silenciar um aviso falso-positivo, usamos pragmas (comandos ##...). Exemplos: `##NO_TEXT` indica que um literal de texto propositalmente não precisa de tradução; `##NEEDED` indica que uma variável declarada é necessária mesmo sem uso aparente.  
 ``` ABAP
   DATA(lv_dummy) = 'Teste' ##NO_TEXT. " Ignora aviso de hardcoded text
+  DATA lv_unused TYPE i ##NEEDED.     " Ignora aviso de variável não utilizada
 ```
 
 ## 3. Análise Dinâmica: ABAP Unit Tests
@@ -66,7 +67,7 @@ As classes de teste são **Classes Locais** especiais definidas dentro da classe
 
   * **RISK LEVEL DANGEROUS/CRITICAL:** O teste pode alterar dados reais. Geralmente evitado ou usado apenas em ambientes de sandbox controlados.  
 
-  * **DURATION SHORT:** O teste deve rodar em frações de segundo. Se demorar, o framework aborta.
+  * **DURATION SHORT:** O teste deve ser rápido. O limite de tempo de cada categoria (SHORT/MEDIUM/LONG) é configurável no sistema; se for excedido, o framework aborta o teste.
 
 #### **O Ciclo de Vida do Teste (Fixtures)**
 
@@ -108,7 +109,7 @@ CLASS zcl_calc DEFINITION PUBLIC FINAL CREATE PUBLIC.
     "! Método para dividir dois números  
     "! @parameter iv_a | Dividendo  
     "! @parameter iv_b | Divisor  
-    "! @returning rv_result | Resultado da divisão  
+    "! @parameter rv_result | Resultado da divisão  
     "! @raising cx_sy_zerodivide | Se o divisor for zero  
     METHODS dividir  
       IMPORTING iv_a TYPE i iv_b TYPE i  
