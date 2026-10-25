@@ -41,7 +41,7 @@ Contribuições são bem-vindas! Se você encontrar erros, tiver sugestões de m
   - [ABAP RESTful Application Programming Model](https://help.sap.com/docs/abap-cloud/abap-rap/abap-restful-application-programming-model?locale=en-US&version=sap_btp)
 
   ### Aprenda Praticando - Tutoriais Oficiais da SAP
-  - [Tutorial SAP - Crie um aplicativo de viagem com SAP Fiori Elements baseado no serviço OData V4 RAP](https://developers.sap.com/tutorials/abap-environment-extend-cds-view.html)
+  - [Tutorial SAP - Crie um aplicativo de viagem com SAP Fiori Elements baseado no serviço OData V4 RAP](https://developers.sap.com/group.fiori-tools-odata-v4-travel.html)
   - [Tutorial SAP - Estenda um Core Data Services Personalizado no Ambiente ABAP](https://developers.sap.com/tutorials/abap-environment-extend-cds-view.html)
   - [Tutorial SAP - Crie um aplicativo de Manutenção de Tabelas baseado em SAP Fiori](https://developers.sap.com/mission.abap-dev-factory-calendar.html)
   - [Tutorial SAP - \[RAP100\] - Construa um App SAP Fiori Usando o ABAP RESTful Application Programming Model](https://developers.sap.com/mission.sap-fiori-abap-rap100.html)
