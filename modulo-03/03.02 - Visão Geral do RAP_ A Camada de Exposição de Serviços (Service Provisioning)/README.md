@@ -56,10 +56,11 @@ define service Z_UI_TRAVEL_V4 {
   expose /DMO/I_Agency   as Agency;  
   expose I_Currency      as Currency;  
     
-  /* Note: Se Z_C_TRAVEL tem uma associação para _Booking,   
+  /* Nota: Se Z_C_TRAVEL tem uma associação para _Booking,   
      e queremos que o Fiori navegue para os itens,   
-     precisamos expor a view de Booking aqui também, ou garantir  
-     que a associação seja acessível via metadados. */  
+     precisamos expor a view de Booking aqui também: associações  
+     cujo destino não é exposto no serviço não aparecem como  
+     propriedades de navegação nos metadados. */  
 
 }
 ```
@@ -96,9 +97,9 @@ No ambiente **ABAP Cloud** (BTP) ou S/4HANA recente, criar o Binding não é o f
 
 ### O que acontece ao clicar em "Publish"?
 
-1. **Geração de Artefatos:** O sistema gera classes de carga (Load Classes) no Gateway.  
-2. **Registro ICF:** É criado um nó na árvore do *Internet Communication Framework* (ICF), geralmente sob o caminho /sap/opu/odata4/....  
-3. **Ativação de Endpoint:** A URL se torna acessível publicamente (dentro da rede segura).
+1. **Registro no Gateway:** O serviço (e, no V4, seu grupo de serviços) é registrado no SAP Gateway — o equivalente ao que se fazia manualmente nas transações `/IWFND/MAINT_SERVICE` (V2) e `/IWFND/V4_ADMIN` (V4).  
+2. **Endpoint:** O serviço passa a responder sob o caminho do *Internet Communication Framework* (ICF) correspondente: `/sap/opu/odata/...` (V2) ou `/sap/opu/odata4/...` (V4).  
+3. **Ativação de Endpoint:** A URL se torna acessível (dentro da rede segura), sujeita às autorizações do usuário.
 
 A Ferramenta de Preview: O Service Binding no ADT oferece um botão "Preview" para a entidade raiz.
 
@@ -113,7 +114,7 @@ A Ferramenta de Preview: O Service Binding no ADT oferece um botão "Preview" pa
 2. **O destino é uma integração via SAP CPI, Postman ou sistema externo?**  
    * Sim -> **Use OData V4 - Web API** (ou V2 se o sistema externo for antigo).  
 
-3. **Preciso de compatibilidade com apps Fiori antigos (versão 1.x)?**  
+3. **Preciso de compatibilidade com apps Fiori/SAPUI5 existentes baseados em OData V2 (ex: Fiori Elements V2, Smart Controls)?**  
    * Sim -> **Use OData V2 - UI**.
 
 ## Glossário Técnico

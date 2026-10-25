@@ -31,7 +31,7 @@ O **ABAP RESTful Application Programming Model (RAP)** utiliza nativamente a ver
 
 * **Performance e Payload Reduzido:** O formato JSON do V4 é mais enxuto, removendo metadados redundantes de cada linha, o que acelera o tráfego de rede em listas grandes.  
 
-* **Capacidades Ricas de Edição:** O V4 suporta nativamente operações complexas como Deep Insert (criar um Cabeçalho e seus Itens em uma única chamada de API), o que é essencial para apps transacionais RAP.  
+* **Capacidades Ricas de Edição:** O V4 oferece um suporte mais padronizado a operações transacionais como ações vinculadas (bound actions), Deep Insert (criar um Cabeçalho e seus Itens em uma única chamada — recurso que também existe no V2) e ao modelo de rascunho (Draft) do RAP.  
 
 * **Agrupamento de Requisições ($batch):** O gerenciamento de chamadas em lote é mais eficiente, permitindo que a UI agrupe múltiplas alterações em um único "pacote" HTTP, garantindo atomicidade da transação.  
 
@@ -48,7 +48,7 @@ A "mágica" do Fiori Elements reside na dissociação entre a lógica de apresen
 
 2. **Serviço OData (O Transporte):** O SAP Gateway traduz essa anotação CDS para o vocabulário padrão do OData (XML de Metadados). O navegador recebe não apenas os dados ("Pedido 100"), mas também a instrução de como mostrá-los ("Este campo é a primeira coluna da tabela").  
 
-3. **Frontend (A Renderização):** O componente Fiori Elements lê o documento de metadados ($metadata). Ao encontrar a anotação de LineItem, ele instancia dinamicamente uma SmartTable e insere a coluna. Se você mudar a anotação no backend, a tela muda sozinha no próximo refresh.
+3. **Frontend (A Renderização):** O componente Fiori Elements lê o documento de metadados ($metadata). Ao encontrar a anotação de LineItem, ele instancia dinamicamente uma tabela e insere a coluna (no OData V4, por meio dos Building Blocks/controles MDC do `sap.fe`; no OData V2, por meio da SmartTable). Se você mudar a anotação no backend, a tela muda sozinha no próximo refresh.
 
 **Resumo:** "Você define a *semântica* (o quê é o dado e como ele se comporta) no Backend, e o Fiori Elements define a *renderização* (como desenhar o HTML) no Frontend."
 
@@ -100,7 +100,7 @@ Por que escolher Fiori Elements em vez de contratar um desenvolvedor Frontend pa
 
 * **OData V4:** A versão mais recente do protocolo OData, otimizada para performance e padronizada para serviços RAP. Permite payloads menores, agrupamento de requisições e operações transacionais complexas.  
 
-* **Smart Controls:** Componentes de UI inteligentes (como SmartTable, SmartFilterBar, SmartField) que sabem ler anotações OData para se autoconfigurarem e renderizarem os dados corretos sem código adicional.
+* **Smart Controls / Building Blocks:** Componentes de UI inteligentes que leem anotações OData para se autoconfigurarem e renderizarem os dados corretos sem código adicional. No Fiori Elements para OData V2 são os Smart Controls (`sap.ui.comp`: SmartTable, SmartFilterBar, SmartField); no OData V4 são os Building Blocks (`sap.fe.macros`), baseados nos controles MDC.
 
 ## Quiz de Fixação
 

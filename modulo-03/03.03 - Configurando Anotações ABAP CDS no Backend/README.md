@@ -32,7 +32,7 @@ Esta anotação é aplicada no **cabeçalho da CDS View** (ou da _Metadata Exten
     typeNamePlural: 'Viagens',   
     title: { type: #STANDARD, value: 'TravelID' },  
     description: { type: #STANDARD, value: 'Description' },  
-    imageUrl: 'Attachment' " Opcional: Mostra imagem no cabeçalho se houver  
+    imageUrl: 'Attachment' // Opcional: Mostra imagem no cabeçalho se houver  
 
 }  
 
@@ -62,7 +62,7 @@ A anotação `@UI.lineItem` é responsável por desenhar as colunas da tabela pr
 
 ``` CDS
 @UI.lineItem: [   
-  { position: 10, label: 'ID da Viagem', importance: #HIGH, width: '10rem' }   
+  { position: 10, label: 'ID da Viagem', importance: #HIGH, cssDefault: { width: '10rem' } }   
 
 ]
 
@@ -198,5 +198,5 @@ Q1: Para que serve a propriedade importance: `#HIGH` dentro da anotação `@UI.l
 Q2: Eu adicionei um campo na minha CDS View, mas ele não aparece na barra de filtros do aplicativo quando carrego a página. Qual anotação está faltando e como o usuário ainda poderia filtrar por esse campo?  
   R: Está faltando a anotação `@UI.selectionField`. Sem ela, o campo não é promovido automaticamente para a barra visível. No entanto, o usuário ainda pode filtrar por ele clicando no botão "Adaptar Filtros" (Adapt Filters) na UI e selecionando o campo manualmente na lista de campos disponíveis.  
 
-Q3: Qual a diferença fundamental de propósito entre as anotações `@UI.headerInfo` e `@UI`.identification?  
-  R: `@UI.headerInfo` é uma anotação de "identidade" global do objeto; ela configura os textos de título e descrição que aparecem no topo da página e na navegação. @UI.identification é uma anotação de "conteúdo"; ela define uma lista específica de campos que devem ser renderizados como um formulário dentro de uma seção da página de detalhes (Object Page).
+Q3: Qual a diferença fundamental de propósito entre as anotações `@UI.headerInfo` e `@UI.identification`?  
+  R: `@UI.headerInfo` é uma anotação de "identidade" global do objeto; ela configura os textos de título e descrição que aparecem no topo da página e na navegação. `@UI.identification` é uma anotação de "conteúdo"; ela define uma lista específica de campos que devem ser renderizados como um formulário dentro de uma seção da página de detalhes (Object Page).

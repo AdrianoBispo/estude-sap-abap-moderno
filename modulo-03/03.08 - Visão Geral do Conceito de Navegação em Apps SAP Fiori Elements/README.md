@@ -91,20 +91,21 @@ CustomerID;
 
 Um problema comum em integração é a divergência de nomes. Imagine que na sua tabela de Viagens, o campo se chama `MyCustID`, mas o aplicativo de destino (Cockpit do Cliente) espera receber um parâmetro chamado PartnerID. Se você apenas disparar a intenção, o destino não entenderá o parâmetro e abrirá a tela inicial sem filtro.
 
-O Fiori Elements faz o mapeamento automático se os nomes forem iguais. Se forem diferentes, usamos anotações de **Parâmetros de Consumo** (`@Consumption.semanticObject`) para ensinar ao sistema o significado do campo.
+O Fiori Elements repassa os campos da linha como parâmetros usando os próprios nomes dos campos; se os nomes forem iguais aos esperados pelo destino, tudo funciona automaticamente. A anotação `@Consumption.semanticObject` marca o campo como representante de um Objeto Semântico (habilitando o Smart Link com os destinos disponíveis), mas **não renomeia** o parâmetro. Se os nomes forem diferentes, é preciso um mapeamento explícito (veja a nota abaixo).
 
 ### Exemplo Completo com Mapeamento:
 
 ``` CDS
 /* Na CDS View ou Metadata Extension:  
-   A anotação `@Consumption.semanticObject` diz: "Ei, sistema, embora este campo   
-   se chame '`MyCustID`', semanticamente ele equivale ao Objeto Semântico 'Customer'".  
-   Isso ajuda o Smart Link a encontrar os parâmetros corretos.  
+   A anotação @Consumption.semanticObject diz: "Ei, sistema, embora este campo   
+   se chame 'MyCustID', semanticamente ele representa o Objeto Semântico 'Customer'".  
+   Isso habilita o Smart Link para os apps desse objeto semântico.  
 */  
 @Consumption.semanticObject: 'Customer'   
 MyCustID;
 
 /* Na Metadata Extension (Definição da Coluna) */  
+@Metadata.layer: #CORE  
 annotate view Z_C_TRAVEL with {  
     @UI.lineItem: [   
         {   
@@ -118,7 +119,7 @@ annotate view Z_C_TRAVEL with {
 }
 ```
 
-*Nota:* Em cenários complexos onde a anotação `@Consumption` não é suficiente, pode ser necessário configurar o mapeamento de parâmetros manualmente no Target Mapping do Launchpad.
+*Nota:* Para renomear o parâmetro (`MyCustID` → `PartnerID`), use uma anotação de mapeamento de objeto semântico (`Common.SemanticObjectMapping`, que pode ser adicionada como anotação local no app via SAP Fiori Tools) ou configure o mapeamento de parâmetros diretamente no Target Mapping do Launchpad.
 
 ## 5. Navegação para URL (Links da Web)
 

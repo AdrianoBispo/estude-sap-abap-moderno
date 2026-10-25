@@ -53,7 +53,7 @@ annotate view Z_C_TRAVEL with ...
 
 Na aula anterior, aprendemos a teoria de *Collection* e *Reference Facets*. Agora, vamos traduzir isso para o código da _Metadata Extension_ (`.ddlx`).
 
-A anotação **@UI.facet** é estruturada como uma matriz (array) de objetos. A ordem no array define a ordem na tela (de cima para baixo, ou da esquerda para a direita).
+A anotação **@UI.facet** é estruturada como uma matriz (array) de objetos. A ordem na tela (de cima para baixo, ou da esquerda para a direita) é definida pela propriedade `position` de cada faceta, e não pela ordem em que aparecem no array.
 
 ### A. Criando a Seção Principal (Collection Facet)
 
@@ -88,7 +88,7 @@ Esta é a abordagem "simples e direta". Existe um grupo especial de anotações 
 
 * **O que é:** Uma faceta deste tipo renderiza **todos** os campos que você marcou com `@UI.identification` na sua Metadata Extension.  
 
-* **Limitação:** Você só tem **um** grupo de identificação por entidade. Você não pode dividir esses campos em dois blocos visuais separados (ex: lado a lado). Eles sempre aparecerão juntos em uma única lista vertical.  
+* **Limitação:** Na prática, usa-se **um** grupo de identificação por entidade, tratado como o bloco principal. Todos os campos anotados aparecem juntos em uma única lista vertical; para dividir campos em blocos visuais separados (ex: lado a lado), o recurso adequado é o `@UI.fieldGroup`.  
 
 * **Uso Ideal:** Para o bloco principal de "Cabeçalho" ou dados essenciais (ID, Descrição, Status).
 
@@ -141,10 +141,11 @@ Vamos juntar tudo. Abaixo, uma Metadata Extension que cria uma Object Page sofis
 
 ``` CDS
 @Metadata.layer: #CORE  
-@UI.headerInfo: { typeName: 'Viagem', title: { value: 'TravelID' } }
+@UI.headerInfo: { typeName: 'Viagem', typeNamePlural: 'Viagens', title: { value: 'TravelID' } }
 
 /* Ordenação padrão da lista */  
-@UI.presentationVariant: [{ sortOrder: [{ by: 'BeginDate', direction: #DESC }] }]
+@UI.presentationVariant: [{ sortOrder: [{ by: 'BeginDate', direction: #DESC }],
+                            visualizations: [{ type: #AS_LINEITEM }] }]
 
 annotate view Z_C_TRAVEL with  
 {  
@@ -234,7 +235,7 @@ annotate view Z_C_TRAVEL with
   R: Adicionando a anotação @UI.presentationVariant no cabeçalho da Metadata Extension. Dentro dela, deve-se definir a propriedade sortOrder apontando para o campo BeginDate com a direção #DESC.  
 
 2. Se eu quiser criar duas caixas de formulário separadas na mesma aba da Object Page (ex: uma caixa para "Dados do Cliente" e outra para "Dados de Contato"), qual tipo de referência de faceta devo usar e por quê?  
-  R: Devo usar #FIELDGROUP_REFERENCE. O tipo #IDENTIFICATION_REFERENCE só permite criar um único bloco de campos. Com #FIELDGROUP_REFERENCE, posso usar qualificadores diferentes (ex: qualifier: 'Cliente' e qualifier: 'Contato') para agrupar os campos em blocos distintos e criar duas facetas separadas apontando para cada qualificador.  
+  R: Devo usar #FIELDGROUP_REFERENCE. O tipo #IDENTIFICATION_REFERENCE renderiza o bloco principal de identificação, pensado para ser único. Com #FIELDGROUP_REFERENCE, posso usar qualificadores diferentes (ex: qualifier: 'Cliente' e qualifier: 'Contato') para agrupar os campos em blocos distintos e criar duas facetas separadas apontando para cada qualificador.  
 
 3. O que acontece visualmente se eu criar uma faceta com parentId apontando para um ID que não existe na minha lista de facetas?  
   R: A configuração ficará órfã. Dependendo da versão do Fiori Elements, o bloco pode não aparecer na tela ou pode ser renderizado de forma "solta" no final da página, fora da estrutura de abas desejada. É crucial que o parentId corresponda exatamente ao id de uma faceta do tipo #COLLECTION.

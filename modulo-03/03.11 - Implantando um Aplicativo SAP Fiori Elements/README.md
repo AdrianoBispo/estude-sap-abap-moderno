@@ -106,6 +106,7 @@ Fluxo Completo de Segurança: Usuário -> possui Business Role -> agrupa Busines
 
 Visualize o caminho que seu código percorre desde o seu teclado até a tela do usuário final:
 
+```
 [ 1. Ambiente de Desenvolvimento (Local/Cloud) ]  
       |  
       | (Processo de Build: Minificação & Preload)  
@@ -129,6 +130,7 @@ Visualize o caminho que seu código percorre desde o seu teclado até a tela do 
 [ 5. Gestão de Identidade (IAM) ]  
       |-- Business Role (Papel: Gerente de Viagens)  
       |-- Business User (Usuário: João Silva)
+```
 
 ### Check-list de Deploy (Antes de enviar)
 
