@@ -82,20 +82,20 @@ A SAP classifica a liberação em níveis de contrato, definindo *como* você po
 
 Aqui reside o segredo para sobreviver no **S/4HANA Private Cloud** ou em migrações Brownfield. Frequentemente, você precisará usar uma funcionalidade antiga (ex: uma BAPI de cálculo de impostos específica do Brasil, ou uma Função Z antiga crítica) que a SAP ainda não liberou para o modelo Cloud (não tem contrato C1).
 
-Se você tentar chamar essa função diretamente do seu código "Tier 2" (ABAP Cloud), receberá um erro.
+Se você tentar chamar essa função diretamente do seu código "Tier 1" (ABAP Cloud), receberá um erro.
 
 ### A Solução Arquitetural: O Padrão Wrapper
 
-Nós criamos uma camada de isolamento. Como no Private Cloud temos acesso ao "Tier 3" (ABAP Clássico/Não Restrito), usamos isso a nosso favor.
+Nós criamos uma camada de isolamento. Como no Private Cloud temos acesso ao ABAP Clássico (não restrito), usamos isso a nosso favor: no modelo de 3 Tiers, essa camada de "ponte" é o **Tier 2 (Cloud API Enablement)**.
 
-1. **Crie o Wrapper (Tier 3):** Crie uma Classe ABAP no modo "Standard ABAP" (sem restrição de Cloud).  
+1. **Crie o Wrapper (Tier 2 — Cloud API Enablement):** Crie uma Classe ABAP no modo "Standard ABAP" (sem restrição de Cloud).  
    * Esta classe tem "superpoderes": ela pode chamar a BAPI antiga, ler a tabela MARA ou usar qualquer código legado.  
 
 2. **Exponha uma Interface Limpa:** O método público desta classe wrapper deve receber e retornar apenas tipos de dados simples ou liberados.  
 
 3. **Libere o Wrapper (Release C1):** Aqui está o "pulo do gato". Você, como desenvolvedor, marca sua própria classe Wrapper como **"Released for Cloud Development"** (Contrato C1). Você está atestando que essa interface é estável.  
 
-4. **Consuma no Tier 2:** Agora, seu código ABAP Cloud (seu App Fiori moderno) pode instanciar e chamar sua classe Wrapper.
+4. **Consuma no Tier 1:** Agora, seu código ABAP Cloud (seu App Fiori moderno) pode instanciar e chamar sua classe Wrapper.
 
 *Nota:* O Wrapper atua como uma "zona de descontaminação". Ele esconde a complexidade e a "sujeira" do legado, permitindo que o novo desenvolvimento permaneça limpo e compliant com as regras da nuvem.
 
@@ -109,20 +109,20 @@ Vamos visualizar a diferença prática entre o código legado e o código modern
 
 ``` ABAP
 " Erro de Sintaxe: The object 'MARA' is not released for cloud development.  
-SELECT matnr, matkl   
-  FROM mara   
-  INTO TABLE @lt_data  
-  WHERE matnr = @lv_material.
+SELECT FROM mara   
+  FIELDS matnr, matkl   
+  WHERE matnr = @lv_material  
+  INTO TABLE @DATA(lt_data).
 ```
 
 - **Código Correto (Clean Core):** Utilizamos a CDS View de Interface I_Product, que é a "Fachada Pública" garantida pela SAP para dados de produtos.
 
 ``` ABAP
 " Correto: I_Product é uma CDS View liberada com contrato C1.  
-SELECT Product as MaterialID, ProductGroup  
-  FROM I_Product  
-  INTO TABLE @lt_data  
-  WHERE Product = @lv_material.
+SELECT FROM I_Product  
+  FIELDS Product AS MaterialID, ProductGroup  
+  WHERE Product = @lv_material  
+  INTO TABLE @DATA(lt_data).
 ```
 
 ## Tabela de Conversão: Legado vs. Cloud (De/Para)
@@ -144,9 +144,9 @@ SELECT Product as MaterialID, ProductGroup
 
 * **Released Object (Objeto Liberado):** Um artefato SAP (Classe, CDS, Interface, BAdI) que foi explicitamente marcado pela SAP como estável para uso em desenvolvimento customizado. Possui um "API State" visível no ADT e garantia de compatibilidade futura.  
 
-* **Wrapper (Classe Envelope):** Um padrão de design estrutural usado para encapsular funcionalidade legada (não liberada) dentro de uma interface moderna e liberada. No contexto S/4HANA Private Cloud, permite que código ABAP Cloud (Tier 2) acesse funcionalidades do ABAP Clássico (Tier 3) de forma controlada.  
+* **Wrapper (Classe Envelope):** Um padrão de design estrutural usado para encapsular funcionalidade legada (não liberada) dentro de uma interface moderna e liberada. No contexto S/4HANA Private Cloud, permite que código ABAP Cloud (Tier 1) acesse funcionalidades do ABAP Clássico (Tier 3) de forma controlada. Os wrappers em si formam o Tier 2 (Cloud API Enablement).  
 
-* **Tier 2 (Developer Extensibility):** Camada de desenvolvimento onde aplicamos o modelo ABAP Cloud. O código roda no mesmo stack do S/4HANA (acesso local a dados), mas é isolado logicamente pelas regras da linguagem, garantindo que não "quebre" o núcleo.
+* **Tier 1 (ABAP Cloud):** Camada de desenvolvimento onde aplicamos o modelo ABAP Cloud (Developer Extensibility). O código roda no mesmo stack do S/4HANA (acesso local a dados), mas é isolado logicamente pelas regras da linguagem, garantindo que não "quebre" o núcleo.
 
 ## Quiz de Fixação
 
@@ -157,7 +157,7 @@ Q2: Como um desenvolvedor pode descobrir se uma determinada CDS View padrão da 
   R: Abrindo a view no ABAP Development Tools (ADT) no Eclipse, acessando a aba Properties e verificando o campo API State. Se estiver marcada como "Released" e possuir o contrato C1 (Use in Cloud Development), ela pode ser usada. Se estiver "Not Released", seu uso gerará erro de compilação.  
 
 Q3: Em um cenário de S/4HANA Private Cloud, você precisa reutilizar uma função Z complexa antiga que não segue as regras do ABAP Cloud. Qual é a estratégia arquitetural recomendada para acessá-la a partir de um novo App Fiori RAP?  
-  R: Deve-se criar um Wrapper. Ou seja, criar uma classe intermediária na camada de ABAP Clássico (Tier 3) que chama a função Z antiga. Em seguida, deve-se liberar (Release C1) essa classe Wrapper explicitamente para uso em Cloud Development. O App Fiori (Tier 2) chamará então o Wrapper, que por sua vez chamará o código legado.
+  R: Deve-se criar um Wrapper. Ou seja, criar uma classe intermediária em ABAP Clássico — a camada de Tier 2 (Cloud API Enablement) — que chama a função Z antiga. Em seguida, deve-se liberar (Release C1) essa classe Wrapper explicitamente para uso em Cloud Development. O App Fiori (Tier 1) chamará então o Wrapper, que por sua vez chamará o código legado.
 
 ## Links de Demonstrações
 

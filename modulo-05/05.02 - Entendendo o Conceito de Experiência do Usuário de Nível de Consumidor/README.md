@@ -103,7 +103,7 @@ Se você criar um aplicativo customizado (Z) que ignora os padrões do Fiori (ex
 
 Usar **SAP Fiori Elements** é a estratégia mais segura. O framework garante que seu aplicativo siga rigorosamente as diretrizes da SAP, seja responsivo e acessível, protegendo o investimento da empresa.
 
-## Os 5 Princípios (Mnemónica RASCD)
+## Os 5 Princípios (Mnemônico RASCD)
 
 * **R**ole-Based (Baseado em Papéis): Decompor complexidade em apps focados na função do usuário.  
 * **A**daptive (Adaptável): Responsividade total (Desktop, Tablet, Mobile).  
