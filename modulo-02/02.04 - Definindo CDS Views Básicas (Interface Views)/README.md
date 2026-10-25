@@ -43,7 +43,7 @@ Uma View CDS é um artefato de código fonte (_DDL - Data Definition Language_) 
 Configurações técnicas que precedem a definição. Começam com `@`.
 
 * **`@AccessControl.authorizationCheck`:** Define se a view terá controle de acesso automático (DCL). Para Interface Views básicas, muitas vezes usamos `#NOT_REQUIRED` ou `#CHECK`.  
-* **`@EndUserText.label`:** A descrição da view. Obrigatória em View Entities.
+* **`@EndUserText.label`:** A descrição da view. Não é obrigatória, mas é fortemente recomendada (o template do ADT já a inclui).
 
 ### B. Definição e Fonte de Dados
 
@@ -67,7 +67,7 @@ O VDM organiza as milhares de views do S/4HANA.
 
 Vamos criar a view `Z_I_TRAVEL`. O objetivo é ler a tabela física `ZRAP_TRAVEL` e transformar seus campos técnicos em uma interface de negócio limpa.
 
-**Atenção ao CamelCase:** Note como usamos as `TravelUUID` em vez de deixar `travel_uuid`. Interfaces modernas (_Fiori_, _React_, _APIs REST_) padronizam o uso de CamelCase. Se mandarmos `TRAVEL_UUID`, o frontend _JavaScript_ terá que lidar com nomes fora do padrão. O CDS resolve isso na fonte.
+**Atenção ao CamelCase:** Note como usamos `TravelUUID` em vez de deixar `travel_uuid`. Interfaces modernas (_Fiori_, _React_, _APIs REST_) padronizam o uso de CamelCase. Se mandarmos `TRAVEL_UUID`, o frontend _JavaScript_ terá que lidar com nomes fora do padrão. O CDS resolve isso na fonte.
 
 ``` CDS
 @AccessControl.authorizationCheck: #NOT_REQUIRED  
@@ -162,7 +162,7 @@ concat_with_space(first_name, last_name, 1) as FullName
 dats_days_between(begin_date, end_date) as DurationDays
 
 /* Conversão de Tipo (Casting) */  
-cast(total_price as abap.fltp) as PriceFloat
+cast(total_price as abap.dec(17,2)) as PriceDecimal
 ```
 
 ## Comparativo: DDIC View vs CDS View Entity

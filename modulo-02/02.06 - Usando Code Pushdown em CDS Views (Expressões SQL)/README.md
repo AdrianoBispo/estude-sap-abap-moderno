@@ -54,13 +54,13 @@ Um uso extremamente comum no RAP é definir a "Criticidade" de uma linha. O Fior
 
 case   
   when overall_status = 'X' then 1  -- Vermelho (Erro)  
-  when overall_status = 'O' and dats_days_between(created_at, $session.system_date) > 30 then 2 -- Amarelo (Atrasado)  
+  when overall_status = 'O' and dats_days_between($session.system_date, begin_date) < 7 then 2 -- Amarelo (Aberta e começa em menos de 7 dias)  
   when overall_status = 'A' then 3  -- Verde (Sucesso)  
   else 0                            -- Cinza (Neutro)  
 end as StatusCriticality
 ```
 
-*Dica:* Observe como combinamos uma comparação simples (`=`) com uma função de data (`dats_days_between`) dentro da condição `WHEN`. O CDS permite essa flexibilidade.
+*Dica:* Observe como combinamos uma comparação simples (`=`) com uma função de data (`dats_days_between`) dentro da condição `WHEN`. O CDS permite essa flexibilidade. Atenção: as funções `dats_*` exigem campos do tipo data (`DATS`); para timestamps (ex: `created_at`), use as funções `tstmp_*` ou converta antes com `tstmp_to_dats`.
 
 ## 3. Funções de Data, Aritmética e String
 
@@ -70,7 +70,7 @@ O ABAP CDS oferece uma biblioteca rica de funções integradas que eliminam a ne
 
 Podemos realizar as quatro operações básicas e usar funções matemáticas. O CDS lida automaticamente com nulos (se um operando for `NULL`, o resultado é `NULL`).
 
-* **Operadores:** `+`, `-`, `*`, `/` (Divisão exata, retorna Floating Point).  
+* **Operadores:** `+`, `-`, `*`, `/` (divisão não inteira — não pode ser usada entre dois operandos inteiros; nesse caso use `div()` ou `division( a, b, casas_decimais )`).  
 * **Funções:** `div(a, b)` (Divisão inteira), `mod(a, b)` (Resto), `abs(x)` (Valor absoluto), `ceil(x)` (Arredondar para cima), `floor(x)` (Arredondar para baixo).
 
 ``` CDS
@@ -123,19 +123,17 @@ O comando `CAST` é vital quando precisamos alinhar tipos de dados. O ABAP e o S
 - **Sintaxe:** cast( expressão as TipoDestino )
 
   - Tipos de destino comuns no CDS:
-    ``` CDS
-      * abap.char(len)  
-      * abap.numc(len)  
-      * abap.int4  
-      * abap.dec(len, decimals)  
-      * abap.fltp (Floating Point - recomendado para cálculos complexos)
-    ```
+    * `abap.char(len)`
+    * `abap.numc(len)`
+    * `abap.int4`
+    * `abap.dec(len, decimals)` (ponto fixo — recomendado para valores monetários)
+    * `abap.fltp` (ponto flutuante binário — útil para cálculos científicos/estatísticos, mas sujeito a erros de arredondamento; evite para dinheiro)
 
 #### Exemplos:
 
 ``` CDS
-/* Convertendo Preço para Float para cálculo preciso */
-cast( total_price as abap.fltp ) as PriceFloat
+/* Convertendo Preço para Decimal com mais dígitos, evitando overflow em cálculos */
+cast( total_price as abap.dec(17,2) ) as PriceDecimal
 
 /* Convertendo para Char para uso em string */
 cast( travel_id as abap.char(8) ) as TravelIdChar
@@ -165,9 +163,9 @@ define view entity Z_I_TRAVEL_COMPUTED
 
       /* --- 1. Aritmética e Conversão --- */  
       /* Calcula o Custo Total Real (Preço + Taxa) */  
-      /* O CAST garante que ambos sejam tratados como ponto flutuante para precisão */  
+      /* O CAST para decimal (ponto fixo) mantém a precisão monetária e evita overflow */  
       @Semantics.amount.currencyCode: 'currency_code'  
-      cast( total_price as abap.fltp ) + cast( booking_fee as abap.fltp ) as GrandTotal,
+      cast( total_price as abap.dec(17,2) ) + cast( booking_fee as abap.dec(17,2) ) as GrandTotal,
 
       /* --- 2. Funções de Data --- */  
       /* Calcula a duração da viagem em dias */  
@@ -212,9 +210,10 @@ define view entity Z_I_TRAVEL_STATS
   as select from zrap_travel  
 
 {  
-  /* Chave do Agrupamento */  
+  /* Chave do Agrupamento: cliente + moeda identificam cada linha do resultado */  
 
   key customer_id,  
+  key currency_code as CurrencyCode,  
         
       /* Agregações */  
       count(*) as NumberOfTravels,  
@@ -222,10 +221,7 @@ define view entity Z_I_TRAVEL_STATS
       @Semantics.amount.currencyCode: 'CurrencyCode'  
       sum( total_price ) as TotalSpent,  
         
-      avg( total_price as abap.dec(15,2) ) as AverageTicketPrice,  
-        
-      /* Campo de Controle para Semântica */  
-      currency_code as CurrencyCode  
+      avg( total_price as abap.dec(15,2) ) as AverageTicketPrice  
 }
 
 /* Agrupamento Obrigatório */  
@@ -249,7 +245,7 @@ group by customer_id, currency_code
 * **Expression (Expressão SQL):** Qualquer comando que gera um valor novo em tempo de execução, em vez de apenas ler um valor armazenado. Inclui cálculos, concatenações e lógica condicional.  
 * **CAST (Type Casting):** Função SQL usada para converter explicitamente um valor de um tipo de dados para outro (ex: `NUMC` para `INT`). Essencial para evitar erros de tipo em cálculos aritméticos e uniões.  
 * **Session Variable ($session):** Variáveis globais de contexto acessíveis dentro da CDS View que contêm informações do ambiente de execução atual do banco de dados/sessão ABAP. Exemplos: `$session.system_date` (Data atual), `$session.user` (Usuário logado).  
-* **Aggregations (Agregações):** Funções que condensam múltiplos registros em um único resultado resumo, como `SUM` (Soma), `MIN` (Mínimo), `MAX` (Máximo), `AVG` (Média) e `COUNT` (Contagem). Exigem o uso da cláusula `GROUP BY`.  
+* **Aggregations (Agregações):** Funções que condensam múltiplos registros em um único resultado resumo, como `SUM` (Soma), `MIN` (Mínimo), `MAX` (Máximo), `AVG` (Média) e `COUNT` (Contagem). Quando combinadas com campos não agregados, exigem a cláusula `GROUP BY`.  
 * **Criticality (Criticidade):** Conceito de UI do SAP Fiori onde valores numéricos (0-3) são mapeados para cores semânticas (Cinza, Vermelho, Amarelo, Verde) para indicar status ou severidade de forma visual.
 
 ## Quiz de Fixação
@@ -264,4 +260,4 @@ group by customer_id, currency_code
   R: Deve-se usar a expressão `CASE`. O benefício é que a lógica de apresentação ("Se A então Verde") fica centralizada na View. A interface de usuário (Fiori) apenas lê o valor numérico resultante e aplica a cor, sem precisar repetir a regra de negócio no JavaScript do frontend.
 
 4. O que acontece se eu tentar usar a função `SUM( price )` em uma CDS View sem adicionar uma cláusula `GROUP BY`?  
-  R: Ocorrerá um erro de sintaxe. Funções de agregação condensam linhas. Se houver outros campos na seleção que não estão sendo agregados (como ID do Cliente), o banco de dados precisa saber como agrupar esses campos para calcular a soma correta para cada grupo.
+  R: Depende da lista de seleção. Se houver outros campos que não estão sendo agregados (como ID do Cliente), ocorrerá um erro de sintaxe: o banco de dados precisa saber como agrupar esses campos para calcular a soma correta de cada grupo. Se a lista contiver apenas agregações, a view é válida e retorna uma única linha com o total geral.
