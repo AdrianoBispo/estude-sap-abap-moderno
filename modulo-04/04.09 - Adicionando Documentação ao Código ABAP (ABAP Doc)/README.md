@@ -8,7 +8,7 @@
 
 - Diferenciar com clareza **Comentários Tradicionais** (`"` ou `*`), destinados a anotações internas de implementação, de **ABAP Doc** (`"!`), destinado à documentação de interface pública e contratos de API.  
 
-- Dominar o uso de tags de documentação estruturada como **`@parameter`**, **`@raising`**, **`@returning`** e o uso de **Tags HTML** para formatação rica de texto.  
+- Dominar o uso de tags de documentação estruturada como **`@parameter`**, **`@raising`** e **`@exception`**, e o uso de **Tags HTML** para formatação rica de texto.  
 
 - Utilizar ferramentas da IDE (ADT) como a janela **Element Info (`F2`)** para consumir a documentação em tempo de codificação, aumentando a produtividade.  
 
@@ -47,10 +47,10 @@ O ABAP Doc deve ser escrito na **Definição** da classe (ou Interface), pois é
 
 Estas tags estruturam a documentação dos elementos da assinatura do método:
 
-* **`@parameter`**: Descreve um parâmetro de `IMPORTING`, `EXPORTING` ou `CHANGING`.  
-  * **Sintaxe:** "! `@parameter nome_param | Descrição do que ele faz`.  
-* **`@returning`**: Descreve o valor de retorno funcional.  
-* **`@raising`**: Descreve as exceções que podem ocorrer, explicando *sob quais condições* o erro é disparado.
+* **`@parameter`**: Descreve um parâmetro de `IMPORTING`, `EXPORTING`, `CHANGING` ou `RETURNING` (o valor de retorno funcional também é documentado com `@parameter` — não existe uma tag `@returning` no ABAP Doc).  
+  * **Sintaxe:** `"! @parameter nome_param | Descrição do que ele faz`  
+* **`@raising`**: Descreve as exceções baseadas em classe que podem ocorrer, explicando *sob quais condições* o erro é disparado.  
+* **`@exception`**: Equivalente para exceções clássicas (não baseadas em classe, `EXCEPTIONS`).
 
 #### **Formatação com HTML**
 
@@ -76,11 +76,9 @@ Diferente dos comentários antigos, o ABAP Doc suporta um subconjunto de tags HT
 "!  
 "! @parameter iv_customer_id | ID do Cliente (Tabela KNA1)  
 "! @parameter iv_total_amount | Valor total da compra atual para base de cálculo  
-"! @returning rv_discount | Valor monetário do desconto calculado em Moeda Local  
+"! @parameter rv_discount | Valor monetário do desconto calculado em Moeda Local  
 "! @raising zcx_customer_error | Disparado se o cliente estiver bloqueado ou não existir  
-
 METHODS calculate_discount  
-
   IMPORTING iv_customer_id     TYPE kunnr  
             iv_total_amount    TYPE kbetr  
   RETURNING VALUE(rv_discount) TYPE kbetr  
@@ -111,7 +109,7 @@ Existe um ditado famoso no desenvolvimento de software: *"Código bom não preci
   lv_count = lv_count + 1. " Incrementa contador (NÃO FAÇA ISSO! É ruído.)
 ```
 
-* **(Comentários de "Por Que" (Necessários):)** Use comentários tradicionais (`"`) dentro da implementação para explicar decisões de design não óbvias, regras de negócio obscuras ou workarounds técnicos.
+* **Comentários de "Por Que" (Necessários):** Use comentários tradicionais (`"`) dentro da implementação para explicar decisões de design não óbvias, regras de negócio obscuras ou workarounds técnicos.
 ``` ABAP
   " Incrementamos em 1 para compensar o offset do array que começa em 0 no sistema legado
 ```
@@ -146,7 +144,7 @@ CLASS zcl_doc_demo DEFINITION PUBLIC FINAL CREATE PUBLIC.
     "!  
     "! @parameter iv_sku   | Código do material (Stock Keeping Unit). Ex: <em>'MAT-001'</em>  
     "! @parameter iv_plant | Centro logístico (ex: '1000'). Se vazio, busca em todos os centros.  
-    "! @returning rv_available | Retorna <strong>abap_true</strong> se houver saldo > 0 disponível para promessa (ATP).  
+    "! @parameter rv_available | Retorna <strong>abap_true</strong> se houver saldo > 0 disponível para promessa (ATP).  
     "! @raising zcx_material_not_found | Disparado se o SKU não existir no cadastro mestre.  
     METHODS check_availability  
       IMPORTING iv_sku              TYPE string  

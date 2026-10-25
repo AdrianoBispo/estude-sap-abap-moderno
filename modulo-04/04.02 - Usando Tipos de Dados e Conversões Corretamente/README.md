@@ -59,7 +59,8 @@ O ABAP é conhecido por ser "user-friendly" (ou permissivo demais) com tipos. Se
   DATA: lv_num TYPE i.  
   lv_num = '100'.   " Funciona (converte string '100' para int 100)  
   lv_num = '100.9'. " Funciona (arredonda para 101)  
-  lv_num = '100,9'. " ERRO! (Depende da configuração do usuário: vírgula vs ponto)
+  lv_num = '100,9'. " ERRO em tempo de execução (CX_SY_CONVERSION_NO_NUMBER): a conversão
+                    " só aceita ponto como separador decimal, independentemente do usuário
   ```
 
 * **Os Riscos Principais:**
@@ -92,7 +93,8 @@ lo_calc->somar(
 ).
 
 " Exemplo: Garantindo precisão decimal ao ler de uma string  
-DATA(lv_price) = CONV kbetr( '150.55' ).
+TYPES ty_amount TYPE p LENGTH 15 DECIMALS 2.  
+DATA(lv_price) = CONV ty_amount( '150.55' ).
 ```
 
 ## 4. Conversão de Tipos Especiais (Alpha Conversion)
@@ -108,7 +110,9 @@ Para converter entre esses formatos sem ter que escrever loops manuais de concat
 DATA(lv_input_user) = '123'.
 
 " 1. Preparar para o Banco (IN = Colocar Zeros)  
-DATA(lv_matnr_db) = |{ lv_input_user ALPHA = IN }|.   
+" WIDTH define o tamanho final; sem ele, o resultado mantém o tamanho
+" do operando ('123' tem 3 posições e continuaria '123').
+DATA(lv_matnr_db) = |{ lv_input_user ALPHA = IN WIDTH = 10 }|.   
 " Resultado: '0000000123' (Agora o SELECT funciona)
 
 " 2. Preparar para a Tela (OUT = Tirar Zeros)  
@@ -142,8 +146,10 @@ CLASS zcl_data_types IMPLEMENTATION.
       
     TRY.  
         " Tenta converter String para Packed Number (Dinheiro)  
-        " kbetr é um elemento de dados standard para valores  
-        DATA(lv_amount) = CONV kbetr( lv_string_num ).  
+        " Tipo local com 2 casas decimais (elementos de dados como KBETR  
+        " não são liberados no ABAP Cloud)  
+        TYPES ty_amount TYPE p LENGTH 15 DECIMALS 2.  
+        DATA(lv_amount) = CONV ty_amount( lv_string_num ).  
         out->write( |Sucesso! Valor convertido: { lv_amount }| ).
 
     CATCH cx_sy_conversion_no_number.  
@@ -173,7 +179,7 @@ CLASS zcl_data_types IMPLEMENTATION.
       
     " Simulando busca no banco  
     " Se buscássemos WHERE kunnr = '4500', falharia. O banco tem '0000004500'.  
-    DATA(lv_customer_db) = |{ lv_customer_input ALPHA = IN }|.  
+    DATA(lv_customer_db) = |{ lv_customer_input ALPHA = IN WIDTH = 10 }|.  
       
     out->write( |Input Usuário: { lv_customer_input } -> Chave Banco: { lv_customer_db }| ).
 
@@ -214,4 +220,4 @@ ENDCLASS.
   R: O tipo C tem tamanho fixo (alocado estaticamente). Se o texto for menor que o tamanho, ele preenche o resto com espaços em branco à direita. O tipo STRING tem tamanho dinâmico e cresce conforme necessário, economizando memória para textos curtos e permitindo textos muito longos sem corte.
   
 3. Como devo converter o valor '100' para o formato '0000000100' (formato padrão de banco de dados para materiais e clientes) usando String Templates?  
-  R: Utilizando a opção de formatação ALPHA = IN. A sintaxe correta dentro do template é: |{ '100' ALPHA = IN }|. Isso instrui o sistema a aplicar a rotina de conversão Alpha para adicionar os zeros à esquerda.
+  R: Utilizando a opção de formatação ALPHA = IN. A sintaxe correta dentro do template é: `|{ '100' ALPHA = IN WIDTH = 10 }|`. Isso instrui o sistema a aplicar a rotina de conversão Alpha para adicionar os zeros à esquerda. O `WIDTH` é necessário aqui porque, sem ele, o resultado mantém o tamanho do operando (o literal `'100'` tem apenas 3 posições).

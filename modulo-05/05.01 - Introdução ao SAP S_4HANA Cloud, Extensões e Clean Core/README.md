@@ -8,7 +8,7 @@
 
 - Definir com precisão o conceito de **Clean Core** e articular por que ele é o pilar fundamental para garantir a agilidade de inovação e a segurança nos upgrades do S/4HANA.
  
-- Diferenciar e selecionar a estratégia correta entre as três camadas de extensibilidade: **Key User** (In-App), **On-Stack Developer** (Embedded Steampunk) e **Side-by-Side** (BTP).
+- Diferenciar e selecionar a estratégia correta entre as três opções de extensibilidade: **Key User** (In-App), **On-Stack Developer** (Embedded Steampunk) e **Side-by-Side** (BTP).
 
 - Compreender as restrições técnicas (Language Version 5) e os benefícios de arquitetura do modelo **ABAP Cloud** em comparação ao ABAP Clássico.
 
@@ -42,11 +42,13 @@ O princípio **Clean Core** (Núcleo Limpo) é a resposta da SAP para eliminar e
 
 3. **Separação Física ou Lógica:** As customizações devem estar claramente separadas do código standard, seja rodando em uma plataforma externa (Side-by-Side) ou em um ambiente isolado dentro do stack (ABAP Cloud).
 
-## 3. O Modelo de Extensibilidade em 3 Camadas
+## 3. As 3 Opções de Extensibilidade
 
 Para viabilizar o Clean Core sem perder a capacidade de adaptar o ERP às necessidades específicas do negócio, a SAP definiu três formas oficiais de extensão:
 
-#### **Tier 1: Key User Extensibility (In-App)**
+> **Atenção à nomenclatura:** não confunda estas três *opções* de extensibilidade com o **Modelo de 3 Tiers** (Tier 1 = ABAP Cloud, Tier 2 = Cloud API Enablement, Tier 3 = ABAP Clássico), que descreve os níveis de desenvolvimento ABAP no Private Edition/On-Premise e é apresentado na seção 5.
+
+### Opção 1: Key User Extensibility (In-App)
 
 * **Público-Alvo:** Consultores Funcionais, "Key Users" avançados e Cidadãos Desenvolvedores (Low-Code/No-Code).
 
@@ -60,7 +62,7 @@ Para viabilizar o Clean Core sem perder a capacidade de adaptar o ERP às necess
   
 * **Ferramenta:** Apps Fiori nativos como "Custom Fields and Logic" direto no navegador.
 
-#### **Tier 2: Developer Extensibility (On-Stack / Embedded Steampunk)**
+### Opção 2: Developer Extensibility (On-Stack / Embedded Steampunk)
 
 * **Público-Alvo:** Desenvolvedores ABAP Profissionais.  
 
@@ -72,7 +74,7 @@ Para viabilizar o Clean Core sem perder a capacidade de adaptar o ERP às necess
 
 * **A "Pegadinha" (Restrição):** Embora seja ABAP, não é o ABAP antigo. O desenvolvimento é restrito ao modelo **ABAP Cloud**. Você não tem acesso ao SAP GUI, não pode acessar arquivos do sistema operacional e só pode usar objetos liberados.
 
-### Tier 3: Side-by-Side Extensibility (SAP BTP)
+### Opção 3: Side-by-Side Extensibility (SAP BTP)
 
 * **Público-Alvo:** Desenvolvedores Full-Stack (Java, Node.js, ABAP) e Arquitetos de Solução.  
 
@@ -98,7 +100,7 @@ O termo "ABAP Cloud" não se refere a um produto que você compra, mas sim a um 
 
 1. **Core Data Services (CDS):** O modelo de dados é definido exclusivamente via CDS, abandonando a criação de Views na `SE11`.
  
-2. **RAP (RESTful ABAP Programming):** O modelo transacional único para criar serviços e aplicações Fiori.
+2. **RAP (ABAP RESTful Application Programming Model):** O modelo transacional único para criar serviços e aplicações Fiori.
 
 3. **Released Objects (Whitelisting):** O compilador verifica cada objeto que você usa. Tentar fazer um `SELECT * FROM MARA` resultará em erro de sintaxe, pois `MARA` não é liberada. Você deve usar a interface pública `I_Product`.  
 
@@ -120,20 +122,27 @@ O termo "ABAP Cloud" não se refere a um produto que você compra, mas sim a um 
   
   * **Governança:** O cliente tem mais controle sobre a janela de upgrades.  
   
-  * **Flexibilidade:** Você tem acesso técnico ao SAP GUI e ao código legado (Tier 3 - Classic Extensibility).  
+  * **Flexibilidade:** Você tem acesso técnico ao SAP GUI e ao código legado (ABAP Clássico).  
   
-  * **O Desafio:** A SAP recomenda fortemente seguir o Clean Core (Tier 1 e 2) para garantir "Cloud Readiness". No entanto, é permitido usar código legado (Tier 3) para facilitar migrações (Brownfield), com o entendimento de que isso gera dívida técnica para o futuro.
+  * **O Modelo de 3 Tiers:** Para organizar o desenvolvimento ABAP nesse cenário, a SAP definiu:  
+    * **Tier 1 — ABAP Cloud:** O caminho preferido e à prova de upgrades, para todo novo desenvolvimento. Usa apenas APIs liberadas.  
+    * **Tier 2 — Cloud API Enablement:** A "ponte". Wrappers que encapsulam objetos SAP ou código Z ainda não liberados e os liberam (C1) para consumo no Tier 1.  
+    * **Tier 3 — ABAP Clássico:** Código legado e extensões que não são possíveis no Tier 1. Fortemente acoplado ao sistema; recomendado apenas como último recurso.  
+  
+  * **O Desafio:** A SAP recomenda fortemente seguir o Clean Core (Tier 1, com Tier 2 como ponte) para garantir "Cloud Readiness". No entanto, é permitido usar código legado (Tier 3) para facilitar migrações (Brownfield), com o entendimento de que isso gera dívida técnica para o futuro.
+
+> **Evolução recente (2025):** a SAP aposentou o modelo de 3 Tiers em favor dos **Clean Core Levels**: **A** (APIs liberadas, máxima estabilidade em upgrades), **B** (APIs e tecnologias clássicas), **C** (acesso a objetos internos, com riscos gerenciáveis) e **D** (objetos/técnicas não recomendados, como modificações — maior risco e dívida técnica). Os princípios deste módulo continuam válidos; muda a forma de classificar as extensões.
 
 ## Diagrama de Decisão: Onde desenvolver minha extensão?
 
 1. **É uma mudança simples de campo, layout ou texto?**  
-   * Sim -> **Key User Extensibility (Tier 1)**. Rápido, barato, sem código.  
+   * Sim -> **Key User Extensibility**. Rápido, barato, sem código.  
 
 2. **A lógica exige acesso intensivo a dados do ERP e alta performance (ex: validação complexa de transação)?**  
-   * Sim -> **On-Stack ABAP Cloud (Tier 2)**. Evita latência de rede, mantém os dados no lugar.  
+   * Sim -> **On-Stack ABAP Cloud (Developer Extensibility)**. Evita latência de rede, mantém os dados no lugar.  
 
 3. **Preciso integrar com serviços de IA, Mobile, ou criar um portal externo para parceiros?**  
-   * Sim -> **Side-by-Side BTP (Tier 3)**. Desacopla o ciclo de vida, usa tecnologias abertas.
+   * Sim -> **Side-by-Side BTP**. Desacopla o ciclo de vida, usa tecnologias abertas.
 
 ## Glossário Técnico
 
@@ -157,5 +166,5 @@ O termo "ABAP Cloud" não se refere a um produto que você compra, mas sim a um 
 2. Um desenvolvedor ABAP experiente precisa criar uma nova tabela Z e uma lógica complexa de validação que acessa múltiplas tabelas do ERP para um relatório crítico. Ele quer manter o Clean Core, mas precisa de performance local. Qual modelo de extensibilidade é o mais indicado?  
   R: Developer Extensibility (On-Stack). Esse modelo permite criar tabelas customizadas e lógica ABAP complexa dentro do S/4HANA, aproveitando a proximidade dos dados para performance, mas utilizando a sintaxe segura do ABAP Cloud e objetos liberados para garantir a compatibilidade futura.  
 
-3. No modelo ABAP Cloud (Tier 2), posso fazer um SELECT direto na tabela KNA1 (Mestre de Clientes) para ler o endereço de um cliente?  
+3. No modelo ABAP Cloud (Developer Extensibility), posso fazer um SELECT direto na tabela KNA1 (Mestre de Clientes) para ler o endereço de um cliente?  
   R: Não (ou não deveria). A tabela física KNA1 não é um objeto liberado (Released Object) no modelo ABAP Cloud e seu uso pode ser bloqueado pelo compilador ou checagens de sintaxe (ATC). A prática correta é selecionar a partir da CDS View pública equivalente (ex: I_Customer), que é a interface estável garantida pela SAP para acesso a esses dados.

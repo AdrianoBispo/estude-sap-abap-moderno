@@ -25,7 +25,7 @@ No ecossistema ABAP, a Orientação a Objetos (OO) é a espinha dorsal do desenv
   * **Visibilidade:** Restrita. Elas só existem dentro do artefato que as contém. Uma classe local definida dentro da classe ZCL_A não pode ser vista pela classe ZCL_B.  
   * **Uso:**  
     * **Classes Auxiliares (Helpers):** Para quebrar uma lógica complexa interna sem poluir o repositório global com classes que só servem para uma tarefa específica.  
-    * **Testes Unitários (ABAP Unit):** Este é o uso mais crítico. Todos os testes unitários são escritos como classes locais (FOR TESTING) que simulam o comportamento da classe principal.
+    * **Testes Unitários (ABAP Unit):** Este é o uso mais crítico. Todos os testes unitários são escritos como classes locais (FOR TESTING) que exercitam e verificam o comportamento da classe principal.
 
 ## 2. A Anatomia de uma Classe: Contrato vs. Ação
 
@@ -89,8 +89,12 @@ A criação de objetos evoluiu para tornar o código mais fluído e legível.
 
 * **Moderno (`NEW`):** Permite instanciação inline. O tipo é inferido (`#`) ou explícito.  
 ``` ABAP
-  " Inferência de tipo (se o lado esquerdo já estiver tipado ou for claro)  
+  " Tipo explícito + declaração inline  
   DATA(lo_cliente) = NEW lcl_cliente( iv_id = '100' ).
+
+  " Inferência de tipo (#): só funciona se a variável já estiver tipada  
+  DATA lo_outro TYPE REF TO lcl_cliente.  
+  lo_outro = NEW #( iv_id = '200' ).
 
   " Uso direto em chamadas de método (sem variável auxiliar!)  
   lo_fatura->processar( io_cliente = NEW lcl_cliente( '100' ) ).
@@ -116,32 +120,36 @@ CLASS lcl_bmi_service DEFINITION.
     " Enumeração simples para tipos de unidade  
     CONSTANTS:  
       BEGIN OF co_unit,  
-        metric   TYPE char1 VALUE 'M', " Metros/Kg  
-        imperial TYPE char1 VALUE 'I', " Polegadas/Libras  
+        metric   TYPE c LENGTH 1 VALUE 'M', " Metros/Kg  
+        imperial TYPE c LENGTH 1 VALUE 'I', " Polegadas/Libras  
       END OF co_unit.
 
-    TYPES: ty_bmi TYPE p LENGTH 8 DECIMALS 2.
+    TYPES: ty_bmi     TYPE p LENGTH 8 DECIMALS 2,
+           " Tipo completo para os parâmetros: parâmetros RETURNING não aceitam
+           " tipos genéricos (como 'p' sozinho) e literais só são convertidos
+           " automaticamente para parâmetros com tipo completo.
+           ty_measure TYPE p LENGTH 8 DECIMALS 2.
 
     " O Construtor define o estado inicial do objeto  
     METHODS: constructor  
-      IMPORTING iv_unit_type TYPE char1 DEFAULT co_unit-metric.
+      IMPORTING iv_unit_type TYPE c DEFAULT co_unit-metric.
 
     METHODS: calculate_bmi  
       IMPORTING  
-        iv_weight     TYPE p  
-        iv_height     TYPE p  
+        iv_weight     TYPE ty_measure  
+        iv_height     TYPE ty_measure  
       RETURNING  
         VALUE(rv_bmi) TYPE ty_bmi.
 
   PRIVATE SECTION.  
     " Atributo privado para guardar a configuração da unidade  
-    DATA: mv_unit_type TYPE char1.
+    DATA: mv_unit_type TYPE c LENGTH 1.
 
     " Método auxiliar privado (Encapsulamento)  
     METHODS: convert_to_metric  
-      IMPORTING iv_val        TYPE p  
-                iv_type       TYPE char1  
-      RETURNING VALUE(rv_val) TYPE p.  
+      IMPORTING iv_val        TYPE ty_measure  
+                iv_type       TYPE c  
+      RETURNING VALUE(rv_val) TYPE ty_measure.  
 ENDCLASS.
 
 " -----------------------------------------------------------------------  
@@ -164,8 +172,8 @@ CLASS lcl_bmi_service IMPLEMENTATION.
       lv_height_m  = iv_height.  
     ELSE.  
       " Conversão simplificada para Imperial  
-      lv_weight_kg = iv_weight * '0.453'. " Libras para Kg  
-      lv_height_m  = iv_height * '0.025'. " Polegadas para Metros  
+      lv_weight_kg = iv_weight * '0.4536'. " Libras para Kg  
+      lv_height_m  = iv_height * '0.0254'. " Polegadas para Metros  
     ENDIF.
 
     " Proteção contra divisão por zero  

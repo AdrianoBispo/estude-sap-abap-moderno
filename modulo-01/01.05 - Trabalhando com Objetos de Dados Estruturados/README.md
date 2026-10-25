@@ -102,7 +102,7 @@ ls_destino = CORRESPONDING #(
 * **Flat Structure (Estrutura Plana):** Contém apenas tipos elementares ou outras estruturas planas. Tem tamanho fixo na memória. É o tipo padrão de uma linha de tabela de banco de dados.  
 * **Deep Structure (Estrutura Profunda):** Contém pelo menos um componente que é dinâmico (referência), como uma **String**, uma **Tabela Interna** ou uma **Referência de Objeto**.  
   * *Exemplo:* Uma estrutura de "Pedido de Venda" que contém um campo "Itens", onde "Itens" é uma tabela interna com lista de produtos.  
-  * *Atenção:* Operações com estruturas profundas exigem cuidado extra, pois envolvem ponteiros de memória. O CORRESPONDING simples faz cópia rasa (shallow copy) das referências, a menos que se use a variante DEEP.
+  * *Atenção:* Operações com estruturas profundas exigem cuidado extra. Sem a adição `DEEP`, o CORRESPONDING atribui componentes profundos de mesmo nome (ex: uma tabela interna aninhada) como um todo, seguindo as regras de conversão; com `CORRESPONDING #( DEEP ... )`, a correspondência por nome é aplicada recursivamente dentro das subestruturas e tabelas aninhadas. Strings e tabelas internas têm semântica de valor (a cópia é independente), enquanto componentes `REF TO` copiam apenas a referência (ambos apontam para o mesmo objeto).
 
 ``` ABAP
 TYPES: BEGIN OF ty_passenger,  
@@ -192,7 +192,7 @@ CLASS zcl_structures_demo IMPLEMENTATION.
     out->write( |UI: { ls_ui_target-airline } / { ls_ui_target-price } ({ ls_ui_target-status_text })| ).
 
     " ---------------------------------------------------------------------  
-    " 2. Cenário B: Atualização Parcial (UI -> DB) usando BASE e EXCEPT  
+    " 3. Cenário B: Atualização Parcial (UI -> DB) usando BASE e EXCEPT  
     " ---------------------------------------------------------------------  
       
     " Imagine que a UI mandou uma alteração: Preço mudou, mas airline e connection são chaves (não mudam)  
@@ -204,16 +204,14 @@ CLASS zcl_structures_demo IMPLEMENTATION.
     " Queremos atualizar ls_db_source com os dados de ls_ui_input  
     " MAS:  
     " 1. Devemos preservar o 'created_by' original (usando BASE)  
-    " 2. Não queremos alterar chaves sem querer (usando EXCEPT, se aplicável) ou MAPPING reverso  
+    " 2. Não queremos que a UI altere a moeda (usando EXCEPT)  
+    " Obs.: as chaves (carrier_id/connection_id) não são mapeadas de volta,  
+    " então permanecem com os valores do BASE.  
       
     DATA(ls_db_updated) = CORRESPONDING ty_db_flight(  
       BASE ( ls_db_source )  " Começa com a cópia dos dados atuais do banco  
-      ls_ui_input            " Aplica as mudanças vindas da UI  
-      MAPPING carrier_id    = airline     " Mapeamento reverso  
-              connection_id = connection  
-              currency_code = currency  
-      EXCEPT carrier_id      " Exemplo: Vamos proteger a chave carrier_id de ser sobrescrita   
-             connection_id   " mesmo se viesse diferente da UI  
+      ls_ui_input            " Aplica as mudanças vindas da UI (price tem o mesmo nome)  
+      EXCEPT currency_code   " Protege a moeda de ser sobrescrita (mantém o valor do BASE)  
     ).
 
     out->write( ' ' ).  
@@ -266,7 +264,7 @@ ENDCLASS.
   R: A primeira instrução limpa completamente ls_b antes de copiar os dados correspondentes de ls_a (os campos sem par em ls_a ficarão vazios). A segunda instrução mantém os valores originais de ls_b e apenas atualiza (sobrescreve) os campos que coincidirem com ls_a, agindo como um "Merge" de dados.
  
 4. O que caracteriza uma "Estrutura Profunda" (Deep Structure) e por que devemos ter cuidado com elas?  
-  R: Uma estrutura profunda contém campos de tamanho dinâmico ou referências, como STRING, TABLE ou REF TO. Devemos ter cuidado porque operações simples de cópia podem envolver apenas a referência (endereço de memória) e não o valor real, além de não poderem ser usadas em certos contextos de banco de dados ou chaves de tabelas simples.
+  R: Uma estrutura profunda contém campos de tamanho dinâmico ou referências, como STRING, TABLE ou REF TO. Devemos ter cuidado porque, em componentes `REF TO`, a cópia transfere apenas a referência (endereço de memória) e não o objeto em si; strings e tabelas internas são copiadas por valor, mas aumentam o custo de memória e processamento. Além disso, estruturas profundas não podem ser usadas em certos contextos de banco de dados ou chaves de tabelas simples.
 
 ## Links de Demonstrações
 

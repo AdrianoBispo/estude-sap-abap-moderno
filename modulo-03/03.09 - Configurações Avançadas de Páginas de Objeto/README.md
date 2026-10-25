@@ -70,13 +70,15 @@ Criamos um campo técnico calculado (geralmente não exibido na tela) que retorn
 ``` CDS
 /* Na CDS View Z_I_TRAVEL */  
 /* Lógica: Esconder se NÃO for Rejeitado ('X') */  
-case when overall_status = 'X' then '' else 'X' end as IsRejectionHidden,
+cast( case when overall_status = 'X' then ' ' else 'X' end
+      as abap_boolean preserving type ) as IsRejectionHidden,
 
 /* Lógica: Esconder botões de edição se já estiver aprovado */  
-case when overall_status = 'A' then 'X' else '' end as IsReadOnly
+cast( case when overall_status = 'A' then 'X' else ' ' end
+      as abap_boolean preserving type ) as IsReadOnly
 ```
 
-*Dica:* No ABAP CDS, um campo de caracteres vazio `''` é tratado como `false` (não esconder), e um campo com valor `'X'` é tratado como `true` (esconder).
+*Dica:* O `cast` para o elemento de dados `abap_boolean` faz o serviço OData V4 expor o campo como `Edm.Boolean`: `'X'` vira `true` (esconder) e o valor vazio vira `false` (não esconder). Sem esse cast, o campo seria um texto comum (`Edm.String`), e não um booleano.
 
 ### Passo 2: Anotação no Frontend (Metadata Extension)
 
@@ -95,7 +97,7 @@ RejectionReason;
 ### Poder da Visibilidade:
 
 * **Granularidade:** Isso funciona para **campos individuais**, para **ações** (botões) e até para **Facetas inteiras** (esconder uma aba inteira se não for relevante).  
-* **Reatividade:** Se o usuário mudar o status na tela de "Aberto" para "Rejeitado", o campo "Motivo" aparecerá instantaneamente sem precisar recarregar a página (Side Effects).
+* **Reatividade:** Se o usuário mudar o status na tela de "Aberto" para "Rejeitado", o campo "Motivo" pode aparecer instantaneamente sem recarregar a página — desde que *Side Effects* estejam configurados para recarregar o campo de visibilidade quando o status mudar.
 
 ## 3. Tabelas Filhas (Line Item Reference)
 
@@ -135,7 +137,7 @@ Vamos configurar uma _Object Page_ de Viagem profissional que utiliza todos os c
 
 ``` CDS
 @Metadata.layer: #CORE  
-@UI.headerInfo: { typeName: 'Viagem', title: { value: 'TravelID' } }
+@UI.headerInfo: { typeName: 'Viagem', typeNamePlural: 'Viagens', title: { value: 'TravelID' } }
 
 annotate view Z_C_TRAVEL with  
 {  
@@ -225,7 +227,7 @@ annotate view Z_C_TRAVEL with
    * Cria um item clicável na **Anchor Bar** (Barra de Navegação).  
 
 3. **Sub-Section (Bloco Interno):**  
-   * É uma Reference Facet (`#IDENTIFICATION`, `#FIELDGROUP` ou `#LINEITEM`).  
+   * É uma Reference Facet (`#IDENTIFICATION_REFERENCE`, `#FIELDGROUP_REFERENCE` ou `#LINEITEM_REFERENCE`).  
    * Possui a propriedade parentId apontando para o ID da Section.  
    * Renderiza o conteúdo real (Formulário ou Tabela).
 
@@ -238,4 +240,4 @@ annotate view Z_C_TRAVEL with
   R: Deve-se usar o tipo #LINEITEM_REFERENCE. A propriedade obrigatória é targetElement, que deve conter o nome exato da Associação (definida na CDS View) que aponta para a entidade filha (ex: _Booking). O framework usa essa associação para fazer a query dos itens.  
 
 3. Como posso ocultar dinamicamente um campo "Comentário" se a viagem estiver com status "Em Aberto", sem usar JavaScript?  
-  R: Primeiro, crie um campo calculado na CDS View (ex: IsCommentHidden) que retorna 'X' (true) se o status for "Em Aberto" e '' (false) caso contrário. Em seguida, na Metadata Extension, anote o campo "Comentário" com @UI.hidden: #(IsCommentHidden). O Fiori Elements fará o binding e controlará a visibilidade automaticamente.
+  R: Primeiro, crie um campo calculado na CDS View (ex: IsCommentHidden), convertido para `abap_boolean`, que retorna 'X' (true) se o status for "Em Aberto" e vazio (false) caso contrário. Em seguida, na Metadata Extension, anote o campo "Comentário" com @UI.hidden: #(IsCommentHidden). O Fiori Elements fará o binding e controlará a visibilidade automaticamente.

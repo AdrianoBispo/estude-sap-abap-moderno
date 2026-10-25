@@ -88,11 +88,11 @@ Para criar um App Fiori do zero no ADT (Eclipse), seguimos um fluxo rigoroso:
 
 4. **Metadata Extension:** Criar um arquivo separado (.ddlx) para adicionar anotações de UI (ex: `@UI.lineItem`, `@UI.selectionField`). Isso mantém a CDS View limpa, separando a lógica de dados da lógica de apresentação.  
 
-5. **Behavior Definition (`BDEF`):** Definir as capacidades transacionais na Interface View e projetá-las na Projection View. É aqui que o compilador cria as classes de pool de comportamento (Behavior Pools) onde escreveremos nosso código ABAP.  
+5. **Behavior Definition (`BDEF`):** Definir as capacidades transacionais na Interface View e projetá-las na Projection View. A partir da BDEF, o ADT oferece um *Quick Fix* (`Ctrl+1`) que gera a classe de implementação (Behavior Pool, prefixo `BP_`) onde escreveremos nosso código ABAP.  
 
 6. **Service Definition:** Agrupar as Projection Views relevantes em um serviço nomeado.  
 
-7. **Service Binding:** Publicar o serviço localmente (`/sap/opu/odata...`). No ambiente Cloud, é necessário "Publicar" explicitamente para ativar o endpoint.  
+7. **Service Binding:** Vincular o serviço a um protocolo (ex: OData V4 - UI) e clicar em **Publish** para ativar o endpoint (`/sap/opu/odata4/...` no V4, `/sap/opu/odata/...` no V2). Sem a publicação, o endpoint não fica disponível.  
 
 8. **Preview:** Utilizar a função de *Preview* do Service Binding para testar a aplicação Fiori Elements instantaneamente no navegador, validando anotações e comportamentos.
 
@@ -130,7 +130,7 @@ Para criar um App Fiori do zero no ADT (Eclipse), seguimos um fluxo rigoroso:
 
 ## Glossário Técnico
 
-* **RAP (RESTful ABAP Programming Model):** Arquitetura moderna da SAP para construção de serviços `OData` e aplicações Fiori no S/4HANA e BTP, baseada em CDS e Behavior Definitions.  
+* **RAP (ABAP RESTful Application Programming Model):** Arquitetura moderna da SAP para construção de serviços `OData` e aplicações Fiori no S/4HANA e BTP, baseada em CDS e Behavior Definitions.  
 
 * **CDS (Core Data Services):** Linguagem de definição de dados (DDL) avançada. No RAP, é usada para definir a estrutura dos dados (Entidades), suas associações e semântica rica (anotações).  
 

@@ -106,6 +106,7 @@ Embora seja tecnicamente possível editar o `manifest.json` manualmente para reg
 
 Visualize como o FPM permite a "mistura" de componentes:
 
+```
 [ Object Page Standard - Viagem 100 ]  
 -------------------------------------------------------  
 | Header (Standard - RAP)                             |  
@@ -122,6 +123,7 @@ Visualize como o FPM permite a "mistura" de componentes:
 | [ Section: Itens (Standard - RAP) ]                 |  
 |   - Tabela de Voos                                  |  
 -------------------------------------------------------
+```
 
 ## Quando usar FPM? (Guia de Decisão)
 

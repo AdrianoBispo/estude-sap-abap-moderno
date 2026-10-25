@@ -46,13 +46,15 @@ SELECT FROM zrap_travel
          " Se booking_fee for nulo, o resultado seria nulo sem tratamento  
          ( total_price + booking_fee ) AS grand_total,  
            
-         " Cálculo com Literais e Casting  
-         " Multiplicamos por 0.9 (literal) para dar 10% de desconto  
-         " CAST é usado para garantir que o resultado caiba no tipo de destino  
-         CAST( total_price * '0.9' AS CURR( 15, 2 ) ) AS discounted_price,  
+         " Cálculo com Literais  
+         " 90% do preço (10% de desconto): multiplica por 9 e divide por 10  
+         " DIVISION( dividendo, divisor, casas_decimais ) faz divisão decimal  
+         DIVISION( total_price * 9, 10, 2 ) AS discounted_price,  
            
          " Cálculo de Margem (Divisão)  
-         " A função DIV faz divisão inteira, / faz divisão com decimais  
+         " DIV( a, b ) faz divisão inteira; DIVISION( a, b, dec ) faz divisão  
+         " com casas decimais; o operador / não é permitido em expressões inteiras  
+         " (exige operandos de ponto flutuante ou decfloat, ex: CAST( ... AS D34N ))  
          DIVISION( total_price, 100, 2 ) AS price_index
 
   WHERE currency_code = 'EUR'  
@@ -268,7 +270,7 @@ ENDCLASS.
   R: O WHERE filtra as linhas brutas antes que elas sejam agrupadas e calculadas, reduzindo o volume de dados a ser processado pelo agrupador. O HAVING filtra os resultados já agregados (os grupos) após o cálculo. Para performance, deve-se filtrar o máximo possível no WHERE.  
 
 2. Por que UNION ALL é geralmente mais performático que UNION?  
-  R: Porque o UNION padrão executa um passo adicional e LOOPcustoso de processamento (sort/distinct) para identificar e remover linhas duplicadas entre os conjuntos de resultados. O UNION ALL simplesmente anexa os resultados sequencialmente, sem verificação extra.  
+  R: Porque o UNION padrão executa um passo adicional e custoso de processamento (sort/distinct) para identificar e remover linhas duplicadas entre os conjuntos de resultados. O UNION ALL simplesmente anexa os resultados sequencialmente, sem verificação extra.  
 
 3. Se eu usar a função SUM( price ) na minha lista de campos, o que sou obrigado a fazer com os outros campos (ex: customer_id) que não estão sendo somados?  
   R: Sou obrigado a incluí-los na cláusula GROUP BY. Caso contrário, ocorrerá um erro de sintaxe SQL, pois o banco de dados não sabe como condensar múltiplas linhas de clientes diferentes em uma só linha de soma sem um critério explícito de agrupamento.  

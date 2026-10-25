@@ -55,16 +55,18 @@ CASE sy-subrc.
     " Ação: Bloquear o processo e lançar erro.  
     RAISE EXCEPTION TYPE cx_demo_auth_failure.  
   WHEN 12.  
-    " Falha Técnica: O objeto de autorização 'S_AGENCY' não existe no sistema.  
-    " Ação: Reportar bug ao desenvolvedor.  
+    " Falha: Nenhuma autorização foi encontrada para o objeto 'S_AGENCY'  
+    " (o usuário não tem nenhuma autorização para ele — ou o objeto nem existe).  
+    " Ação: Tratar também como falta de autorização (e verificar o nome do objeto).  
+    RAISE EXCEPTION TYPE cx_demo_auth_failure.  
   WHEN OTHERS.  
-    " Outros erros (ex: campos incorretos).  
+    " Outros erros (ex: 24 = campos incorretos, 40 = usuário inválido).  
 ENDCASE.
 ```
 
 * **Pontos Críticos:**
   * **Falha Silenciosa:** O AUTHORITY-CHECK por si só **não para** o programa. Se você esquecer de checar o sy-subrc, o código continuará executando mesmo se o usuário não tiver permissão.  
-  * **Dummy Checks:** Se você omitir um campo do objeto (ex: não checar ACTVT), o sistema assume que *qualquer* valor naquele campo é aceitável para a verificação atual, a menos que configurado de outra forma (DUMMY).
+  * **Dummy Checks:** Se você omitir um campo do objeto (ex: não checar ACTVT), ele simplesmente não é verificado — o mesmo efeito de especificar `ID 'ACTVT' DUMMY`. Prefira listar todos os campos explicitamente, usando `DUMMY` apenas quando a omissão for intencional.
 
 ## 3. Verificação Implícita: CDS Access Control (DCL)
 
@@ -79,7 +81,7 @@ Imagine um cenário onde você precisa exibir um relatório de Viagens. A tabela
      Resultado: Estouro de memória e lentidão extrema.  
 
 * **Abordagem Moderna (DCL - Data Control Language):** 
-  No modelo RAP e S/4HANA, aplicamos a segurança diretamente na consulta ao banco de dados. O DCL funciona como um filtro WHERE dinâmico e invisível que é injetado automaticamente pelo banco de dados HANA.
+  No modelo RAP e S/4HANA, aplicamos a segurança diretamente na consulta ao banco de dados. O DCL funciona como um filtro WHERE dinâmico e invisível que o runtime ABAP injeta automaticamente na consulta antes de enviá-la ao banco de dados (HANA).
 
 ### Anatomia de um Arquivo DCL
 
@@ -103,7 +105,7 @@ define role Z_I_TRAVEL_DCL {
 }
 ```
 
-**Como funciona em tempo de execução?** Quando qualquer programa (Fiori, GUI, API) executa `SELECT * FROM Z_I_TRAVEL`, o banco de dados verifica o usuário atual. Se o usuário tiver acesso apenas à agência '001', o banco reescreve a query internamente para:  
+**Como funciona em tempo de execução?** Quando qualquer programa (Fiori, GUI, API) executa `SELECT * FROM Z_I_TRAVEL`, o runtime ABAP lê as autorizações do usuário atual. Se o usuário tiver acesso apenas à agência '001', a query enviada ao banco é reescrita internamente para:  
 ``` ABAP
 SELECT * FROM Z_I_TRAVEL WHERE AgencyID = '001'.  
 ```
@@ -115,7 +117,7 @@ SELECT * FROM Z_I_TRAVEL WHERE AgencyID = '001'.
 
 ## 4. Exemplo Prático: Protegendo uma Ação de Negócio
 
-No exemplo abaixo, combinamos a segurança de dados (DCL na View, não mostrado aqui) com a segurança de aplicação (`AUTHORITY-CHECK` no método). O usuário pode ver a viagem (graças ao DCL), mas vamos verificar se ele tem poder de "Aprovação".
+No exemplo abaixo (trecho simplificado: supõe que `is_travel` e `out` estejam disponíveis no método), combinamos a segurança de dados (DCL na View, não mostrado aqui) com a segurança de aplicação (`AUTHORITY-CHECK` no método). O usuário pode ver a viagem (graças ao DCL), mas vamos verificar se ele tem poder de "Aprovação".
 
 ``` ABAP
 CLASS zcl_auth_demo IMPLEMENTATION.
@@ -141,16 +143,13 @@ CLASS zcl_auth_demo IMPLEMENTATION.
       out->write( |Usuário { sy-uname } autorizado a aprovar viagem da agência { lv_agency_id }.| ).  
       " ... lógica de aprovação ...  
         
-    ELSEIF sy-subrc = 4.  
-      " Falha de Negócio: Usuário não tem permissão  
+    ELSE.  
+      " Falha: qualquer valor diferente de 0 significa "não autorizado"  
+      " (4 = sem autorização para os valores; 12 = nenhuma autorização para o objeto)  
       out->write( |Erro: Usuário { sy-uname } sem permissão de aprovação para agência { lv_agency_id }.| ).  
         
       " Em RAP, adicionaríamos uma mensagem ao container REPORTED  
       " APPEND VALUE #( ... ) TO reported-travel.  
-        
-    ELSE.  
-      " Falha Técnica: Objeto não existe ou erro de definição  
-      out->write( 'Erro Crítico: Objeto de autorização Z_O_TRAVEL não encontrado.' ).  
     ENDIF.
 
   ENDMETHOD.
@@ -164,9 +163,9 @@ No desenvolvimento e suporte, é comum o usuário relatar: "Não vejo o botão" 
 
 * **Transação SU53:** Ferramenta padrão. O usuário deve executá-la imediatamente após o erro. Ela mostra a *última* verificação de autorização falha. Mostra o objeto, os campos esperados e o que o usuário realmente tinha.  
 
-* **Trace de Sistema (ST01):** Para análises mais complexas (ex: DCLs falhando silenciosamente ou múltiplas verificações em cadeia), o ST01 rastreia todas as checagens no kernel durante um período.  
+* **Trace de Autorizações (ST01 / STAUTHTRACE):** Para análises mais complexas (ex: múltiplas verificações em cadeia), esses traces registram todas as checagens de autorização executadas durante um período.  
 
-* **Ferramenta de Simulação (SACF):** Permite simular verificações de autorização sem alterar o código ou as roles.
+* **SACF (Switchable Authorization Check Framework):** Permite ativar, desativar ou colocar em modo de log as verificações de autorização "comutáveis" entregues pela SAP, sem alterar o código.
 
 ## Comparativo: ABAP Check vs CDS DCL
 
@@ -182,7 +181,7 @@ No desenvolvimento e suporte, é comum o usuário relatar: "Não vejo o botão" 
 
 * **Authorization Object (Objeto de Autorização):** Estrutura lógica definida na transação SU21 que agrupa até 10 campos de autorização. É a base da verificação de segurança no código ABAP.  
 
-* **ACTVT (Activity):** Campo padrão (domínio TACT) presente na maioria dos objetos de autorização. Define a operação permitida (ex: 01=Criar, 02=Alterar, 03=Exibir, 16=Executar).  
+* **ACTVT (Activity):** Campo padrão (valores válidos na tabela TACT) presente na maioria dos objetos de autorização. Define a operação permitida (ex: 01=Criar, 02=Alterar, 03=Exibir, 16=Executar).  
 
 * **DCL (Data Control Language):** Linguagem declarativa usada para definir objetos de controle de acesso (Access Control) para CDS Views. Permite a implementação de "Row-Level Security" (Segurança em Nível de Linha) automática.  
 

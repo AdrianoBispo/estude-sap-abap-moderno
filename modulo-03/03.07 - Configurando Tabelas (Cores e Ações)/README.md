@@ -50,7 +50,7 @@ Na Metadata Extension, vinculamos a coluna visual ao campo de cálculo técnico.
     position: 50,   
     label: 'Status',  
       
-    /* Vínculo Mágico: O Fiori lê o valor desta coluna para pintar a linha */  
+    /* Vínculo Mágico: O Fiori lê o valor deste campo para colorir o valor da coluna (não a linha inteira) */  
     criticality: 'StatusCriticality',   
       
     /* Opcional: Adiciona ícone além da cor (Check, X, Exclamação) */  
@@ -90,7 +90,7 @@ Para ações específicas como "Aceitar Viagem" ou "Copiar", usamos a anotação
 
 1. **Toolbar Action:** Botão no topo da tabela. Ideal para ações em massa ou que afetam múltiplos registros selecionados. (Padrão se não especificado o contrário).  
 
-2. **Inline Action:** Botão pequeno dentro da própria linha. Ideal para ações rápidas em um único registro. Configurado adicionando a anotação ao campo relevante ou usando `invocationGrouping: #ISOLATED` (dependendo da versão).
+2. **Inline Action:** Botão pequeno dentro da própria linha. Ideal para ações rápidas em um único registro. Configurado com a propriedade `inline: true` no item `#FOR_ACTION`. (Não confunda com `invocationGrouping`, que define se a ação é executada de forma isolada ou em conjunto quando várias linhas estão selecionadas.)
 
 ``` CDS
 @UI.lineItem: [  
@@ -107,11 +107,12 @@ Para ações específicas como "Aceitar Viagem" ou "Copiar", usamos a anotação
   },  
     
   /* Ação Inline: Rejeitar */  
-  /* Aparece como um link ou botão na linha se configurado como Inline */  
+  /* inline: true faz o botão aparecer dentro de cada linha */  
   {   
     type: #FOR_ACTION,   
     dataAction: 'rejectTravel',   
     label: 'Rejeitar',  
+    inline: true,  
     position: 16   
   }  
 
@@ -142,6 +143,7 @@ Description;
 Vamos configurar uma tabela de viagens rica, com cores, ícones e ações estratégicas.
 
 ``` CDS
+@Metadata.layer: #CORE  
 annotate view Z_C_TRAVEL with  
 {  
   /* --- AÇÕES GLOBAIS E COLUNA CHAVE --- */  
@@ -181,10 +183,10 @@ annotate view Z_C_TRAVEL with
   OverallStatus;  
     
   /* --- AÇÃO INLINE --- */  
-  /* Este botão aparecerá "atrelado" à coluna BookingFee */  
+  /* Com inline: true, este botão aparece em cada linha, na posição 60 */  
   /* Ideal para ações contextuais rápidas */  
   @UI.lineItem: [   
-    { type: #FOR_ACTION, dataAction: 'deductFee', label: 'Deduzir Taxa', position: 60 }   
+    { type: #FOR_ACTION, dataAction: 'deductFee', label: 'Deduzir Taxa', inline: true, position: 60 }   
   ]  
   BookingFee;   
 }

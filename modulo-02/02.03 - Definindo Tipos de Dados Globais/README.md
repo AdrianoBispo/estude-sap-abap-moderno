@@ -8,7 +8,7 @@
 
 - Explicar em profundidade a hierarquia de duas camadas do dicionário ABAP: **Domínio** (Definição Técnica) vs **Elemento de Dados** (Definição Semântica), e como esse desacoplamento favorece a manutenção.  
 
-- Criar e configurar Elementos de Dados para garantir a **tradução automática** e a seleção inteligente de labels (Rótulos) nas aplicações Fiori responsivas.  
+- Criar e configurar Elementos de Dados para garantir a **tradução automática** e rótulos (labels) consistentes nas aplicações Fiori.  
 
 - Entender o papel crítico dos **Value Helps** (Ajudas de Pesquisa) e **Rotinas de Conversão** associados aos tipos globais.  
 
@@ -23,7 +23,7 @@ Para criar um campo reutilizável e consistente em milhares de tabelas e program
 O Domínio é a base da pirâmide. Ele define as propriedades técnicas puras do dado, independentemente do seu significado de negócio. Vários Elementos de Dados diferentes (ex: "Telefone Comercial", "Telefone Celular", "Fax") podem apontar para o mesmo Domínio técnico (ex: `CHAR30`).
 
 * **Tipo de Dado e Tamanho:** Define o formato físico no banco (`CHAR`, `DEC`, `INT4`, `DATS`, `TIMS`) e o comprimento (Length).  
-* **Propriedades de Saída:** Define se o campo permite minúsculas (Lower Case) ou se requer sinal negativo.  
+* **Propriedades de Saída:** Define se o campo permite minúsculas (Lower Case) ou se permite sinal negativo.  
 
 * **Rotina de Conversão (Conversion Routine):** Um recurso vital. Define uma função que é executada automaticamente ao mover dados da tela para o banco (INPUT) e vice-versa (OUTPUT).  
   * *Exemplo:* A rotina ALPHA converte automaticamente 123 para 0000000123 (Input) e remove os zeros na exibição (Output). Sem isso, as chaves numéricas do SAP seriam ingovernáveis.  
@@ -39,7 +39,7 @@ O Elemento de Dados adiciona significado e contexto ao Domínio. Ele responde à
   * *Medium (20):* "Status do Pedido"  
   * *Long (40):* "Status Atual do Processamento"  
   * *Heading:* "St." (Para cabeçalhos de colunas estreitas)  
-  * *O Mágica do Fiori:* O SAP Fiori Elements é responsivo. Se a coluna na tela for larga, ele usa o rótulo "Long". Se o usuário acessar pelo celular e a tela encolher, o Fiori troca automaticamente para "Medium" ou "Short". Se você não preencher isso corretamente, a UI ficará quebrada em telas pequenas.  
+  * *A Mágica no Fiori:* No RAP, o framework usa esses textos para gerar os metadados do serviço OData: na ausência de um `@EndUserText.label` na CDS View, o rótulo **Medium** do elemento de dados é usado como label padrão do campo, e o **Heading** é usado em cabeçalhos de coluna. Se você não preencher os rótulos corretamente, a UI exibirá textos vazios, truncados ou técnicos.  
 
 * **Ajuda `F1` (Documentation):** Você pode escrever um texto explicativo técnico ou de negócio que aparecerá quando o usuário pedir ajuda sobre o campo.  
 
@@ -67,8 +67,8 @@ Diferente de constantes globais simples, uma variável tipada com um Enum **só 
 
 **Exemplo de Definição (Código):**
 
-INTERFACE if_status_enums PUBLIC.  
 ``` ABAP
+INTERFACE zif_status_enums PUBLIC.  
   " Define um tipo ENUM que, por baixo dos panos, é um CHAR1  
   TYPES:  
     BEGIN OF ENUM ty_status STRUCTURE status BASE TYPE char1,  
@@ -77,19 +77,19 @@ INTERFACE if_status_enums PUBLIC.
       processed VALUE 'P',        " Valor 'P'  
       rejected  VALUE 'R',        " Valor 'R'  
     END OF ENUM ty_status STRUCTURE status.  
-```
 ENDINTERFACE.
+```
 
 **Uso no Código (Type Safety):**
 
 ``` ABAP
-DATA: lv_status TYPE if_status_enums=>ty_status.
+DATA: lv_status TYPE zif_status_enums=>ty_status.
 
 " Atribuição válida  
-lv_status = if_status_enums=>status-rejected.
+lv_status = zif_status_enums=>status-rejected.
 
 " Comparação legível  
-IF lv_status = if_status_enums=>status-rejected.  
+IF lv_status = zif_status_enums=>status-rejected.  
   " Lógica clara e legível, sem "Magic Strings" espalhadas  
 ENDIF.
 
@@ -121,7 +121,7 @@ Imagine um campo de "Número de Telefone Comercial":
 
 * **Data Element (Elemento de Dados):** Objeto do dicionário que descreve o significado semântico e de negócio de um campo. Ele carrega os textos (Field Labels), a documentação (`F1`) e pode carregar Search Helps.  
 
-* **Field Label (Rótulo de Campo):** Textos definidos dentro do Elemento de Dados (Curto, Médio, Longo, Cabeçalho). O SAP Fiori Elements utiliza uma lógica inteligente para escolher qual label exibir dependendo do espaço disponível na tela (Responsividade).  
+* **Field Label (Rótulo de Campo):** Textos definidos dentro do Elemento de Dados (Curto, Médio, Longo, Cabeçalho). No RAP, esses textos alimentam os metadados OData (ex: o rótulo Médio como label padrão e o Cabeçalho para colunas), garantindo textos traduzidos e consistentes no SAP Fiori Elements.  
 
 * **Conversion Routine (Rotina de Conversão):** Um par de Function Modules (Input/Output) associado a um Domínio que transforma o dado automaticamente (ex: Formato interno de banco vs. Formato externo de visualização).  
 
@@ -136,4 +136,4 @@ Imagine um campo de "Número de Telefone Comercial":
   R: O Domínio define a parte técnica (tipo físico, tamanho, rotinas de conversão), focando em como o dado é armazenado. O Elemento de Dados define a parte semântica (significado de negócio, labels de tela, ajuda `F1`), focando em o que o dado representa para o usuário.
 
 3. As Enumerações (Enums) são objetos globais do dicionário criados via `SE11`?  
-  R: Não exatamente da forma clássica (como tabelas). Embora existam Enumerações globais no Dicionário (a partir do ABAP 7.51), elas são definidas através de código fonte em Interfaces ou Classes Globais (ou artefatos específicos de Type Group modernos) para uso em lógica de programação, oferecendo tipagem forte (Type Safety) que as antigas listas de valores fixos de domínio não possuíam.
+  R: Não. As enumerações ABAP (`BEGIN OF ENUM`, disponíveis a partir do ABAP 7.51) são definidas em código-fonte — normalmente na seção pública de uma Interface ou Classe Global, para que possam ser reutilizadas —, oferecendo tipagem forte (Type Safety) que as antigas listas de valores fixos de domínio não possuíam. A partir do ABAP 7.58 (S/4HANA 2023) e no ABAP Cloud também existem os *CDS Enumerated Types* (`DEFINE TYPE ... ENUM`), criados no ADT — e não na `SE11`.

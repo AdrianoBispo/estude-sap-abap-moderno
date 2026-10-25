@@ -24,7 +24,7 @@ Muitos desenvolvedores ABAP iniciam na Orientação a Objetos focando excessivam
   * *Exemplo:* "Um Cachorro **é um** Animal".  
   * *Limitação:* O ABAP suporta apenas herança simples. Uma classe só pode ter uma "mãe". Se você herda de ZCL_ANIMAL, não pode herdar de ZCL_AMIGO ao mesmo tempo. Além disso, mudanças na superclasse afetam todas as subclasses, o que pode introduzir bugs colaterais (Fragile Base Class Problem).  
 
-* **Interface:** É um relacionamento flexível e comportamental. Segue a lógica "Faz algo" (Can-do / Behas-as).  
+* **Interface:** É um relacionamento flexível e comportamental. Segue a lógica "Faz algo" (Can-do / Behaves-as).  
   * *Exemplo:* "Um Cachorro **faz** Latido" (Implementa ZIF_LATIDOR). "Um Cachorro **é** Amigável" (Implementa ZIF_AMIGO).  
   * *Vantagem:* Uma classe pode implementar N interfaces. Isso permite que um objeto desempenhe múltiplos papéis dentro do sistema dependendo do contexto em que é utilizado.
 
@@ -84,12 +84,13 @@ No ABAP Moderno, usamos **Classes de Exceção**, que são objetos ricos em info
    * **Comportamento:** O compilador *obriga* o desenvolvedor a tratar (TRY...CATCH) ou propagar (RAISING) a exceção.  
    * **Uso:** Erros de negócio previsíveis onde o programa consumidor deve ter uma chance de se recuperar (ex: "Saldo Insuficiente", "Cliente Bloqueado").  
 
-2. **CX_NO_CHECK (Não Checada):**  
-   * **Comportamento:** O tratamento é opcional. Se não tratado, gera um Dump automático.  
-   * **Uso:** Erros técnicos graves ou de programação onde a recuperação é improvável (ex: "Divisão por Zero", "Ponteiro Nulo", "Parâmetro Obrigatório Vazio").  
+2. **CX_DYNAMIC_CHECK (Verificada em Runtime):**  
+   * **Comportamento:** O compilador não obriga o tratamento. Só em tempo de execução, se a exceção ocorrer e não for tratada nem declarada no `RAISING`, o sistema dispara `CX_SY_NO_HANDLER` (Dump se não tratada).  
+   * **Uso:** Erros que podem ser evitados com verificações prévias (pré-condições). A maioria das exceções predefinidas do runtime é desse tipo (ex: "Divisão por Zero" — `CX_SY_ZERODIVIDE`, "Referência Nula" — `CX_SY_REF_IS_INITIAL`, `CX_SY_ITAB_LINE_NOT_FOUND`).  
 
-3. **CX_DYNAMIC_CHECK:**  
-   * Um híbrido raramente usado em código de aplicação, comum em frameworks genéricos.
+3. **CX_NO_CHECK (Não Checada):**  
+   * **Comportamento:** O tratamento é opcional e a exceção é implicitamente declarada em todas as interfaces. Se não tratada, gera um Dump.  
+   * **Uso:** Erros que podem ocorrer a qualquer momento e não podem ser tratados localmente de forma útil (ex: "Falta de Memória", estados inconsistentes do sistema).
 
 ### Disparando uma Exceção Rica
 
@@ -122,11 +123,14 @@ Primeiro, definimos *o que* precisa ser feito, ignorando *como*.
 ``` ABAP
 INTERFACE zif_discount_strategy PUBLIC.  
 
+  " Tipo completo: parâmetros RETURNING não aceitam tipos genéricos (como 'p' sozinho)  
+  TYPES ty_amount TYPE p LENGTH 15 DECIMALS 2.  
+
   " Qualquer classe que queira ser uma estratégia de desconto  
   " deve saber executar este método.  
   METHODS calculate  
-    IMPORTING iv_price TYPE p  
-    RETURNING VALUE(rv_discount) TYPE p.  
+    IMPORTING iv_price TYPE ty_amount  
+    RETURNING VALUE(rv_discount) TYPE ty_amount.  
 
 ENDINTERFACE.
 ```
@@ -220,4 +224,4 @@ ENDCLASS.
   R: Porque permite a Injeção de Dependência. Se o seu código depende de uma Interface ZIF_CLIENTE_DAO em vez da classe concreta ZCL_CLIENTE_DAO, você pode, durante o teste, injetar uma classe falsa (Mock) que implementa a mesma interface, mas retorna dados fixos de memória, isolando o teste do banco de dados real.  
 
 3. Em que situação devo usar uma exceção que herda de CX_NO_CHECK?  
-  R: Exceções CX_NO_CHECK devem ser usadas para erros técnicos graves ou situações inesperadas onde não se espera que o programa consumidor consiga se recuperar ou tratar o erro localmente (ex: falta de memória, argumentos nulos em métodos internos). Elas não obrigam o uso de TRY...CATCH e geralmente resultam em um Dump informativo se não tratadas no topo da pilha.
+  R: Exceções CX_NO_CHECK devem ser usadas para erros técnicos graves que podem ocorrer a qualquer momento e onde não se espera que o programa consumidor consiga se recuperar ou tratar o erro localmente (ex: falta de memória, estados inconsistentes do sistema). Erros evitáveis por pré-condições (como divisão por zero) pertencem a CX_DYNAMIC_CHECK. Elas não obrigam o uso de TRY...CATCH e geralmente resultam em um Dump informativo se não tratadas no topo da pilha.

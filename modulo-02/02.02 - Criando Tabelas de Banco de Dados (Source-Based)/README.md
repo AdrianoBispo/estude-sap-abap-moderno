@@ -38,9 +38,11 @@ Estas anotações substituem as configurações de "Technical Settings" e "Deliv
 * `@AbapCatalog.tableCategory`: Define se é uma tabela Transparente (`#TRANSPARENT`), Global Temporary, etc. Para persistência padrão, sempre usamos Transparente.  
 * `@AbapCatalog.deliveryClass`: Define como os dados são tratados durante o transporte entre sistemas (DEV -> QAS -> PRD).  
   * `#A` (Application Table): Dados de negócio (Pedidos, Clientes). Geralmente não são transportados, são criados no ambiente.  
-  * `#C` (Customizing Table): Dados de configuração. São transportados automaticamente via Requests de Customizing.  
-* `@AbapCatalog.dataMaintenance`: Controla se a tabela pode ser editada pelas transações genéricas **SE16N** ou **SM30**.  
-  * `#RESTRICTED` ou `#NOT_ALLOWED`: Recomendado para tabelas RAP. Força o usuário a usar o App Fiori oficial para editar dados, garantindo que as validações do Business Object sejam executadas.
+  * `#C` (Customizing Table): Dados de configuração. O conteúdo é registrado e transportado via Requests de Customizing.  
+* `@AbapCatalog.dataMaintenance`: Controla se o conteúdo da tabela pode ser exibido/mantido por ferramentas genéricas (Data Preview do ADT, **SE16N**, **SM30**).  
+  * `#RESTRICTED`: Permite exibição (ex: Data Preview no ADT), mas restringe a manutenção direta. É o valor gerado pelo template do ADT.  
+  * `#NOT_ALLOWED`: Não permite exibição nem manutenção pelas ferramentas genéricas.  
+  * Para tabelas RAP, `#RESTRICTED` ou `#NOT_ALLOWED` são recomendados: forçam o usuário a usar o App Fiori oficial para editar dados, garantindo que as validações do Business Object sejam executadas.
 
 ## 3. Campos e Tipos de Dados: A Escolha Arquitetural
 
@@ -73,18 +75,18 @@ Vamos criar a tabela `zrap_travel`, que será a fundação do nosso aplicativo d
 @AbapCatalog.dataMaintenance : #RESTRICTED  
 define table zrap_travel {
 
-  " Chaves Primárias  
+  // Chaves Primárias  
   key client      : abap.clnt not null;  
   key travel_uuid : sysuuid_x16 not null;
 
-  " Campos de Dados (Usando Data Elements para semântica rica)  
+  // Campos de Dados (Usando Data Elements para semântica rica)  
   travel_id       : /dmo/travel_id;  
   agency_id       : /dmo/agency_id;  
   customer_id     : /dmo/customer_id;  
   begin_date      : /dmo/begin_date;  
   end_date        : /dmo/end_date;
 
-  " Campos de Valor e Moeda (Ligação Semântica Obrigatória)  
+  // Campos de Valor e Moeda (Ligação Semântica Obrigatória)  
   @Semantics.amount.currencyCode : 'zrap_travel.currency_code'  
   booking_fee     : /dmo/booking_fee;
 
@@ -95,7 +97,7 @@ define table zrap_travel {
   description     : /dmo/description;  
   overall_status  : /dmo/overall_status;
 
-  " Campos Administrativos (Audit Trail - Gerenciados pelo RAP)  
+  // Campos Administrativos (Audit Trail - Gerenciados pelo RAP)  
   created_by      : syuname;  
   created_at      : timestampl;  
   last_changed_by : syuname;  
@@ -145,4 +147,4 @@ define table zrap_travel {
   R: O sistema tratará o valor como um número genérico. Isso pode causar erros graves de exibição em moedas que não usam 2 casas decimais (como o Iene Japonês ou Peso Chileno), fazendo com que o valor 100 seja exibido incorretamente ou arredondado de forma errada nas interfaces Fiori e relatórios.
 
 3. Qual é a implicação de definir a anotação `@AbapCatalog.dataMaintenance` como `#RESTRICTED` ou `#NOT_ALLOWED`?  
-  R: Isso bloqueia a edição direta dos dados da tabela através das transações técnicas padrão como SM30 (Table Maintenance Generator) e SE16N. Isso é uma boa prática no modelo RAP, pois força os usuários e consultores a utilizarem os aplicativos Fiori construídos sobre a tabela, garantindo que todas as validações de negócio, autorizações e logs definidos no Business Object sejam respeitados.
+  R: Isso bloqueia a edição direta dos dados da tabela através das ferramentas técnicas genéricas como SM30 (Table Maintenance Generator) e SE16N (com `#RESTRICTED` a exibição continua permitida; com `#NOT_ALLOWED`, nem a exibição). Isso é uma boa prática no modelo RAP, pois força os usuários e consultores a utilizarem os aplicativos Fiori construídos sobre a tabela, garantindo que todas as validações de negócio, autorizações e logs definidos no Business Object sejam respeitados.

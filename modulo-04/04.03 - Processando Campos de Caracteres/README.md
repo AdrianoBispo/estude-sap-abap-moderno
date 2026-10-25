@@ -6,17 +6,17 @@
 
 ## Objetivos de Aprendizagem
 
-- Substituir comandos de manipulação de string obsoletos (`TRANSLATE`, `SEARCH`, `SPLIT`) por **Funções de String Embutidas** (`to_upper()`, `substring()`, `condense()`, `replace()`), aproveitando o encadeamento de métodos.  
+- Substituir comandos de manipulação de string obsoletos ou verbosos (`TRANSLATE`, `SEARCH`, `CONCATENATE`) por **Funções de String Embutidas** (`to_upper()`, `substring()`, `condense()`, `replace()`), aproveitando o encadeamento de métodos.  
 
 - Aplicar **Expressões Regulares (Regex)** para resolver problemas complexos de validação (e-mail, CPF, telefone) e extração de padrões que seriam impossíveis com comandos simples.  
 
-- Utilizar funções predicativas como **contains**, **matches** e **starts_with** diretamente em condições lógicas, eliminando variáveis auxiliares e melhorando a legibilidade.  
+- Utilizar funções predicativas como **contains** (inclusive com os parâmetros `start`/`end`) e **matches** diretamente em condições lógicas, eliminando variáveis auxiliares e melhorando a legibilidade.  
 
 - Realizar concatenações e formatações avançadas com **String Templates**, integrando lógica de apresentação diretamente na construção da string.
 
 ## 1. Funções Embutidas: O Fim do "TRANSLATE"
 
-No ABAP clássico, a manipulação de strings era feita através de comandos imperativos que modificavam a variável no local. Isso impedia o encadeamento de operações e tornava o código verboso. O ABAP 7.40+ introduziu uma biblioteca rica de funções que retornam o resultado, permitindo um estilo de programação funcional.
+No ABAP clássico, a manipulação de strings era feita através de comandos imperativos que modificavam a variável no local. Isso impedia o encadeamento de operações e tornava o código verboso. O ABAP 7.02+ (e, de forma mais completa, o 7.40+) introduziu uma biblioteca rica de funções que retornam o resultado, permitindo um estilo de programação funcional.
 
 ### Maiúsculas e Minúsculas
 
@@ -28,17 +28,17 @@ No ABAP clássico, a manipulação de strings era feita através de comandos imp
 
 * **Antigo:** `lv_part = lv_text+0(5).` (Sintaxe de Offset/Length). É rígida e causa dumps se o offset for maior que o tamanho da string.  
 * **Moderno:** `lv_part = substring( val = lv_text off = 0 len = 5 ).`  
-  * *Vantagem:* Mais seguro e legível. Permite usar expressões para calcular o offset dinamicamente.
+  * *Vantagem:* Mais legível e funciona em qualquer posição de expressão, permitindo calcular o offset dinamicamente. *Atenção:* se `off`/`len` ultrapassarem o tamanho do texto, também ocorre uma exceção (`CX_SY_RANGE_OUT_OF_BOUNDS`), que pode ser tratada com `TRY...CATCH`.
 
 ### Limpeza de Espaços
 
-* **Antigo:** `CONDENSE lv_text NO-GAPS.`  
-* **Moderno:** `lv_text = condense( val = lv_text from = ' ' ).`  
-  * *Diferença:* A função `condense()` moderna remove espaços das pontas (Trim) e reduz espaços múltiplos internos para um único espaço. Para remover *todos* os espaços (como o `NO-GAPS`), você usaria replace ou especificaria argumentos adicionais.
+* **Antigo:** `CONDENSE lv_text.` / `CONDENSE lv_text NO-GAPS.`  
+* **Moderno:** `lv_text = condense( lv_text ).` / ``` lv_text = condense( val = lv_text to = `` ). ```  
+  * *Diferença:* Por padrão, a função `condense()` remove espaços das pontas (Trim) e reduz espaços múltiplos internos para um único espaço (como `CONDENSE`). Para remover *todos* os espaços (como o `NO-GAPS`), informe uma string vazia no parâmetro `to` (``` to = `` ```).
 
 ## 2. O Poder das Expressões Regulares (Regex)
 
-Quando precisamos encontrar ou validar padrões abstratos (e não apenas texto fixo), as funções de string tradicionais falham. O suporte a Regex no ABAP moderno é robusto e segue o padrão POSIX/PCRE.
+Quando precisamos encontrar ou validar padrões abstratos (e não apenas texto fixo), as funções de string tradicionais falham. O suporte a Regex no ABAP moderno é robusto e segue o padrão **PCRE** (Perl Compatible Regular Expressions), informado nas funções pelo parâmetro `pcre`. O antigo parâmetro `regex` (sintaxe POSIX) é obsoleto e gera aviso de sintaxe — prefira sempre `pcre`.
 
 ### Validação (Matches)
 
@@ -46,7 +46,7 @@ Verificar se um texto segue um formato específico, como um e-mail corporativo.
 
 ``` ABAP
 " Padrão: Texto + @ + Texto + . + Texto (Simplificado)  
-IF matches( val = lv_email regex = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' ).  
+IF matches( val = lv_email pcre = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$` ).  
   " É um email sintaticamente válido  
 ELSE.  
   " Formato inválido  
@@ -61,8 +61,9 @@ Um cenário comum em integrações é receber dados "sujos", como um telefone `(
 DATA(lv_phone) = '(11) 99999-0000'.
 
 " Regex '[^0-9]' significa: Encontre qualquer caractere que NÃO (^) seja um dígito (0-9).  
-" A função substitui esses caracteres por vazio (''), limpando a string.  
-DATA(lv_clean) = replace( val = lv_phone regex = '[^0-9]' with = '' occ = 0 ).  
+" A função substitui esses caracteres por uma string vazia (``), limpando o texto.  
+" occ = 0 substitui todas as ocorrências.  
+DATA(lv_clean) = replace( val = lv_phone pcre = `[^0-9]` with = `` occ = 0 ).  
 " Resultado: '11999990000'
 ```
 
@@ -71,12 +72,12 @@ DATA(lv_clean) = replace( val = lv_phone regex = '[^0-9]' with = '' occ = 0 ).
 São funções especiais projetadas para retornar um valor booleano implícito, permitindo seu uso direto dentro de comandos `IF`, `CHECK` ou `COND`. Elas eliminam a necessidade de fazer uma operação, checar o sy-subrc e depois decidir.
 
 * **`contains( val = ... sub = ... )`**: Verifica se uma string contém uma substring.  
-* **`starts_with` / `ends_with`**: Verifica se a string começa ou termina com determinado padrão.  
+* **`contains( val = ... start = ... )` / `contains( val = ... end = ... )`**: Verifica se a string começa ou termina com determinado texto (o ABAP não possui funções `starts_with`/`ends_with`; usa-se `contains` com os parâmetros `start` e `end`).  
 * **matches**: Verifica se a string corresponde a um Regex.
 
 ``` ABAP
 " Verifica se é uma mensagem de erro sem precisar de SEARCH  
-IF contains( val = lv_msg sub = 'Erro' ) OR starts_with( val = lv_msg sub = 'E:' ).  
+IF contains( val = lv_msg sub = 'Erro' ) OR contains( val = lv_msg start = 'E:' ).  
   " Tratar erro  
 ENDIF.
 ```
@@ -121,8 +122,9 @@ CLASS zcl_string_proc IMPLEMENTATION.
     " 3. Extração de Informação com Regex  
     " Cenário: Extrair apenas a parte numérica do SKU 'MAT-1234-BR'  
     " O padrão \d+ busca uma sequência contínua de dígitos.  
+    " match( ) retorna o trecho encontrado (find( ) retornaria apenas a posição).  
       
-    find( val = lv_raw_sku regex = '\d+' sub = DATA(lv_extracted_num) ).  
+    DATA(lv_extracted_num) = match( val = lv_raw_sku pcre = `\d+` ). " '1234'  
       
     out->write( |Número do Material extraído: { lv_extracted_num }| ).
 
@@ -130,8 +132,8 @@ CLASS zcl_string_proc IMPLEMENTATION.
     " Classificar o produto baseado no prefixo  
       
     DATA(lv_type) = COND string(  
-      WHEN starts_with( val = lv_raw_sku sub = 'MAT' ) THEN 'Material Físico'  
-      WHEN starts_with( val = lv_raw_sku sub = 'SRV' ) THEN 'Serviço'  
+      WHEN contains( val = lv_raw_sku start = 'MAT' ) THEN 'Material Físico'  
+      WHEN contains( val = lv_raw_sku start = 'SRV' ) THEN 'Serviço'  
       ELSE 'Desconhecido'  
     ).  
       
@@ -151,16 +153,16 @@ ENDCLASS.
   * **NOVO:** `x = to_upper( x )`
 
 * **Tamanho:**
-  * **ANTIGO:** Variável de sistema ou `STRLEN`
-  * **NOVO:** `strlen( x )`
+  * **ANTIGO:** `COMPUTE len = STRLEN( x ).`
+  * **NOVO:** `len = strlen( x )` (usável diretamente em qualquer expressão)
 
 * **Busca:**
   * **ANTIGO:** `SEARCH x FOR 'ABC'`
-  * **NOVO:** `find( val = x sub = 'ABC' )`
+  * **NOVO:** `find( val = x sub = 'ABC' )` (retorna a posição ou -1)
 
 * **Confere Padrão:**
   * **ANTIGO:** CP (Contains Pattern)
-  * **NOVO:** `matches( val = x regex = ... )`
+  * **NOVO:** `matches( val = x pcre = ... )`
 
 * **Concatenar:**
   * **ANTIGO:** `CONCATENATE a b INTO c`
@@ -183,10 +185,10 @@ ENDCLASS.
 ## Quiz de Fixação
 
 1. Qual a diferença de comportamento entre a função `condense( val = text )` e o comando antigo `CONDENSE text NO-GAPS`?  
-  R: A função `condense()` moderna, por padrão, remove apenas os espaços em branco das extremidades (trim) e reduz múltiplos espaços internos para um único espaço (ex: " A  B " vira "A B"). O comando `NO-GAPS` remove todos os espaços da string, colando os caracteres (ex: " A  B " vira "AB"). Para simular `NO-GAPS` modernamente, usa-se `replace()` ou argumentos específicos.  
+  R: A função `condense()` moderna, por padrão, remove apenas os espaços em branco das extremidades (trim) e reduz múltiplos espaços internos para um único espaço (ex: " A  B " vira "A B"). O comando `NO-GAPS` remove todos os espaços da string, colando os caracteres (ex: " A  B " vira "AB"). Para simular `NO-GAPS` modernamente, usa-se ``` condense( val = text to = `` ) ```.  
 
 2. Para verificar se uma variável de string contém o domínio "@sap.com" no final (sufixo), qual função é a mais performática e legível?  
-  R: A função predicativa `ends_with( val = lv_email sub = '@sap.com' ).` Ela é semanticamente clara e otimizada para essa verificação específica.  
+  R: A função predicativa `contains( val = lv_email end = '@sap.com' )`. O parâmetro `end` verifica especificamente o sufixo, deixando a intenção clara (o ABAP não possui uma função `ends_with`).  
 
 3. O que a expressão regex `[^0-9]` significa quando usada em uma função `replace()` para limpeza de dados?  
   R: Ela significa "Qualquer caractere que NÃO seja um dígito numérico de 0 a 9". O acento circunflexo `^` dentro dos colchetes `[]` nega o conjunto. É comumente usada para higienizar strings que deveriam ser numéricas (como telefones ou documentos), removendo formatação como pontos, traços e parênteses.

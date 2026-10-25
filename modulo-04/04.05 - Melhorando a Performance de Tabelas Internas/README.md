@@ -53,7 +53,7 @@ TYPES: BEGIN OF ty_data,
 " UNIQUE: Garante que não haverá IDs duplicados (o sistema valida na inserção)  
 " NON-UNIQUE: Permite duplicatas (comum para categorias, status, etc.)  
 TYPES ty_t_data TYPE STANDARD TABLE OF ty_data  
-                WITH DEFAULT KEY  
+                WITH EMPTY KEY  
                 WITH UNIQUE HASHED KEY key_id COMPONENTS id  
                 WITH NON-UNIQUE SORTED KEY key_cat COMPONENTS category.
 ```
@@ -68,7 +68,7 @@ DATA(ls_row) = lt_data[ KEY key_id COMPONENTS id = 500 ].
 
 " Loop Otimizado via Chave Secundária Sorted (Busca por Categoria)  
 " Sem o 'USING KEY', este loop varreria a tabela inteira linha a linha.  
-" Com 'USING KEY', ele salta direto para o primeiro registro da categoria 'A'  
+" Com 'USING KEY', ele salta direto (busca binária) para o primeiro registro da categoria 'Hardware'  
 LOOP AT lt_data ASSIGNING FIELD-SYMBOL(<fs_row>)   
                 USING KEY key_cat   
                 WHERE category = 'Hardware'.  
@@ -84,9 +84,9 @@ Quando iteramos sobre uma tabela interna, o ABAP precisa disponibilizar o conte�
 
 Cria uma duplicata física da linha na memória ("Work Area").
 
-* **Mecanismo:** O sistema aloca um novo bloco de memória e copia byte a byte o conteúdo da linha da tabela para a variável DATA.  
+* **Mecanismo:** A cada iteração, o sistema copia o conteúdo da linha da tabela para a work area (a mesma variável é reutilizada, mas os dados são copiados).  
 * **Prós:** Segurança. Se você alterar a Work Area, a tabela original permanece intacta.  
-* **Contras:** Performance degradada em "Wide Tables" (tabelas com centenas de colunas ou strings longas). Alocar e desalocar memória milhões de vezes custa CPU (Garbage Collector).
+* **Contras:** Performance degradada em "Wide Tables" (tabelas com centenas de colunas ou strings longas). Copiar linhas largas milhões de vezes custa CPU e memória.
 
 ``` ABAP
 " Cria uma cópia isolada. Lento para linhas largas.  
@@ -135,7 +135,7 @@ O cenário clássico de performance ruim é cruzar dados de duas tabelas (ex: Pe
 * **Abordagem Otimizada (Logarítmica/Linear):** Loop na Tabela A. Para cada linha, ler Tabela B usando uma Chave Hashed ou Sorted.  
   * *Custo Hashed:* 10.000 x 1 = **10.000** operações.  
   * *Custo Sorted:* 10.000 x log(5000) ≈ **120.000** operações.  
-  * *Ganho:* A abordagem otimizada é cerca de **5.000 vezes mais rápida**.
+  * *Ganho:* A abordagem otimizada é cerca de **5.000 vezes mais rápida** com chave Hashed (50 milhões ÷ 10.000) e cerca de **400 vezes** com chave Sorted (50 milhões ÷ 120.000).
 
 ## 5. Exemplo Prático: Benchmark de Performance
 
@@ -157,7 +157,7 @@ CLASS zcl_perf_demo DEFINITION
     " Tabela Híbrida: Comporta-se como Standard (append rápido),  
     " mas possui um índice Sorted secundário para buscas.  
     TYPES ty_t_materials TYPE STANDARD TABLE OF ty_material  
-                         WITH DEFAULT KEY  
+                         WITH EMPTY KEY  
                          WITH NON-UNIQUE SORTED KEY sk_matnr COMPONENTS matnr.  
 ENDCLASS.
 
@@ -178,6 +178,10 @@ CLASS zcl_perf_demo IMPLEMENTATION.
     ENDDO.
 
     DATA(lv_target) = 'M499999'. " Buscando um item no final da tabela (pior caso linear)
+
+    " Chaves secundárias NON-UNIQUE são construídas de forma "lazy" (no primeiro uso).
+    " Fazemos um acesso inicial para que o custo de montar o índice não entre na medição.
+    READ TABLE lt_materials WITH KEY sk_matnr COMPONENTS matnr = 'M1' TRANSPORTING NO FIELDS.
 
     " 2. Teste Lento: Busca Linear (Standard padrão)  
     " O sistema varre 499.999 linhas até achar.  
@@ -211,7 +215,7 @@ CLASS zcl_perf_demo IMPLEMENTATION.
     IF diff_sorted > 0.  
       out->write( |Ganho de Performance: { diff_linear / diff_sorted } vezes mais rápido| ).  
     ELSE.  
-      out->write( 'A busca foi tão rápida que o timer não capturou precisão (< 1ms).' ).  
+      out->write( 'A busca foi tão rápida que o timer não capturou precisão (< 1 microssegundo).' ).  
     ENDIF.
 
   ENDMETHOD.  
@@ -229,13 +233,13 @@ ENDCLASS.
 
 ## Glossário Técnico Expandido
 
-* **Linear Search (Busca Sequencial):** O algoritmo mais simples e ineficiente para grandes volumes. Varrre a tabela do início ao fim. Complexidade **O(n)**. É o padrão para tabelas Standard sem chave explícita.  
+* **Linear Search (Busca Sequencial):** O algoritmo mais simples e ineficiente para grandes volumes. Varre a tabela do início ao fim. Complexidade **O(n)**. É o padrão para tabelas Standard sem chave explícita.  
 
 * **Binary Search (Busca Binária):** Algoritmo de "dividir para conquistar". Divide a tabela ordenada ao meio repetidamente. Complexidade **O(log n)**. Usado em tabelas Sorted ou Secondary Sorted Keys. É extremamente escalável (1 milhão de registros requerem apenas ~20 comparações).  
 
 * **Hash Algorithm (O(1)):** O "Santo Graal" da performance. O sistema calcula matematicamente o endereço de memória da linha baseado na chave. O tempo de acesso é constante, seja para 10 ou 10 milhões de linhas.  
 
-* **Secondary Key:** Um índice adicional mantido pelo ABAP Runtime que permite buscas rápidas por campos que não fazem parte da chave primária ou da ordenação padrão da tabela. Tem um custo de memória (cerca de 10-15% a mais) e um custo leve de CPU na inserção, mas compensa enormemente na leitura.  
+* **Secondary Key:** Um índice adicional mantido pelo ABAP Runtime que permite buscas rápidas por campos que não fazem parte da chave primária ou da ordenação padrão da tabela. Tem um custo adicional de memória e de CPU para manter o índice (na inserção ou, em chaves NON-UNIQUE, no primeiro acesso após alterações), mas compensa enormemente na leitura.  
 
 * **Field-Symbol:** Uma variável ponteiro (<fs>) que não armazena dados, mas aponta para um endereço de memória de outra variável. Essencial para loops de alta performance e modificação direta de tabelas internas.
 
@@ -248,4 +252,4 @@ ENDCLASS.
   R: Você deve definir uma Chave Secundária (WITH NON-UNIQUE SORTED KEY ou HASHED KEY) na definição da tabela utilizando o campo CPF. Em seguida, deve adaptar seu comando de leitura (READ ou LOOP) para usar explicitamente USING KEY nome_da_chave. Isso evitará o table scan linear.  
 
 3. Qual a vantagem de performance de usar ASSIGNING FIELD-SYMBOL em vez de INTO em um comando LOOP sobre uma tabela com estrutura larga (ex: 200 colunas)?  
-  R: O FIELD-SYMBOL cria apenas uma referência (ponteiro) para a linha que já existe na memória da tabela. O INTO força o sistema a alocar um novo bloco de memória e copiar os dados de todas as 200 colunas para essa nova variável a cada iteração. Evitar essa cópia economiza tempo de CPU (alocação/cópia) e reduz a pressão sobre a memória.
+  R: O FIELD-SYMBOL cria apenas uma referência (ponteiro) para a linha que já existe na memória da tabela. O INTO força o sistema a copiar os dados de todas as 200 colunas para a work area a cada iteração. Evitar essa cópia economiza tempo de CPU e memória.

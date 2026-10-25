@@ -50,7 +50,7 @@ Para acessá-lo no VS Code ou BAS, abrimos a paleta de comandos (`F1` ou `Ctrl+S
    * O gerador lê os metadados do serviço para entender as entidades disponíveis.  
 4. **Entity Selection:**  
    * **Main Entity:** Escolhemos a entidade raiz (ex: Travel). Isso define o que será listado na primeira tela.  
-   * **Navigation Entity:** (Opcional) Define para onde o usuário vai ao clicar na linha (ex: to_Booking).  
+   * **Navigation Entity:** (Opcional) Define para onde o usuário vai ao clicar na linha (ex: _Booking).  
 5. **Project Attributes:**  
    * Definimos o nome do projeto, namespace (ex: z.travel), e configurações de deploy.
 
@@ -130,7 +130,7 @@ Esta é uma decisão de arquitetura crítica.
 ## Quiz de Fixação
 
 1. Qual é a função primordial do "Application Generator" nas SAP Fiori Tools?  
-  R: Ele automatiza a criação da estrutura de pastas e arquivos de configuração (`manifest.json`, `ui5`,`.yaml`) de um projeto Fiori, conectando-o corretamente a um serviço OData backend, poupando o desenvolvedor de configurações manuais complexas e propensas a erros.  
+  R: Ele automatiza a criação da estrutura de pastas e arquivos de configuração (`manifest.json`, `ui5.yaml`) de um projeto Fiori, conectando-o corretamente a um serviço OData backend, poupando o desenvolvedor de configurações manuais complexas e propensas a erros.  
 
 2. Se eu configurar uma coluna de tabela usando o "Page Map" do Fiori Tools (gerando uma anotação local), essa configuração afetará outros aplicativos que usam o mesmo serviço OData?  
   R: Não. Configurações feitas no Page Map geram anotações locais (armazenadas dentro do projeto webapp do aplicativo específico). Elas não alteram o serviço OData no backend, portanto, outros aplicativos que consomem o mesmo serviço não verão essa alteração.  

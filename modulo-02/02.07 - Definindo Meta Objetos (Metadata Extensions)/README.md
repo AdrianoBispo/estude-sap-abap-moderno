@@ -40,13 +40,13 @@ O modelo RAP resolve este problema adotando o padrão de **Metadata Extensions**
 
 ## 3. Habilitando Extensões: O Contrato de Flexibilidade
 
-Por padrão, uma CDS View é "fechada". O framework RAP ignora arquivos de extensão para economizar tempo de compilação, a menos que você diga explicitamente que aquela view permite ser estendida.
+Por padrão, uma CDS View é "fechada". O framework ignora arquivos de extensão de metadados, a menos que o autor da view declare explicitamente que ela permite ser estendida.
 
 Para "abrir" a view, precisamos adicionar uma anotação de cabeçalho específica no arquivo .ddls:
 
 ``` CDS
 @AccessControl.authorizationCheck: #CHECK  
-@EndUserText.label: 'Projection View for Travel'
+@EndUserText.label: 'Consumption View for Travel'
 
 
 /* A LINHA MÁGICA: */  
@@ -63,7 +63,7 @@ define view entity Z_C_TRAVEL
 
 ## 4. Criando a Metadata Extension na Prática
 
-No ADT (Eclipse), criamos um objeto do tipo "Metadata Extension" (clique direito no Core Data Services > Metadata Extension). A sintaxe utiliza o comando annotate view, vinculando-se à entidade CDS.
+No ADT (Eclipse), criamos um objeto do tipo "Metadata Extension" (clique direito no Core Data Services > Metadata Extension). A sintaxe utiliza o comando `annotate entity` (ou o sinônimo `annotate view`), vinculando-se à entidade CDS. Toda Metadata Extension precisa declarar a anotação `@Metadata.layer`.
 
 ### Exemplo Prático: Configurando a Tela de Viagens
 
@@ -78,12 +78,13 @@ Vamos configurar nossa View de Consumo (`Z_C_TRAVEL`) para gerar um **List Repor
 ``` CDS
 @Metadata.layer: #CORE  
 
-annotate view Z_C_TRAVEL with  
+annotate entity Z_C_TRAVEL with  
 {  
   /* ----------------------------------------------------------- */  
   /* Cabeçalho e Facetas (Estrutura da Página de Detalhes)       */  
   /* ----------------------------------------------------------- */  
-  /* Define que a Object Page terá uma seção chamada "Detalhes" */  
+  /* Define que a Object Page terá uma seção chamada "Detalhes"  */  
+  /* exibindo os campos anotados com @UI.identification          */  
 
   @UI.facet: [ { id: 'Travel',   
                  purpose: #STANDARD,   
@@ -99,16 +100,19 @@ annotate view Z_C_TRAVEL with
   /* lineItem: position 10 coloca na primeira coluna */  
   /* importance: #HIGH garante que nunca suma, mesmo em celulares */  
   /* selectionField: position 10 coloca como primeiro filtro no topo */  
+  /* identification: posição do campo na seção "Detalhes" da Object Page */  
   @UI: {   
     lineItem:       [ { position: 10, importance: #HIGH } ],   
-    selectionField: [ { position: 10 } ]   
+    selectionField: [ { position: 10 } ],   
+    identification: [ { position: 10 } ]   
   }  
   TravelID;
 
   /* Campo: ID da Agência */  
   @UI: {   
     lineItem:       [ { position: 20, importance: #HIGH } ],   
-    selectionField: [ { position: 20 } ]   
+    selectionField: [ { position: 20 } ],   
+    identification: [ { position: 20 } ]   
   }  
   AgencyID;
 
@@ -116,7 +120,8 @@ annotate view Z_C_TRAVEL with
   /* importance: #MEDIUM significa que em telas pequenas, este campo pode ser ocultado */  
   @UI: {   
     lineItem:       [ { position: 30, importance: #MEDIUM } ],   
-    selectionField: [ { position: 30 } ]   
+    selectionField: [ { position: 30 } ],   
+    identification: [ { position: 30 } ]   
   }  
   CustomerID;
 

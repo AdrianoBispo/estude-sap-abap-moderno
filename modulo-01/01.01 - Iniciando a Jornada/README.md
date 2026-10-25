@@ -51,7 +51,7 @@ O **Clean Core** é a estratégia para garantir que o sistema ERP possa ser atua
 2. **Released Objects (Objetos Liberados):** Esta é a "Regra de Ouro". Você só pode referenciar objetos SAP que foram explicitamente marcados como **APIs Públicas (Whitelisted)**.  
    * *Exemplo:* No clássico, líamos a tabela MARA para dados de material. No Cloud, isso gera erro de sintaxe. Devemos usar a CDS View pública I_Product, que é a "interface contrato" estável que a SAP garante que não mudará.  
 
-3. **Acesso a Dados:** O acesso direto ao banco de dados é restrito. Toda leitura deve passar por CDS Views liberadas, garantindo que as verificações de segurança e a lógica de negócio sejam respeitadas.
+3. **Acesso a Dados:** O acesso direto às tabelas SAP é restrito. Toda leitura de dados standard deve passar por CDS Views liberadas (suas próprias tabelas Z podem ser lidas normalmente), garantindo que as verificações de segurança e a lógica de negócio sejam respeitadas.
 
 ## 3. Estrutura de Organização do Código
 
@@ -159,7 +159,7 @@ ENDCLASS.
 ## Quiz de Fixação
 
 1. Por que o comando WRITE e a criação de telas Dynpro não são suportados no modelo de desenvolvimento ABAP Cloud?  
-  R: O ABAP Cloud separa estritamente o Backend do Frontend. O Backend (ABAP) deve fornecer apenas serviços e APIs (OData), enquanto o Frontend deve ser baseado em tecnologias web (SAP Fiori/UI5). Comandos como WRITE geram HTML legado no servidor, o que viola essa arquitetura e não é compatível com a nuvem.  
+  R: O ABAP Cloud separa estritamente o Backend do Frontend. O Backend (ABAP) deve fornecer apenas serviços e APIs (OData), enquanto o Frontend deve ser baseado em tecnologias web (SAP Fiori/UI5). Comandos como WRITE geram listas clássicas exibidas no SAP GUI, o que viola essa arquitetura e não é compatível com a nuvem.  
 
 1. Um desenvolvedor tenta ler a tabela MARA (Mestre de Materiais) em um ambiente S/4HANA Cloud e recebe um erro de sintaxe. Qual é a causa e a solução?  
   R: A causa é que a tabela MARA não é um "Released Object" no modelo ABAP Cloud. O acesso direto a tabelas físicas internas é proibido para garantir o Clean Core. A solução é encontrar e utilizar a CDS View pública equivalente liberada pela SAP, como a I_Product.  
@@ -171,4 +171,4 @@ ENDCLASS.
 
 - [Como criar um ABAP Cloud Project](https://learnsap.enable-now.cloud.sap/pub/mmcp/index.html?library=library.txt&show=project!PR_CFA821567D1C62AF:demo)
 - [Como criar um ABAP Package](https://learnsap.enable-now.cloud.sap/pub/mmcp/index.html?library=library.txt&show=project!PR_E85FDC0DEC83B2B8:demo)
-- [Como criar seu primeiro app ABAP ('Hellow World')](https://learnsap.enable-now.cloud.sap/pub/mmcp/index.html?library=library.txt&show=project!PR_B569C1AE21873BA7:demo)
+- [Como criar seu primeiro app ABAP ('Hello World')](https://learnsap.enable-now.cloud.sap/pub/mmcp/index.html?library=library.txt&show=project!PR_B569C1AE21873BA7:demo)

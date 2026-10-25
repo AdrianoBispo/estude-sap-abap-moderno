@@ -64,9 +64,9 @@ Vamos analisar uma consulta na tabela /dmo/connection (Modelo de Voo).
     WHERE carrier_id = @lv_airline  
     ORDER BY carrier_id, connection_id DESCENDING " Ordenação mista  
     INTO TABLE @DATA(lt_flights).
+```
 
   *Nota:* A tabela lt_flights terá os campos carrier_id, connection_id, departure_airport, etc. O tipo é inferido automaticamente.
-```
 
 ### Selecionando uma Única Linha (Estrutura)
 
@@ -100,8 +100,8 @@ No Strict Mode, o parser do SQL precisa de uma distinção clara entre o que per
 * `carrier_id`: É uma coluna que existe na tabela do banco.  
 * `@lv_airline`: É uma variável ("Host Variable") hospedada na memória do programa ABAP.
 
-Por que isso é seguro?  
-O uso do `@` ajuda a prevenir ambiguidades e melhora a segurança. O banco sabe exatamente que aquele valor é um parâmetro externo, o que ajuda na performance (reaproveitamento do plano de execução) e segurança.  
+Por que isso importa?  
+O `@` é uma marcação sintática que elimina ambiguidades: o compilador sabe exatamente o que é coluna e o que é variável ABAP. (Vale lembrar que o ABAP SQL sempre enviou as variáveis ABAP ao banco como parâmetros — *bind variables* —, o que protege contra SQL Injection e permite reaproveitar planos de execução; o `@` torna isso explícito no código, mas não muda esse mecanismo.)  
 *Exemplo de Erro Comum:*
 
 ``` ABAP
@@ -119,7 +119,7 @@ Após cada comando SELECT, o sistema atualiza duas variáveis críticas na estru
 1. **sy-subrc (Return Code):**  
    * 0: Sucesso. Pelo menos uma linha foi encontrada.  
    * 4: Aviso. Nenhuma linha foi encontrada que satisfaça o WHERE.  
-   * 8: Erro (menos comum em SELECTs simples).  
+   * 8: Ocorre apenas em `SELECT SINGLE ... FOR UPDATE` quando a chave primária não é informada completamente.  
    * *Dica:* Sempre verifique sy-subrc imediatamente após o SELECT.  
 
 2. **sy-dbcnt (Database Count):**  
@@ -208,7 +208,7 @@ ENDCLASS.
 | **Verificar Existência** | SELECT * ... UP TO 1 ROWS | SELECT SINGLE @abap_true ... | Mais leve, não transporta dados inúteis. |
 | **Escape de Variável** | WHERE id = lv_id | WHERE id = @lv_id | Clareza para o parser e segurança. |
 | **Looping** | SELECT dentro de LOOP | FOR ALL ENTRIES ou JOIN | Evita "N+1 selects" (múltiplas idas ao banco). |
-| **Destino** | INTO CORRESPONDING FIELDS | Lista explícita com INTO TABLE | CORRESPONDING é mais lento pois compara nomes. |
+| **Destino** | SELECT * ... INTO CORRESPONDING FIELDS | Lista explícita de campos com INTO TABLE @DATA(...) | Deixa claro quais campos são lidos e evita buscar colunas que seriam descartadas no destino. |
 
 ## Glossário Técnico
 
@@ -218,7 +218,7 @@ ENDCLASS.
 * **SELECT SINGLE:** Instrução otimizada para buscar **uma única linha**. Se a chave primária completa não for fornecida, retorna a primeira linha arbitrária encontrada.  
 * **sy-subrc:** Variável de sistema que indica o status da execução. 0 = Sucesso, 4 = Dados não encontrados.  
 * **sy-dbcnt:** Variável de sistema que armazena a **quantidade de linhas** afetadas ou lidas pela última instrução SQL.  
-* **FIELDS:** Palavra-chave introduzida no ABAP 7.40+ para listar as colunas a serem lidas. Embora opcional em alguns contextos, é recomendada para clareza e obrigatória em queries complexas.  
+* **FIELDS:** Palavra-chave introduzida no ABAP 7.50 para listar as colunas a serem lidas. É obrigatória quando a cláusula `FROM` vem antes da lista de campos (`SELECT FROM ... FIELDS ...`), o estilo recomendado por favorecer o Content Assist do ADT.  
 * **Inline Declaration (@DATA):** Recurso que permite criar a tabela ou estrutura de destino no momento exato da leitura, inferindo os tipos de dados a partir da lista de campos do SELECT.
 
 ## Quiz de Fixação

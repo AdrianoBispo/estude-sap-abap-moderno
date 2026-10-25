@@ -18,7 +18,7 @@
 
 A introdução das **Associações** no ABAP CDS representa uma mudança de paradigma na forma como pensamos sobre relacionamentos de dados.
 
-* **A Abordagem Clássica (JOIN):** Em Views SQL tradicionais (`SE11`), quando definimos um `LEFT OUTER JOIN` entre "Pedido" e "Cliente", o banco de dados executa essa junção fisicamente **toda vez** que a view é lida. Se o seu relatório precisa apenas do ID do Pedido e do Valor Total, o banco desperdiça recursos buscando o Endereço do Cliente, mesmo que essa informação nunca seja exibida. Isso é chamado de *Eager Loading* (Carregamento Ansioso).
+* **A Abordagem Clássica (JOIN):** Em views SQL tradicionais (ou num `JOIN` escrito diretamente na view), quando definimos um `LEFT OUTER JOIN` entre "Pedido" e "Cliente", o banco de dados executa essa junção fisicamente **toda vez** que a view é lida. Se o seu relatório precisa apenas do ID do Pedido e do Valor Total, o banco desperdiça recursos buscando o Endereço do Cliente, mesmo que essa informação nunca seja exibida. Isso é chamado de *Eager Loading* (Carregamento Ansioso).
  
 * **A Abordagem Moderna (Associação):** No ABAP CDS, uma Associação é uma definição lógica de um relacionamento, não uma instrução de execução imediata. Ela funciona como um "Join sob demanda" (*Lazy Join*).
 
@@ -46,7 +46,7 @@ A definição de uma associação ocorre logo após a cláusula `FROM` e antes d
 * **Associações Filtradas:** Você também pode adicionar filtros fixos na condição `ON`.
   **Exemplo:**
   ``` CDS
-  on $projection.OrgVendas = _Config.OrgVendas and _Config.Status = 'Ativo'.
+  on $projection.OrgVendas = _Config.OrgVendas and _Config.Status = 'Ativo'
   ```
 
 ## 3. Entendendo a Cardinalidade
@@ -54,7 +54,7 @@ A definição de uma associação ocorre logo após a cláusula `FROM` e antes d
 A cardinalidade é uma instrução para o otimizador do banco de dados. Ela informa quantos registros podem existir na tabela de destino para cada registro da tabela de origem. A sintaxe é `[min..max]`.
 
 * **`[0..1]` (Zero ou Um):** Relacionamento "Para Um" opcional. Exemplo: Uma Viagem *pode* ter uma Agência. Se não tiver, retorna nulo. Comporta-se como um `LEFT OUTER JOIN` quando executado. Este é o padrão se a cardinalidade for omitida.  
-* **`[1..1]` (Exatamente Um):** Relacionamento "Para Um" obrigatório. Exemplo: Um Item de Pedido *deve* ter um Cabeçalho. Isso dá liberdade ao banco para usar `INNER JOIN` se for mais performático, pois a existência é garantida.  
+* **`[1..1]` (Exatamente Um):** Relacionamento "Para Um" obrigatório. Exemplo: Um Item de Pedido *deve* ter um Cabeçalho. A cardinalidade documenta essa regra e ajuda o otimizador, mas o join gerado por uma expressão de caminho continua sendo `LEFT OUTER JOIN` por padrão; para forçar um `INNER JOIN`, usa-se o atributo de caminho `[inner]` (ex: `_Header[inner].Field`).  
 * **`[0..*]` ou `[*]` (Zero ou Muitos):** Relacionamento "Para Muitos". Exemplo: Uma Viagem tem *muitas* Reservas. Isso altera a granularidade dos dados se campos da associação forem selecionados (pode duplicar linhas da origem).
 
 *Nota Técnica:* Definir a cardinalidade correta não é apenas documentação; ajuda o SAP HANA a escolher o melhor plano de execução SQL.
@@ -120,7 +120,7 @@ Porém, para que consumidores externos (como um App Fiori ou outra CDS View) pos
 1. **Reutilização:** Outra view que leia Z_I_TRAVEL pode acessar os campos do cliente sem precisar refazer o join: select from Z_I_TRAVEL { _Customer.EmailAddress }.
   
 2. **OData Navigation:** No mundo OData, uma associação exposta vira uma **Navigation Property**. Isso permite que o Fiori Elements navegue de uma tela para outra automaticamente.  
-   * *URL OData:* `.../Travels('001')/to_Customer`  
+   * *URL OData V4:* `.../Travel(TravelUUID=...)/_Customer` (no OData V2, o framework gera a navegação com o prefixo `to_`, ex: `to_Customer`)  
    * Isso habilita o usuário a clicar no ID do Cliente na tela de Viagem e abrir um pop-over com os dados do contato do cliente, tudo gerenciado pelo framework através da associação.
 
 ## Comparativo: Join vs Association

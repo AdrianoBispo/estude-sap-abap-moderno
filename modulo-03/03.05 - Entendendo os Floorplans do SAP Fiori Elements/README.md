@@ -115,7 +115,7 @@ Esta é a faceta de "estrutura". Ela é um container vazio projetado para agrupa
 
 ## Exemplo Visual da Estrutura
 
-Aqui está como a hierarquia que você descreveu se traduz no código (CDS Annotation) e na tela:
+Veja como essa hierarquia se traduz no código (CDS Annotation) e na tela:
 
 ``` CDS
 // 1. A Collection Facet (O "Container")
@@ -129,6 +129,7 @@ Aqui está como a hierarquia que você descreveu se traduz no código (CDS Annot
 
 // 2. A Reference Facet (O Conteúdo real - Bloco 1)
   { 
+    id: 'BasicData',                // ID interno do bloco
     parentId: 'GeneralInfo',        // Aponta para o pai (Collection)
     type: #IDENTIFICATION_REFERENCE,// Tipo de conteúdo (Formulário)
     label: 'Dados Básicos',         // Título do Bloco
@@ -137,6 +138,7 @@ Aqui está como a hierarquia que você descreveu se traduz no código (CDS Annot
 
 // 3. A Reference Facet (O Conteúdo real - Bloco 2)
   { 
+    id: 'FinanceData',              // ID interno do bloco
     parentId: 'GeneralInfo',        // Aponta para o mesmo pai
     type: #FIELDGROUP_REFERENCE,    // Tipo de conteúdo (Grupo de campos)
     targetQualifier: 'Finance',     // Aponta para @UI.fieldGroup: #Finance

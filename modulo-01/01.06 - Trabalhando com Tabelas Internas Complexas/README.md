@@ -36,7 +36,7 @@ Mantém os dados automaticamente ordenados pela chave definida, inserção após
 * **Acesso por Chave:** Utiliza **Busca Binária (Binary Search)**. O sistema divide a tabela ao meio repetidamente para encontrar o valor.  
   * *Complexidade:* **O(log n)**. Extremamente rápido mesmo em tabelas grandes.  
 * **Custo:** A inserção (INSERT) é mais lenta que na Standard, pois o sistema precisa encontrar a posição correta para manter a ordem.  
-* **Uso Ideal:** Tabelas que sofrem muitas leituras e poucas escritas, ou quando a ordem lógica dos dados é vital para o processamento (ex: FOR ALL ENTRIES).  
+* **Uso Ideal:** Tabelas que sofrem muitas leituras e poucas escritas, ou quando a ordem lógica dos dados é vital para o processamento (ex: leituras por parte inicial da chave ou processamento em ordem de chave).  
 * **Definição:** TYPE SORTED TABLE OF ... WITH UNIQUE/NON-UNIQUE KEY ....
 
 ### C. Hashed Table (Tabela de Hash)
