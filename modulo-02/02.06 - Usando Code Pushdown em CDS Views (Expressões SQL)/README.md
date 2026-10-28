@@ -3,6 +3,8 @@
 ![Infográfico - Code Pushdown com ABAP CDS](./02.06_Code_Pushdown_com_ABAP_CDS.png)
 
 > **Comece pelos slides: [O Fim do LOOP: Dominando o Code Pushdown em ABAP CDS com Expressões SQL](./02.06_O_Fim_do_LOOP_Code_Pushdown_em_ABAP_CDS.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [CDS DDL - CDS View Entity, Built-In Functions](https://help.sap.com/docs/abap-cloud/abap-keywords/cds-ddl-cds-view-entity-built-in-functions)
 
 ## Objetivos de Aprendizagem
 
@@ -13,6 +15,8 @@
 - Converter tipos de dados explicitamente utilizando a instrução **CAST**, garantindo a integridade dos dados em operações de cálculo e uniões.  
 
 - Utilizar **Variáveis de Sessão** ($session.system_date, $session.user, $session.system_language) para criar views dinâmicas que respondem ao contexto do usuário logado.
+
+- Definir e consumir **CDS views com parâmetros de entrada**, inclusive repassando parâmetros entre views.
 
 ## 1. O Poder das Expressões SQL e o Fim do Loop
 
@@ -229,6 +233,40 @@ group by customer_id, currency_code
 ```
 
 **Nota:** Neste exemplo, se um cliente tiver viagens em EUR e USD, ele aparecerá em duas linhas diferentes (uma para cada moeda), pois `currency_code` faz parte do grupo.
+
+## 7. CDS Views com Parâmetros de Entrada
+
+Um `WHERE` é opcional para o consumidor. **Parâmetros de entrada** permitem que a view **exija** uma informação e a use nos cálculos: a moeda de destino de uma conversão, uma data de corte antes de uma agregação, o idioma de um texto.
+
+``` ABAP
+define view entity ZI_FlightsFrom
+  with parameters
+    P_MinDate : abap.dats
+  as select from /dmo/flight
+{
+  key carrier_id                 as AirlineID,
+  key connection_id              as ConnectionID,
+  key flight_date                as FlightDate,
+      seats_max - seats_occupied as FreeSeats
+}
+where flight_date >= $parameters.P_MinDate
+```
+
+* **Tipos:** Somente elementares (tipo built-in `abap.<tipo>` ou data element). Estruturas, tabelas e referências não são permitidas.
+
+* **Uso dentro da view:** Com o prefixo `$parameters.`, na lista de elementos, em `CASE`, em expressões e funções (ex.: `currency_conversion`), no `WHERE` e em filtros de path expressions.
+
+* **Consumo em outra view:** `from ZI_FlightsFrom( P_MinDate: $parameters.P_MinDate )`, com dois-pontos como operador de atribuição. Repassar o parâmetro dessa forma é comum em pilhas de views.
+
+* **Consumo no ABAP SQL:** O operador é o sinal de igual:
+
+``` ABAP
+SELECT FROM zi_flightsfrom( p_mindate = @lv_data_corte )
+  FIELDS AirlineID, ConnectionID, FlightDate, FreeSeats
+  INTO TABLE @DATA(lt_voos).
+```
+
+No **Data Preview**, o ADT pede os valores dos parâmetros (marcados com `*`, obrigatórios) antes de exibir o resultado.
 
 ## Code Pushdown na Prática: Comparativo
 

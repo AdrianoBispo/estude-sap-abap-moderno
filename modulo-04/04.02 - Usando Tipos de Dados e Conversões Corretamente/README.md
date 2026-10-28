@@ -3,6 +3,8 @@
 ![Infográfico - Guia Rápido de Tipos de Dados e Conversões Seguras](./04.02_Guia_Rapido_Tipos_de_Dados_e_Conversoes_Seguras.png)
 
 > **Comece pelos slides: [ABAP Moderno: Tipos de Dados e Conversões](./04.02_ABAP_Moderno_Tipos_e_Conversões.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [Built-In ABAP Types](https://help.sap.com/docs/abap-cloud/abap-keywords/built-in-abap-types)
 
 ## Objetivos de Aprendizagem
 
@@ -13,6 +15,8 @@
 - Utilizar o operador construtor **CONV** para realizar conversões seguras, legíveis e com tratamento de exceções.  
 
 - Prevenir e diagnosticar erros comuns de **Overflow** (Estouro numérico) e **Truncation** (Corte de texto) que podem causar Dumps em produção.
+
+- Calcular com **datas, horas e timestamps** (`d`, `t`, `utclong`) e converter entre fusos horários com `CONVERT UTCLONG`.
 
 ## 1. O Zoológico de Tipos ABAP: Uma Escolha Estratégica
 
@@ -187,6 +191,38 @@ CLASS zcl_data_types IMPLEMENTATION.
 
 ENDCLASS.
 ```
+
+## 6. Calculando com Datas, Horas e Timestamps
+
+**Aritmética com `d` e `t`:** Para calcular, o ABAP converte a data em número de dias desde 01.01.0001 e a hora em segundos desde a meia-noite. Por isso `data + 7` soma sete dias e `data2 - data1` devolve a diferença em dias. Partes da data podem ser lidas com offset e comprimento: ano `lv_date(4)`, mês `lv_date+4(2)`, dia `lv_date+6(2)`.
+
+**Data e hora atuais:** No ABAP Cloud, use a classe `cl_abap_context_info` (`get_system_date( )`, `get_system_time( )`, `get_user_time_zone( )`) em vez das variáveis de sistema.
+
+**Timestamps com `utclong`:** Representa um instante no padrão ISO-8601 (`AAAA-MM-DD HH:MM:SS.sssssss`), com precisão de 100 nanossegundos e sempre em UTC. É o tipo indicado quando fusos horários importam.
+
+``` ABAP
+DATA lv_data_usuario TYPE d.
+DATA lv_hora_usuario TYPE t.
+
+DATA(lv_agora)  = utclong_current( ).                              " Instante atual (UTC)
+DATA(lv_semana) = utclong_add( val = lv_agora days = 7 ).          " + 7 dias
+DATA(lv_seg)    = utclong_diff( high = lv_semana low = lv_agora ). " Diferença em segundos
+
+" UTC -> data e hora locais do usuário
+CONVERT UTCLONG lv_agora
+  INTO DATE lv_data_usuario
+       TIME lv_hora_usuario
+  TIME ZONE cl_abap_context_info=>get_user_time_zone( ).
+
+" Data e hora locais (ex.: partida de um voo, no fuso do aeroporto) -> UTC
+" lv_hora_partida TYPE t e lv_fuso_aeroporto (fuso horário) vêm dos dados do voo
+CONVERT DATE cl_abap_context_info=>get_system_date( )
+        TIME lv_hora_partida
+        TIME ZONE lv_fuso_aeroporto
+  INTO UTCLONG DATA(lv_partida_utc).
+```
+
+> **Exemplo clássico:** a duração de um voo entre aeroportos de fusos diferentes só fica correta depois de converter partida e chegada para UTC e subtrair os dois instantes.
 
 ## Regras de Ouro para Tipos
 

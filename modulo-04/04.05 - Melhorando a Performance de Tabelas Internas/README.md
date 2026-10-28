@@ -3,6 +3,8 @@
 ![Infográfico - Guia de Performance para Tabelas Internas ABAP](./04.05_Guia_de_Performance_para_Tabelas_ABAP.png)
 
 > **Comece pelos slides: [ABAP Moderno: Performance de Elite em Tabelas Internas](./04.05_ABAP_Performance_Tabelas_Internas.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [itab - Using Secondary Keys](https://help.sap.com/docs/abap-cloud/abap-keywords/itab-using-secondary-keys)
 
 ## Objetivos de Aprendizagem
 
@@ -114,9 +116,9 @@ LOOP AT lt_big_table ASSIGNING FIELD-SYMBOL(<fs_row>).
 ENDLOOP.
 ```
 
-### C. Referência de Objeto (REFERENCE INTO)
+### C. Referência de Dados (REFERENCE INTO)
 
-Uma alternativa moderna ao Field-Symbol, que usa referências de dados OO (REF TO). É ligeiramente mais segura que ponteiros puros e útil em contextos OO.
+Uma alternativa moderna ao Field-Symbol, que usa referências de dados (`REF TO`). É ligeiramente mais segura que ponteiros puros e útil em contextos OO.
 
 ``` ABAP
 LOOP AT lt_big_table REFERENCE INTO DATA(lr_row).  

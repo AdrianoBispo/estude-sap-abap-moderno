@@ -3,6 +3,8 @@
 ![Infográfico - Adicionando Documentação ao Código ABAP (ABAP Doc)](./04.09_ABAP_Doc.png)
 
 > **Comece pelos slides: [A Revolução da Documentação (ABAP Doc)](./04.09_ABAP_Doc_A_Jornada_Para_o_Código_Mestre.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP Doc](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-doc)
 
 ## Objetivos de Aprendizagem
 

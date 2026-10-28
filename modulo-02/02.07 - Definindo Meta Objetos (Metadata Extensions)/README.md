@@ -3,6 +3,8 @@
 ![Infográfico - As Vantagens da Metadata Extensions](./02.07_A_Vantagem_das_Metadatas_Extensions.png)
 
 > **Comece pelos slides: [Definindo Meta Objetos (Metadata Extensions)](./02.07_Definindo_Meta_Objetos.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP CDS - Metadata Extensions](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-cds-metadata-extensions)
 
 ## Objetivos de Aprendizagem
 
@@ -13,6 +15,8 @@
 - Criar e vincular arquivos de **Metadata Extension (MDE)** para centralizar todas as anotações de UI (`@UI`), mantendo o código "Core" limpo e legível.
 
 - Aplicar anotações fundamentais de UI, como `@UI.lineItem` e `@UI.selectionField`, dominando propriedades avançadas como importance, position e criticality para criar interfaces Fiori responsivas.
+
+- Estender tabelas e CDS views de terceiros com **append structures** e **CDS view extensions**, respeitando o controle de extensibilidade do fornecedor.
 
 ## 1. O Problema: Poluição Visual e Acoplamento no CDS
 
@@ -161,6 +165,45 @@ Você deve ter notado a anotação `@Metadata.layer: #CORE` no início do arquiv
   * Um parceiro cria uma extensão na camada **`#PARTNER`** e define `AgencyID` na posição 90.  
 
   * O usuário verá o campo na posição 90. O sistema faz o "merge" das anotações em tempo de execução, com a camada superior sobrescrevendo a inferior.
+
+## 6. Estendendo Objetos: Append Structures e CDS View Extensions
+
+Metadata Extensions mudam **anotações**. Para adicionar **campos** a objetos de outro fornecedor (ex.: a SAP), sem alterar o objeto original, existem duas técnicas paralelas:
+
+### Append Structures (Dicionário)
+
+Um objeto separado, do cliente, que adiciona campos à tabela ou estrutura original. Ao ativar, os campos passam a existir na tabela do banco.
+
+``` ABAP
+@EndUserText.label : 'Extensão da agência'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+extend type /dmo/agency with zz_agency_ext {
+  zzcategoryzag : abap.char(1);
+}
+```
+
+* **Namespace `ZZ`/`YY`:** A SAP garante que nunca entregará campos com esses prefixos, evitando conflitos em upgrades.
+
+* **Controle do fornecedor:** `@AbapCatalog.enhancement.category` (`#NOT_EXTENSIBLE`, `#EXTENSIBLE_CHARACTER`, `#EXTENSIBLE_ANY` etc.), sufixo obrigatório e cota de campos.
+
+* **ABAP Cloud:** Só é possível estender objetos que a SAP liberou para extensão (contrato C0, veja a lição 05.03).
+
+### CDS View Extensions
+
+``` ABAP
+extend view entity /DMO/E_Agency with
+{
+  Agency.zzcategoryzag as ZZCategoryZAG
+}
+```
+
+* A extensão endereça os campos pelo **alias da fonte de dados** da view original (aqui, `Agency`) e pode adicionar e expor novas associações.
+
+* O controle é feito por `@AbapCatalog.extensibility` (`extensible`, `elementSuffix`, `allowNewDatasources`, `dataSources`).
+
+* **Extension include views (`E_`):** A SAP costuma restringir a extensão de views como as `R_` a uma associação para uma view `E_`. Nesse caso, estenda primeiro a `E_` e depois exponha o campo na `R_` por path expression.
+
+> **Proteção dos dados:** o outro meta objeto desta unidade oficial é o controle de acesso CDS (DCL), tratado na lição 04.06.
 
 ## Comparativo: Anotação Inline vs Externa
 

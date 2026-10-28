@@ -3,6 +3,8 @@
 ![Infográfico - Um Guia Rápido do Sintaxe](./01.02_Um_Guia_Visual_de_Boas_Praticas.png)
 
 > **Comece pelos slides: [ABAP Moderno: Escreva Menos, Realize Mais](./01.02_ABAP_Moderno_Escreva_Menos_Realize_Mais.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [Constructor Operators for Constructor Expressions](https://help.sap.com/docs/abap-cloud/abap-keywords/constructor-operators-for-constructor-expressions)
 
 ## Objetivos de Aprendizagem
 
@@ -11,6 +13,8 @@
 - Aplicar estruturas de controle de fluxo modernas, substituindo lógicas verbosas por operadores construtores como **`COND`**, **`SWITCH`** e introduzindo o uso de **`LET`** para variáveis auxiliares.  
 - Utilizar o operador **`VALUE`** para construção rápida de estruturas e tabelas.  
 - Utilizar funções embutidas para operações de string e lógica booleana, alinhando-se aos princípios de *Clean Code* e evitando a criação de variáveis globais desnecessárias.
+
+- Depurar programas no **ABAP Debugger** do ADT, usando breakpoints, navegação passo a passo e inspeção de variáveis.
 
 ## 1. Declarações de Variáveis: O Jeito Moderno (Inline Declarations)
 
@@ -313,6 +317,37 @@ CLASS zcl_basic_concepts IMPLEMENTATION.
 
 ENDCLASS.
 ```
+
+## 5. Depurando um Programa ABAP (Debugger)
+
+Escrever código moderno não elimina bugs. Para investigar um comportamento inesperado, defina um **breakpoint** e execute o programa normalmente: quando a execução chega ao breakpoint, o ADT abre a perspectiva **Debug**.
+
+* **Criar/remover breakpoint:** Duplo clique na margem esquerda do editor (ou botão direito → `Toggle Breakpoint`). O objeto precisa estar ativado.
+
+* **Breakpoints são do usuário e persistentes:** Continuam ativos mesmo após sair e entrar de novo no ADT. Desative ou remova os que não usa mais.
+
+### Navegação
+
+| Tecla | Função | Quando usar |
+| :--- | :--- | :--- |
+| `F5` | Step Into | Executar uma instrução por vez, entrando em métodos chamados |
+| `F6` | Step Over | Executar a linha sem entrar no método chamado |
+| `F7` | Step Return | Concluir o método atual e voltar a quem chamou |
+| `F8` | Resume | Seguir até o próximo breakpoint (ou até o fim) |
+| `Shift+F8` | Run to Line | Executar até a linha do cursor |
+| `Shift+F12` | Jump to Line | Pular linhas ou voltar, **sem** desfazer alterações em variáveis |
+
+### Breakpoints Especiais
+
+* **Statement Breakpoint:** Para em toda execução de uma instrução (ex.: todo `CLEAR`), onde quer que ela esteja.
+
+* **Exception Breakpoint:** Para sempre que uma exceção específica é levantada, tratada ou não.
+
+* **Conditional Breakpoint:** Só para quando a condição for verdadeira (ex.: `sy-index > 20` dentro de um `DO`).
+
+* **Watchpoint:** Acompanha uma variável e para quando o valor dela muda.
+
+Na view **Variables** você inspeciona estruturas e tabelas internas e, se tiver autorização, altera valores durante a depuração para testar hipóteses.
 
 ## Tabela Comparativa: Sintaxe Clássica vs. Moderna
 

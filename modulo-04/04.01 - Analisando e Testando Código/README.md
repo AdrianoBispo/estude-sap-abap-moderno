@@ -3,6 +3,8 @@
 ![Infográfico - A Triade da Qualidade de Código ABAP Moderno](./04.01_A_Triade_da_Qualidade_ABAP.png)
 
 > **Comece pelos slides: [Dominando a Qualidade de Código no ABAP Moderno para S/4HANA](./04.01_Qualidade_ABAP_do_Funcional_ao_Robusto.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP Unit](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-unit)
 
 ## Objetivos de Aprendizagem
 
@@ -13,6 +15,8 @@
 - Escrever classes de **Teste Unitário (ABAP Unit)** robustas, aplicando o padrão **AAA (Arrange, Act, Assert)** e compreendendo o ciclo de vida dos métodos de configuração (setup, teardown).  
 
 - Executar e interpretar rastreamentos de **ABAP Profiling** no Eclipse para identificar o consumo de recursos (CPU vs. Banco de Dados) e otimizar rotinas críticas.
+
+- Analisar o acesso ao banco com o **SQL Trace** e gerar testes ABAP Unit com o **Joule**, revisando o resultado.
 
 ## 1. A Tríade da Qualidade de Código: De "Funciona" para "Robusto"
 
@@ -186,6 +190,31 @@ CLASS ltcl_test_calc IMPLEMENTATION.
 
 ENDCLASS.
 ```
+
+## 6. Analisando o Acesso ao Banco: SQL Trace
+
+O Profiling (seção 4) mostra **se** o banco é o gargalo. O **SQL Trace** mostra **quais** instruções SQL custam caro: quantas vezes cada tabela foi acessada, quantos registros vieram e quanto tempo levou, inclusive o SQL nativo que chegou ao banco.
+
+1. **Ativar:** No Project Explorer, botão direito no projeto → `SQL Trace...` → `Activate`.
+2. **Executar:** Rode o cenário (ex.: a classe como console app com `F9`).
+3. **Desativar:** `SQL Trace...` → `Deactivate`, e depois `View Trace Directory`.
+4. **Analisar:** O resultado abre no **Technical Monitoring Cockpit** (no navegador). Filtre pela coluna `Program` com o nome da sua classe e ordene por `Accessed Records` ou `Duration`.
+
+**Restrições:** Apenas um usuário por instância pode ligar o trace de cada vez (desligue logo após o uso) e, ativado pelo ADT, ele não aceita filtros de gravação. Em sistemas on-premise/Private Edition, a transação clássica equivalente é a `ST05`.
+
+> **Padrão típico encontrado:** centenas de `SELECT SINGLE` de 1 registro dentro de um `LOOP`. A correção costuma ser um único `SELECT` para a tabela interna (ou um `JOIN`, veja a lição 04.04) seguido de leitura em memória.
+
+## 7. Gerando Testes ABAP Unit com o Joule
+
+O Joule for Developers acelera a escrita de testes. No editor, botão direito → `Joule → Start Chat for ABAP Unit`:
+
+* **Generate Tests:** Gera métodos de teste para métodos selecionados da classe global ou de uma classe local.
+
+* **Explain `<classe de teste>`:** Explica testes existentes, aponta *test smells* e os padrões usados.
+
+* **Find Test-Unfriendly Dependencies:** Identifica dependências que dificultam o teste e sugere **test doubles** para isolá-las.
+
+O resultado é um ponto de partida: refatore o código gerado para o padrão da equipe e confirme que os testes verificam a regra de negócio, e não apenas a implementação atual.
 
 ## Comparativo Detalhado: ATC vs ABAP Unit
 

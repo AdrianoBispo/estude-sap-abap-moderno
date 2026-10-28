@@ -3,6 +3,8 @@
 ![Infográfico - Estruturas de Dados no ABAP Moderno](./01.05_Estruturas_de_Dados_ABAP.png)
 
 > **Comece pelos slides: [Dominando Estruturas de Dados em ABAP](./01.05_Dominando_Estruturas_de_Dados_em_ABAP_e_RAP.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [CORRESPONDING, Component Operator](https://help.sap.com/docs/abap-cloud/abap-keywords/corresponding-component-operator)
 
 ## Objetivos de Aprendizagem
 

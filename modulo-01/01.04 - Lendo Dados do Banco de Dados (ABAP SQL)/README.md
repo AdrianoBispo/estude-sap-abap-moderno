@@ -3,6 +3,8 @@
 ![Infográfico - A Evolução do SQL no ABAP Moderno](./01.04_A_Evolucao_do_ABAP_SQL.png)
 
 > **Comece pelos slides: [Lendo Dados do Banco de Dados (ABAP SQL)](./01.04_Lendo_Dados_do_Banco_de_Dados_(ABAP%20SQL).pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [SELECT](https://help.sap.com/docs/abap-cloud/abap-keywords/select)
 
 ## Objetivos de Aprendizagem
 
@@ -15,6 +17,8 @@
 - Aplicar filtros avançados (`WHERE`, `IN`, `LIKE`), ordenação (`ORDER BY`) e limitar resultados (`UP TO n ROWS`) de forma eficiente.  
 
 - Diferenciar o uso de **`SELECT SINGLE`** para leituras únicas e entender as variáveis de sistema **`sy-subrc`** e **`sy-dbcnt`**.
+
+- Ler dados a partir de **CDS View Entities** em vez de tabelas, usando os nomes de elementos e **path expressions** sobre associações expostas.
 
 ## 1. ABAP SQL Moderno: O Que Mudou e Por Quê?
 
@@ -199,6 +203,29 @@ CLASS zcl_read_data IMPLEMENTATION.
 
 ENDCLASS.
 ```
+
+## 6. Lendo Dados de uma CDS View
+
+Em vez de ler a tabela diretamente, o `SELECT` pode usar uma **CDS View Entity** como fonte de dados. É o caminho preferido no ABAP Cloud, onde os dados SAP são acessados por views liberadas (ex.: `I_Product`; veja a lição 05.03).
+
+* **Reuso:** A lógica SQL da view (cálculos, joins, filtros) não precisa ser reescrita.
+
+* **Nomes legíveis:** No `FIELDS` e no `WHERE` usamos os **nomes de elementos** da view (alias), não os nomes técnicos das colunas.
+
+* **Associações:** Uma associação exposta pela view permite ler dados relacionados com uma **path expression**. A barra invertida (`\`) é obrigatória antes do nome da associação.
+
+``` ABAP
+SELECT FROM /dmo/i_connection
+  FIELDS AirlineID,
+         ConnectionID,
+         \_Airline-Name AS AirlineName, " Path expression: lê o nome em /DMO/I_Carrier
+         DepartureAirport,
+         DestinationAirport
+  WHERE AirlineID = 'LH'
+  INTO TABLE @DATA(lt_connections).
+```
+
+**Dicas de ferramenta:** `F8` sobre a data definition abre o **Data Preview** da view (com `Follow Association` no menu de contexto), e `Ctrl+Shift+G` sobre uma tabela mostra o **Where-used List**, útil para descobrir quais CDS views já leem aquela tabela.
 
 ## Pontos de Atenção (Performance e Sintaxe)
 

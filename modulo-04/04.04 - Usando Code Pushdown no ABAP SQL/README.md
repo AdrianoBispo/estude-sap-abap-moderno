@@ -3,6 +3,8 @@
 ![Infográfico - Modernize seu ABAP com Code Pushdown](./04.04_Modernize_seu_ABAP_com_Code_Pushdown.png)
 
 > **Comece pelos slides: [Usando Code Pushdown no ABAP SQL](./04.04_Usando_Code_Pushdown_no_ABAP_SQL.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP SQL](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-sql)
 
 ## Objetivos de Aprendizagem
 
@@ -15,6 +17,8 @@
 - Combinar resultados de múltiplas seleções heterogêneas usando **UNION** e **UNION ALL**, compreendendo as implicações de performance e requisitos de compatibilidade de tipos.  
 
 - Empregar funções de tratamento de nulos como **COALESCE** para garantir a robustez de cálculos matemáticos no banco de dados.
+
+- Combinar tabelas com **INNER JOIN** e **LEFT/RIGHT OUTER JOIN**, usando aliases e o seletor de coluna `~`.
 
 ## 1. ABAP SQL vs. CDS Views: Quando usar qual?
 
@@ -240,6 +244,35 @@ CLASS zcl_sql_pushdown IMPLEMENTATION.
 
 ENDCLASS.
 ```
+
+## 7. Combinando Tabelas: JOINs
+
+Quando o resultado precisa de colunas de mais de uma fonte, usamos um **JOIN** em vez de dois `SELECT`s e um `LOOP`. As condições de junção vêm depois de `ON`.
+
+* **`INNER JOIN`:** Só as linhas com correspondência nos dois lados.
+
+* **`LEFT OUTER JOIN`:** Todas as linhas da esquerda; onde não há correspondência à direita, as colunas da direita vêm nulas e são gravadas na variável ABAP com o **valor inicial**.
+
+* **`RIGHT OUTER JOIN`:** O espelho do anterior.
+
+No ABAP SQL, a coluna é qualificada pela fonte com o **til (`~`)**, porque o ponto já encerra a instrução. Com aliases (`AS`), o alias passa a ser obrigatório no lugar do nome da tabela. A qualificação só é exigida para colunas que existem nas duas fontes.
+
+``` ABAP
+SELECT FROM /dmo/carrier AS a
+         INNER JOIN /dmo/connection AS c
+           ON a~carrier_id = c~carrier_id
+  FIELDS a~carrier_id,          " Existe nas duas tabelas: qualificação obrigatória
+         name AS carrier_name,  " Só existe em /DMO/CARRIER
+         connection_id,
+         airport_from_id,
+         airport_to_id
+  WHERE currency_code = 'EUR'
+  INTO TABLE @DATA(lt_result).
+```
+
+**Self-join:** Para unir uma tabela com ela mesma (ex.: conexões com uma escala, em que o destino do 1º trecho é a origem do 2º), os aliases são indispensáveis para distinguir as duas ocorrências.
+
+> **JOIN ou associação?** Se a mesma junção servir a vários consumidores, modele-a como **associação** em uma CDS View (lição 02.05) e leia com path expressions. Use o JOIN no ABAP SQL para necessidades pontuais.
 
 ## Loop ABAP vs Code Pushdown SQL
 
