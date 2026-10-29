@@ -1,23 +1,19 @@
-# Módulo 4: Programação ABAP Intermediária
+# Módulo 4: Praticando a Extensibilidade do Clean Core para SAP S/4HANA Cloud
 
-![Guia Visual: Modernizando seu Código ABAP](./04.00_Modernizando_seu_Codigo_ABAP.png)
+![Guia Visual: A Estratégia Clean Core](./04.00_A_Estrategia_Clean_Core.png)
 
-Material baseado no curso [**"Deepening Your ABAP Programming Knowledge"**](https://learning.sap.com/courses/deepening-your-abap-programming-knowledge) da SAP Learning. Voltado para desenvolvedores com conhecimentos básicos em ABAP que desejam aprofundar suas habilidades, cobrindo tópicos essenciais para escrever código eficiente, seguro e bem estruturado.
+Material baseado no curso [**"Practicing Clean Core Extensibility for SAP S/4HANA Cloud"**](https://learning.sap.com/courses/practicing-clean-core-extensibility-for-sap-s-4hana-cloud) da SAP Learning. Uma jornada intermediária para profissionais que desejam dominar a criação de extensões no **SAP S/4HANA Cloud**, alinhadas aos princípios de **Clean Core**.
 
-> **Comece por aqui: [Excelência em ABAP: robustez, performance e design](./04.00_Excelência_em_ABAP_robustez_performance_e_design.pptx)**
+> **Comece por aqui: [Do legado à agilidade: Clean Core no S/4HANA](./04.00_Do_legado_à_agilidade_Clean_Core_no_S4HANA.pptx)**
 >
-> Material complementar em PDF: [Excelência ABAP: Robustez, Performance e Design](./04.00_Excelência_ABAP_Robustez_Performance_Design.pdf)
+> Material complementar em PDF: [Do Legado à Agilidade: Guia de Arquitetura S/4HANA](./04.00_Do_Legado_à_Agilidade_Guia_de_Arquitetura_S4HANA.pdf)
 
 ## Conteúdo
 
 | Diretórios | Descrição |
 | :--- | :--- |
-| [**Analisando e Testando Código**](./04.01%20-%20Analisando%20e%20Testando%20C%C3%B3digo/README.md) | Ferramentas e técnicas para análise estática e testes de código. |
-| [**Usando Tipos de Dados e Conversões Corretamente**](./04.02%20-%20Usando%20Tipos%20de%20Dados%20e%20Convers%C3%B5es%20Corretamente/README.md) | Boas práticas no uso de tipos de dados e conversão de valores. |
-| [**Processando Campos de Caracteres**](./04.03%20-%20Processando%20Campos%20de%20Caracteres/README.md) | Manipulação avançada de strings e campos de texto. |
-| [**Usando Code Pushdown no ABAP SQL**](./04.04%20-%20Usando%20Code%20Pushdown%20no%20ABAP%20SQL/README.md) | Otimização de acessos ao banco dados delegando processamento (Code Pushdown). |
-| [**Melhorando a Performance de Tabelas Internas**](./04.05%20-%20Melhorando%20a%20Performance%20de%20Tabelas%20Internas/README.md) | Técnicas para otimizar o uso e performance de tabelas internas. |
-| [**Implementando Verificações de Autorização**](./04.06%20-%20Implementando%20Verifica%C3%A7%C3%B5es%20de%20Autoriza%C3%A7%C3%A3o/README.md) | Segurança e controle de acesso através de objetos de autorização. |
-| [**Projetando Código Orientado a Objetos Eficaz**](./04.07%20-%20Projetando%20C%C3%B3digo%20Orientado%20a%20Objetos%20Eficaz/README.md) | Design patterns e princípios de orientação a objetos em ABAP. |
-| [**Definindo e Trabalhando com Classes de Exceção**](./04.08%20-%20Definindo%20e%20Trabalhando%20com%20Classes%20de%20Exce%C3%A7%C3%A3o/README.md) | Gestão robusta de erros utilizando classes de exceção. |
-| [**Adicionando Documentação ao Código ABAP (ABAP Doc)**](./04.09%20-%20Adicionando%20Documenta%C3%A7%C3%A3o%20ao%20C%C3%B3digo%20ABAP%20(ABAP%20Doc)/README.md) | Uso do ABAP Doc para documentar código fonte diretamente no editor. |
+| [**Introdução ao SAP S/4HANA Cloud, Extensões e Clean Core**](./04.01%20-%20Introdu%C3%A7%C3%A3o%20ao%20SAP%20S_4HANA%20Cloud,%20Extens%C3%B5es%20e%20Clean%20Core/README.md) | Conceitos básicos do S/4HANA Cloud e a estratégia Clean Core. |
+| [**Entendendo o Conceito de Experiência do Usuário de Nível de Consumidor**](./04.02%20-%20Entendendo%20o%20Conceito%20de%20Experi%C3%AAncia%20do%20Usu%C3%A1rio%20de%20N%C3%ADvel%20de%20Consumidor/README.md) | UX e a importância da experiência do usuário no ecossistema SAP. |
+| [**ABAP Cloud em Profundidade**](./04.03%20-%20ABAP%20Cloud%20em%20Profundidade/README.md) | Detalhes técnicos e práticos sobre o desenvolvimento ABAP na nuvem. |
+| [**Aprofundando no Modelo de Extensibilidade do S/4HANA Cloud**](./04.04%20-%20Aprofundando%20no%20Modelo%20de%20Extensibilidade%20do%20S_4HANA%20Cloud/README.md) | Técnicas e padrões para estender o S/4HANA Cloud corretamente. |
+| [**Considerações Especiais para SAP S/4HANA Cloud Private Edition e On-Premise**](./04.05%20-%20Considera%C3%A7%C3%B5es%20Especiais%20para%20SAP%20S_4HANA%20Cloud%20Private%20Edition%20e%20On-Premise/README.md) | Particularidades de desenvolvimento para ambientes Private Cloud e On-Premise. |

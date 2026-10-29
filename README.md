@@ -6,29 +6,17 @@
 
 ## Estrutura do Repositório
 
-O conteúdo está organizado em módulos progressivos:
+Os módulos estão numerados na ordem de estudo recomendada pela SAP: os módulos 1 a 4 seguem a sequência de pré-requisitos da jornada oficial, e o módulo 5 é um curso complementar de SAP Fiori Elements, para estudar depois do RAP.
 
-| Módulo | Descrição Detalhada |
-| :--- | :--- |
-| **[Módulo 1: Iniciando a Jornada no Desenvolvimento ABAP Moderno](./modulo-01/README.md)** | Introdução abrangente à linguagem ABAP Moderna. Aprenda a criar pacotes, objetos e aplicações, entenda a estrutura de software, técnicas de programação, classes locais, manipulação de dados (SQL e tabelas internas) e atualizações via Business Objects. Introdução ao conceito **ABAP RESTful Application Programming Model (RAP)**. |
-| **[Módulo 2: Modelagem de Dados com ABAP Dictionary e CDS](./modulo-02/README.md)** | Conceitos fundamentais do **ABAP Dictionary** e definição de tabelas; criação e gerenciamento de **views** com **ABAP Core Data Services (CDS)**; modelagem de relacionamentos; aplicação de lógica SQL e **Metadata Extensions**; controle de acesso; objetos de modelagem e ciclo de vida de serviços. |
-| **[Módulo 3: Introdução à Criação de um Aplicativo SAP Fiori Elements com Base em um Serviço OData V4 RAP](./modulo-03/README.md)** | Desenvolvimento de aplicações **SAP Fiori Elements** baseadas em serviços **OData V4** (RAP), utilizando **SAP Business Application Studio** e **SAP Fiori Tools**. |
-| **[Módulo 4: Programação ABAP Intermediária](./modulo-04/README.md)** | Testes e análise com **ABAP Test Cockpit (ATC)**; testes unitários e **ABAP Profiling**; tipos de dados e conversões; manipulação de strings; performance com **Code Pushdown** e **Tabelas Internas**; verificações de autorização; orientação a objetos; tratamento de exceções e documentação. |
-| **[Módulo 5: Praticando a extensibilidade do Clean Core para SAP S/4HANA Cloud](./modulo-05/README.md)** | Desenvolvimento de extensões seguindo o conceito **Clean Core**: preservação do núcleo, facilitação de atualizações e compatibilidade com o **ABAP Cloud Development Model**. |
-
-### Ordem de Estudo Recomendada
-
-A numeração dos módulos não segue a ordem de pré-requisitos da jornada oficial da SAP. Para estudar na sequência da jornada:
-
-| Ordem | Módulo | Curso oficial correspondente |
+| Módulo | Curso oficial | Descrição Detalhada |
 | :--- | :--- | :--- |
-| 1º | [Módulo 1](./modulo-01/README.md) | Learning Basic ABAP Programming (S4D400) |
-| 2º | [Módulo 4](./modulo-04/README.md) | Deepening Your ABAP Programming Knowledge (S4D401) |
-| 3º | [Módulo 2](./modulo-02/README.md) | Building Data Models with the ABAP Dictionary and ABAP CDS (S4D430), que exige o S4D401 |
-| 4º | [Módulo 5](./modulo-05/README.md) | Practicing Clean Core Extensibility for SAP S/4HANA Cloud (S4D426) |
-| Complementar | [Módulo 3](./modulo-03/README.md) | SAP Fiori Elements com OData V4 (não faz parte da jornada atual) |
+| **[Módulo 1: Iniciando a Jornada no Desenvolvimento ABAP Moderno](./modulo-01/README.md)** | Learning Basic ABAP Programming (S4D400) | Introdução abrangente à linguagem ABAP Moderna. Aprenda a criar pacotes, objetos e aplicações, entenda a estrutura de software, técnicas de programação, classes locais, manipulação de dados (SQL e tabelas internas) e atualizações via Business Objects. Introdução ao conceito **ABAP RESTful Application Programming Model (RAP)**. |
+| **[Módulo 2: Programação ABAP Intermediária](./modulo-02/README.md)** | Deepening Your ABAP Programming Knowledge (S4D401) | Testes e análise com **ABAP Test Cockpit (ATC)**; testes unitários e **ABAP Profiling**; tipos de dados e conversões; manipulação de strings; performance com **Code Pushdown** e **Tabelas Internas**; verificações de autorização; orientação a objetos; tratamento de exceções e documentação. |
+| **[Módulo 3: Modelagem de Dados com ABAP Dictionary e CDS](./modulo-03/README.md)** | Building Data Models with the ABAP Dictionary and ABAP CDS (S4D430), que exige o S4D401 | Conceitos fundamentais do **ABAP Dictionary** e definição de tabelas; criação e gerenciamento de **views** com **ABAP Core Data Services (CDS)**; modelagem de relacionamentos; aplicação de lógica SQL e **Metadata Extensions**; controle de acesso; objetos de modelagem e ciclo de vida de serviços. |
+| **[Módulo 4: Praticando a extensibilidade do Clean Core para SAP S/4HANA Cloud](./modulo-04/README.md)** | Practicing Clean Core Extensibility for SAP S/4HANA Cloud (S4D426) | Desenvolvimento de extensões seguindo o conceito **Clean Core**: preservação do núcleo, facilitação de atualizações e compatibilidade com o **ABAP Cloud Development Model**. |
+| **[Módulo 5 (complementar): Introdução à Criação de um Aplicativo SAP Fiori Elements com Base em um Serviço OData V4 RAP](./modulo-05/README.md)** | [Getting Started with Creating an SAP Fiori Elements App Based on an OData V4 RAP Service](https://learning.sap.com/courses/getting-started-with-creating-an-sap-fiori-elements-app-based-on-an-odata-v4-rap-service) (não faz parte da jornada) | Desenvolvimento de aplicações **SAP Fiori Elements** baseadas em serviços **OData V4** (RAP), utilizando **SAP Business Application Studio** e **SAP Fiori Tools**. |
 
-A jornada prepara para a certificação **SAP Certified – Back-End Developer – ABAP Cloud (C_ABAPD)**, que também avalia o uso do **Joule for Developers** (veja as lições 01.01 e 04.01).
+A jornada prepara para a certificação **SAP Certified – Back-End Developer – ABAP Cloud (C_ABAPD)**, que também avalia o uso do **Joule for Developers** (veja as lições 01.01 e 02.01).
 
 ## Organização e Nomenclatura dos Arquivos
 
@@ -77,4 +65,4 @@ Este projeto é distribuído sob a licença MIT. Veja o arquivo `LICENSE` para m
 
 ---
 
-_O conteúdo deste repositório foi gerado com o Notebook LM a partir dos cursos da plataforma SAP Learning: os módulos 1, 2, 4 e 5 seguem a jornada de aprendizagem [**"Acquiring Core ABAP Skills"**](https://learning.sap.com/learning-journeys/acquiring-core-abap-skills), e o módulo 3 vem de um curso complementar sobre SAP Fiori Elements. As lições foram revisadas e complementadas com a documentação oficial da SAP._
+_O conteúdo deste repositório foi gerado com o Notebook LM a partir dos cursos da plataforma SAP Learning: os módulos 1 a 4 seguem a jornada de aprendizagem [**"Acquiring Core ABAP Skills"**](https://learning.sap.com/learning-journeys/acquiring-core-abap-skills), e o módulo 5 vem do curso [**"Getting Started with Creating an SAP Fiori Elements App Based on an OData V4 RAP Service"**](https://learning.sap.com/courses/getting-started-with-creating-an-sap-fiori-elements-app-based-on-an-odata-v4-rap-service). As lições foram revisadas e complementadas com a documentação oficial da SAP._

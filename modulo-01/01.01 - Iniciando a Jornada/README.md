@@ -145,7 +145,7 @@ O **Joule for Developers** (ABAP AI Capabilities) é o conjunto de ferramentas d
 
 * **Explain:** Selecione um objeto ou um trecho de código e escolha `Joule → Explain` (ou `/explain` no chat). Ideal para entender código legado.
 
-* **Outras capacidades:** Geração de testes ABAP Unit (veja a lição 04.01) e de testes para CDS, criação de um serviço OData de UI (RAP) do zero e sugestão de lógica RAP (determinations e validations).
+* **Outras capacidades:** Geração de testes ABAP Unit (veja a lição 02.01) e de testes para CDS, criação de um serviço OData de UI (RAP) do zero e sugestão de lógica RAP (determinations e validations).
 
 Para colocar IA dentro das **suas** aplicações, existe o **ABAP AI SDK**, uma biblioteca ABAP para consumir modelos de linguagem (LLMs) via generative AI hub.
 

@@ -1,21 +1,23 @@
-# Módulo 2: Modelagem de Dados com ABAP Dictionary e CDS
+# Módulo 2: Programação ABAP Intermediária
 
-![Guia Visual: Modelagem de Dados RAP](./02.00_Modelagem_de_Dados_RAP.png)
+![Guia Visual: Modernizando seu Código ABAP](./02.00_Modernizando_seu_Codigo_ABAP.png)
 
-Material baseado no curso [**"Data Modelling in ABAP Dictionary and ABAP Core Data Services"**](https://learning.sap.com/courses/data-modelling-in-abap-dictionary-and-abap-core-data-services) da SAP Learning. Este conteúdo intermediário destina-se a profissionais que desejam aprofundar conhecimentos em modelagem de dados no ambiente ABAP Moderno (RAP).
+Material baseado no curso [**"Deepening Your ABAP Programming Knowledge"**](https://learning.sap.com/courses/deepening-your-abap-programming-knowledge) da SAP Learning. Voltado para desenvolvedores com conhecimentos básicos em ABAP que desejam aprofundar suas habilidades, cobrindo tópicos essenciais para escrever código eficiente, seguro e bem estruturado.
 
-> **Comece por aqui: [ABAP CDS: modelagem arquitetural](./02.00_ABAP_CDS_modelagem_arquitetural.pptx)**
+> **Comece por aqui: [Excelência em ABAP: robustez, performance e design](./02.00_Excelência_em_ABAP_robustez_performance_e_design.pptx)**
 >
-> Material complementar em PDF: [ABAP CDS e Modelagem Arquitetural](./02.00_ABAP_CDS_Modelagem_Arquitetural.pdf)
+> Material complementar em PDF: [Excelência ABAP: Robustez, Performance e Design](./02.00_Excelência_ABAP_Robustez_Performance_Design.pdf)
 
 ## Conteúdo
 
 | Diretórios | Descrição |
 | :--- | :--- |
-| [**Explorando a Modelagem de Dados no ABAP**](./02.01%20-%20Explorando%20a%20Modelagem%20de%20Dados%20no%20ABAP/README.md) | Visão geral sobre modelagem de dados em ABAP. |
-| [**Criando Tabelas de Banco de Dados (Source-Based)**](./02.02%20-%20Criando%20Tabelas%20de%20Banco%20de%20Dados%20(Source-Based)/README.md) | Criação de tabelas utilizando a abordagem baseada em código (Source-Based). |
-| [**Definindo Tipos de Dados Globais**](./02.03%20-%20Definindo%20Tipos%20de%20Dados%20Globais/README.md) | Definição e uso de tipos de dados globais no dicionário de dados. |
-| [**Definindo CDS Views Básicas (Interface Views)**](./02.04%20-%20Definindo%20CDS%20Views%20B%C3%A1sicas%20(Interface%20Views)/README.md) | Criação de interface views básicas com Core Data Services (CDS). |
-| [**Definindo Relacionamentos e Associações**](./02.05%20-%20Definindo%20Relacionamentos%20e%20Associa%C3%A7%C3%B5es/README.md) | Configuração de relacionamentos e associações entre entidades CDS. |
-| [**Usando Code Pushdown em CDS Views (Expressões SQL)**](./02.06%20-%20Usando%20Code%20Pushdown%20em%20CDS%20Views%20(Express%C3%B5es%20SQL)/README.md) | Otimização de performance movendo lógica para o banco de dados via Code Pushdown. |
-| [**Definindo Meta Objetos (Metadata Extensions)**](./02.07%20-%20Definindo%20Meta%20Objetos%20(Metadata%20Extensions)/README.md) | Enriquecimento de modelos de dados utilizando extensões de metadados. |
+| [**Analisando e Testando Código**](./02.01%20-%20Analisando%20e%20Testando%20C%C3%B3digo/README.md) | Ferramentas e técnicas para análise estática e testes de código. |
+| [**Usando Tipos de Dados e Conversões Corretamente**](./02.02%20-%20Usando%20Tipos%20de%20Dados%20e%20Convers%C3%B5es%20Corretamente/README.md) | Boas práticas no uso de tipos de dados e conversão de valores. |
+| [**Processando Campos de Caracteres**](./02.03%20-%20Processando%20Campos%20de%20Caracteres/README.md) | Manipulação avançada de strings e campos de texto. |
+| [**Usando Code Pushdown no ABAP SQL**](./02.04%20-%20Usando%20Code%20Pushdown%20no%20ABAP%20SQL/README.md) | Otimização de acessos ao banco dados delegando processamento (Code Pushdown). |
+| [**Melhorando a Performance de Tabelas Internas**](./02.05%20-%20Melhorando%20a%20Performance%20de%20Tabelas%20Internas/README.md) | Técnicas para otimizar o uso e performance de tabelas internas. |
+| [**Implementando Verificações de Autorização**](./02.06%20-%20Implementando%20Verifica%C3%A7%C3%B5es%20de%20Autoriza%C3%A7%C3%A3o/README.md) | Segurança e controle de acesso através de objetos de autorização. |
+| [**Projetando Código Orientado a Objetos Eficaz**](./02.07%20-%20Projetando%20C%C3%B3digo%20Orientado%20a%20Objetos%20Eficaz/README.md) | Design patterns e princípios de orientação a objetos em ABAP. |
+| [**Definindo e Trabalhando com Classes de Exceção**](./02.08%20-%20Definindo%20e%20Trabalhando%20com%20Classes%20de%20Exce%C3%A7%C3%A3o/README.md) | Gestão robusta de erros utilizando classes de exceção. |
+| [**Adicionando Documentação ao Código ABAP (ABAP Doc)**](./02.09%20-%20Adicionando%20Documenta%C3%A7%C3%A3o%20ao%20C%C3%B3digo%20ABAP%20(ABAP%20Doc)/README.md) | Uso do ABAP Doc para documentar código fonte diretamente no editor. |
