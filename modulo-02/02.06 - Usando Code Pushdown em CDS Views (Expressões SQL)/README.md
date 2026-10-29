@@ -2,7 +2,9 @@
 
 ![Infográfico - Code Pushdown com ABAP CDS](./02.06_Code_Pushdown_com_ABAP_CDS.png)
 
-> **Comece pelos slides: [O Fim do LOOP: Dominando o Code Pushdown em ABAP CDS com Expressões SQL](./02.06_O_Fim_do_LOOP_Code_Pushdown_em_ABAP_CDS.pdf)**
+> **Comece pelos slides: [Code pushdown em CDS views](./02.06_Code_pushdown_em_CDS_views.pptx)**
+>
+> Material complementar em PDF: [O Fim do LOOP: Dominando o Code Pushdown em ABAP CDS com Expressões SQL](./02.06_O_Fim_do_LOOP_Code_Pushdown_em_ABAP_CDS.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [CDS DDL - CDS View Entity, Built-In Functions](https://help.sap.com/docs/abap-cloud/abap-keywords/cds-ddl-cds-view-entity-built-in-functions)
 

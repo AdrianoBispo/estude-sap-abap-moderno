@@ -4,7 +4,9 @@
 
 Material baseado no curso [**"Getting Started with Creating an SAP Fiori Elements App Based on an OData V4 RAP Service"**](https://learning.sap.com/courses/getting-started-with-creating-an-sap-fiori-elements-app-based-on-an-odata-v4-rap-service) da SAP Learning. Jornada introdutória para desenvolvedores, arquitetos e consultores que desejam criar aplicações SAP Fiori utilizando o modelo de programação ABAP RESTful (RAP) e OData V4.
 
-> **Comece por aqui: [RAP Fiori Elements: Jornada Completa](./03.00_RAP_Fiori_Elements_Jornada_Completa.pdf)**
+> **Comece por aqui: [RAP e Fiori elements: a jornada completa](./03.00_RAP_e_Fiori_elements_a_jornada_completa.pptx)**
+>
+> Material complementar em PDF: [RAP Fiori Elements: Jornada Completa](./03.00_RAP_Fiori_Elements_Jornada_Completa.pdf)
 
 > **[Aqui você encontra uma lista de exercícios simulados dos conteúdos deste módulo para ajudar nos seus estudos.](https://learnsap.enable-now.cloud.sap/pub/mmcp/index.html?library=library.txt&show=book!BO_8BC72D3BB2E765AF#slide!SL_3DFBCEC28C0D793)**
 

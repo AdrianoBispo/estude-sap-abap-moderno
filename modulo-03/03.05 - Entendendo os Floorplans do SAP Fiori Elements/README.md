@@ -2,8 +2,9 @@
 
 ![Infográfico - Anatomia dos Floorplans do SAP Fiori Elements](./03.05_Anatomia_dos_Floorplans_SAP_Fiori_Elements.png)
 
-> **Comece pelos slides: [Desvendando os Floorplans do SAP Fiori Elements](./03.05_Desvendando_os_Floorplans_do_SAP_Fiori_Elements.pdf)**
-
+> **Comece pelos slides: [Floorplans do SAP Fiori elements](./03.05_Floorplans_do_SAP_Fiori_elements.pptx)**
+>
+> Material complementar em PDF: [Desvendando os Floorplans do SAP Fiori Elements](./03.05_Desvendando_os_Floorplans_do_SAP_Fiori_Elements.pdf)
 ## Objetivos de Aprendizagem
 
 - Decompor a anatomia de um **List Report** (Relatório de Lista), identificando as nuances funcionais da Barra de Filtros Inteligente e as capacidades da Área de Conteúdo.  

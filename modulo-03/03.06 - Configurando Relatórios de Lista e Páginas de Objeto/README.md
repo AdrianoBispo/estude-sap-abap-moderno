@@ -2,8 +2,9 @@
 
 ![Infográfico - Guia Rápido Otimizando Telas SAP Fiori Elements](./03.06_Otimizando_Telas_Fiori_Elements.png)
 
-> **Comece pelos slides: [Criando a Experiência Fiori Perfeita com Anotações](./03.06_Fiori_Elements_Do_Rascunho_à_Obra_Prima.pdf)**
-
+> **Comece pelos slides: [Configurando List Report e Object Page](./03.06_Configurando_List_Report_e_Object_Page.pptx)**
+>
+> Material complementar em PDF: [Criando a Experiência Fiori Perfeita com Anotações](./03.06_Fiori_Elements_Do_Rascunho_à_Obra_Prima.pdf)
 ## Objetivos de Aprendizagem
 
 - Aplicar **Ordenação Padrão** (Sorting) na tabela do List Report usando a anotação complexa `PresentationVariant`, compreendendo como isso afeta a percepção inicial do usuário.  

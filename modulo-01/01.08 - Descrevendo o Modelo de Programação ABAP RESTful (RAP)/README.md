@@ -2,7 +2,9 @@
 
 ![Infográfico - Desvendando o RAP](./01.08_Desvendando_o_RAP.png)
 
-> **Comece pelos slides: [Arquiteto de Software: Dominando ABAP RAP](./01.08_Arquiteto_de_Software_Dominando_ABAP_RAP.pdf)**
+> **Comece pelos slides: [O modelo de programação ABAP RESTful (RAP)](./01.08_O_modelo_de_programação_ABAP_RESTful_RAP.pptx)**
+>
+> Material complementar em PDF: [Arquiteto de Software: Dominando ABAP RAP](./01.08_Arquiteto_de_Software_Dominando_ABAP_RAP.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [ABAP RAP Business Objects](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-rap-business-objects)
 

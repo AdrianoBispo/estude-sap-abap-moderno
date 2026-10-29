@@ -2,8 +2,9 @@
 
 ![Infográfico - Visão Geral das SAP Fiori Tools](./03.04_SAP_Fiori_Tools.png)
 
-> **Comece pelos slides: [Da Lógica de Negócio à Experiência do Usuário](./03.04_Backend_à_Experiência_Fiori_As_Ferramentas_Essenciais.pdf)**
-
+> **Comece pelos slides: [SAP Fiori tools](./03.04_SAP_Fiori_tools.pptx)**
+>
+> Material complementar em PDF: [Da Lógica de Negócio à Experiência do Usuário](./03.04_Backend_à_Experiência_Fiori_As_Ferramentas_Essenciais.pdf)
 ## Objetivos de Aprendizagem
 
 - Identificar e configurar o ambiente de desenvolvimento frontend ideal, compreendendo as diferenças e casos de uso entre **VS Code** (Local) e **SAP Business Application Studio (BAS)** (Cloud).  

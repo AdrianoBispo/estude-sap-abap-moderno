@@ -2,7 +2,9 @@
 
 ![Infográfico - ABAP Cloud: As Novas Regras do Jogo para um SAP Clean Core](./05.01_As_Novas_Regras_do_Jogo_SAP_Clean_Core.png)
 
-> **Comece pelos slides: [A Nova Era da Extensibilidade SAP](./05.01_SAP_Clean_Core_A_Nova_Extensibilidade.pdf)**
+> **Comece pelos slides: [SAP S/4HANA Cloud, extensões e Clean Core](./05.01_SAP_S4HANA_Cloud_extensões_e_Clean_Core.pptx)**
+>
+> Material complementar em PDF: [A Nova Era da Extensibilidade SAP](./05.01_SAP_Clean_Core_A_Nova_Extensibilidade.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-cloud)
 

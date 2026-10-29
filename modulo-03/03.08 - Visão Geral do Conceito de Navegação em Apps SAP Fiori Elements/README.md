@@ -2,8 +2,9 @@
 
 ![Infográfico - Visão Geral do Conceito de Navegação em Apps SAP Fiori Elements](./03.08_Navegacao_em_Apps_Fiori.png)
 
-> **Comece pelos slides: [Navegação Inteligente em SAP Fiori Elements](./03.08_Navegação_Inteligente_SAP_Fiori_Elements_Guia_Definitivo.pdf)**
-
+> **Comece pelos slides: [Navegação em apps Fiori elements](./03.08_Navegação_em_apps_Fiori_elements.pptx)**
+>
+> Material complementar em PDF: [Navegação Inteligente em SAP Fiori Elements](./03.08_Navegação_Inteligente_SAP_Fiori_Elements_Guia_Definitivo.pdf)
 ## Objetivos de Aprendizagem
 
 - Diferenciar com precisão a **Navegação Interna** (Drill-down), que aprofunda o contexto dentro do mesmo objeto, da **Navegação Externa** (Cross-App), que transfere o contexto para um domínio de negócio diferente.  

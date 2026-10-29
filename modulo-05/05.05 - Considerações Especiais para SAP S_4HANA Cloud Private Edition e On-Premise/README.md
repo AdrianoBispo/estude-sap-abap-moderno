@@ -2,7 +2,9 @@
 
 ![Infográfico - Modernizando o ABAP: A Estratégia Clean Core para S/4HANA Private Cloud](./05.05_Modernizando_o_ABAP.png)
 
-> **Comece pelos slides: [Dominando os Dois Mundos: A Estratégia Clean Core Definitiva para SAP S/4HANA Private Cloud e On-Premise](./05.05_Dominando_os_Dois_Mundos_Estratégia_Clean_Core.pdf)**
+> **Comece pelos slides: [Clean Core no Private Edition e on-premise](./05.05_Clean_Core_no_Private_Edition_e_on-premise.pptx)**
+>
+> Material complementar em PDF: [Dominando os Dois Mundos: A Estratégia Clean Core Definitiva para SAP S/4HANA Private Cloud e On-Premise](./05.05_Dominando_os_Dois_Mundos_Estratégia_Clean_Core.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [ABAP Test Cockpit](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-test-cockpit)
 

@@ -2,7 +2,9 @@
 
 ![Infográfico - A Evolução do SQL no ABAP Moderno](./01.04_A_Evolucao_do_ABAP_SQL.png)
 
-> **Comece pelos slides: [Lendo Dados do Banco de Dados (ABAP SQL)](./01.04_Lendo_Dados_do_Banco_de_Dados_(ABAP%20SQL).pdf)**
+> **Comece pelos slides: [Lendo dados do banco com ABAP SQL](./01.04_Lendo_dados_do_banco_com_ABAP_SQL.pptx)**
+>
+> Material complementar em PDF: [Lendo Dados do Banco de Dados (ABAP SQL)](./01.04_Lendo_Dados_do_Banco_de_Dados_(ABAP%20SQL).pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [SELECT](https://help.sap.com/docs/abap-cloud/abap-keywords/select)
 

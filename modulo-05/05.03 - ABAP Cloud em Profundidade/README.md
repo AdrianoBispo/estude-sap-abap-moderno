@@ -2,7 +2,9 @@
 
 ![Infográfico - Extensibilidade SAP: A Evolução do Legado para o Clean Core](./05.03_Extensibilidade_SAP.png)
 
-> **Comece pelos slides: [Desmistificando o ABAP Cloud](./05.03_ABAP_Cloud_Guia_Arquitetural.pdf)**
+> **Comece pelos slides: [ABAP Cloud em profundidade](./05.03_ABAP_Cloud_em_profundidade.pptx)**
+>
+> Material complementar em PDF: [Desmistificando o ABAP Cloud](./05.03_ABAP_Cloud_Guia_Arquitetural.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [Release Contracts](https://help.sap.com/docs/abap-cloud/abap-keywords/release-contracts)
 

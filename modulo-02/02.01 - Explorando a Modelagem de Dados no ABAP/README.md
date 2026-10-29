@@ -2,7 +2,9 @@
 
 ![Infográfico - A Evolução da Modelagem de Dados no ABAP](./02.01_A_Evolucao_da_Modelagem_de_Dados_ABAP.png)
 
-> **Comece pelos slides: [A Revolução Silenciosa da Modelagem de Dados no S/4HANA ](./02.01_CDS_VDM_S4HANA_Architecture.pdf)**
+> **Comece pelos slides: [Explorando a modelagem de dados no ABAP](./02.01_Explorando_a_modelagem_de_dados_no_ABAP.pptx)**
+>
+> Material complementar em PDF: [A Revolução Silenciosa da Modelagem de Dados no S/4HANA](./02.01_CDS_VDM_S4HANA_Architecture.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [ABAP Dictionary (DDIC)](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-dictionary-ddic)
 

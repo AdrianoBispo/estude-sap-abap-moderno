@@ -2,8 +2,9 @@
 
 ![Infográfico - Os 5 Princípios do SAP Fiori](./05.02_Os_5_Principios_do_SAP_Fiori.png)
 
-> **Comece pelos slides: [A Grande Virada: Da Função à Experiência](./05.02_Fiori_Redefinindo_o_Papel_do_Desenvolvedor.pdf)**
-
+> **Comece pelos slides: [UX de consumidor com SAP Fiori e SAP Build](./05.02_UX_de_consumidor_com_SAP_Fiori_e_SAP_Build.pptx)**
+>
+> Material complementar em PDF: [A Grande Virada: Da Função à Experiência](./05.02_Fiori_Redefinindo_o_Papel_do_Desenvolvedor.pdf)
 ## Objetivos de Aprendizagem
 
 - Explicar e exemplificar os **5 Princípios de Design do SAP Fiori** (Role-Based, Adaptive, Simple, Coherent, Delightful), aplicando-os na avaliação de interfaces.  

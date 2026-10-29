@@ -2,7 +2,9 @@
 
 ![Infográfico - Um Guia Rápido do Sintaxe](./01.02_Um_Guia_Visual_de_Boas_Praticas.png)
 
-> **Comece pelos slides: [ABAP Moderno: Escreva Menos, Realize Mais](./01.02_ABAP_Moderno_Escreva_Menos_Realize_Mais.pdf)**
+> **Comece pelos slides: [Técnicas básicas da linguagem ABAP](./01.02_Técnicas_básicas_da_linguagem_ABAP.pptx)**
+>
+> Material complementar em PDF: [ABAP Moderno: Escreva Menos, Realize Mais](./01.02_ABAP_Moderno_Escreva_Menos_Realize_Mais.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [Constructor Operators for Constructor Expressions](https://help.sap.com/docs/abap-cloud/abap-keywords/constructor-operators-for-constructor-expressions)
 

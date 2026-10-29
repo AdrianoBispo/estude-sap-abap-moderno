@@ -2,7 +2,9 @@
 
 ![Infográfico - A Evolução do Processamento de Strings em ABAP](./04.03_A_Evolucao_do_Processamento_de_Strings.png)
 
-> **Comece pelos slides: [ABAP Moderno: Processamento de Strings](./04.03_ABAP_String_Processing_Evolution.pdf)**
+> **Comece pelos slides: [Processando campos de caracteres](./04.03_Processando_campos_de_caracteres.pptx)**
+>
+> Material complementar em PDF: [ABAP Moderno: Processamento de Strings](./04.03_ABAP_String_Processing_Evolution.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [Regular Expressions (regex)](https://help.sap.com/docs/abap-cloud/abap-keywords/regular-expressions-regex)
 

@@ -2,8 +2,9 @@
 
 ![Infográfico - SAP Fiori Elements: A Evolução de Interfaces SAP](./03.01_SAP_Fiori_Elements.png)
 
-> **Comece pelos slides: [A Revolução do SAP Fiori Elements no Desenvolvimento de Apps RAP](./03.01_De_Artesão_a_Arquiteto.pdf)**
-
+> **Comece pelos slides: [SAP Fiori elements para OData V4](./03.01_SAP_Fiori_elements_para_OData_V4.pptx)**
+>
+> Material complementar em PDF: [A Revolução do SAP Fiori Elements no Desenvolvimento de Apps RAP](./03.01_De_Artesão_a_Arquiteto.pdf)
 ## Objetivos de Aprendizagem
 
 - Definir com precisão o que é **SAP Fiori Elements** e articular suas diferenças fundamentais em relação ao desenvolvimento SAPUI5 "Freestyle", focando em eficiência e padronização.  

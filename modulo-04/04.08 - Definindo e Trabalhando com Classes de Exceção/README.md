@@ -2,7 +2,9 @@
 
 ![Infográfico - Guia Rápido: Exceções Modernas em ABAP OO](./04.08_Guia_Rapido_Excecoes_Modernas_em_ABAP_OO.png)
 
-> **Comece pelos slides: [Tratamento Avançado de Exceções ABAP OO](./04.08_Tratamento_Avançado_de_Exceções_ABAP_OO.pdf)**
+> **Comece pelos slides: [Definindo e usando classes de exceção](./04.08_Definindo_e_usando_classes_de_exceção.pptx)**
+>
+> Material complementar em PDF: [Tratamento Avançado de Exceções ABAP OO](./04.08_Tratamento_Avançado_de_Exceções_ABAP_OO.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [Class-Based Exceptions](https://help.sap.com/docs/abap-cloud/abap-keywords/class-based-exceptions)
 

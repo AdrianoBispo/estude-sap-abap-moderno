@@ -2,8 +2,9 @@
 
 ![Infográfico - Examinando o Modelo de Programação Flexível (FPM)](./03.10_Fiori_FPM.png)
 
-> **Comece pelos slides: [Dominando o Flexible Programming Model](./03.10_Dominando_o_Flexible_Programming_Model.pdf)**
-
+> **Comece pelos slides: [Flexible Programming Model](./03.10_Flexible_Programming_Model.pptx)**
+>
+> Material complementar em PDF: [Dominando o Flexible Programming Model](./03.10_Dominando_o_Flexible_Programming_Model.pdf)
 ## Objetivos de Aprendizagem
 
 - Compreender profundamente o **Flexible Programming Model (FPM)** como a arquitetura moderna que preenche a lacuna entre a rigidez do Fiori Elements e a liberdade total (e cara) do Freestyle UI5.  

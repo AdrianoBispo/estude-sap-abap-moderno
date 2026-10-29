@@ -2,7 +2,9 @@
 
 ![Infográfico - Guia Visual: Expondo Serviços com SAP RAP](./03.02_Expondo_Servicos_com_RAP.png)
 
-> **Comece pelos slides: [SAP RAP: Da Lógica ABAP à API Global ](./03.02_RAP_ABAP_à_API_Global_Service_Provisioning.pdf)**
+> **Comece pelos slides: [Exposição de serviços no RAP](./03.02_Exposição_de_serviços_no_RAP.pptx)**
+>
+> Material complementar em PDF: [SAP RAP: Da Lógica ABAP à API Global](./03.02_RAP_ABAP_à_API_Global_Service_Provisioning.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [ABAP CDS - Service Definitions](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-cds-service-definitions)
 

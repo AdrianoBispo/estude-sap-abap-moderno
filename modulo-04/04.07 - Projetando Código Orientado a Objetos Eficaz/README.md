@@ -2,7 +2,9 @@
 
 ![Infográfico - Princípios para um Código ABAP OO Eficaz](./04.07_Principios_para_um_Codigo_ABAP_OO_Eficaz.png)
 
-> **Comece pelos slides: [Dominando os Pilares do Código Flexível e Resiliente para S/4HANA, RAP e Clean Core](./04.07_De_Construtor_a_Arquiteto_ABAP_Moderno.pdf)**
+> **Comece pelos slides: [Projetando código orientado a objetos eficaz](./04.07_Projetando_código_orientado_a_objetos_eficaz.pptx)**
+>
+> Material complementar em PDF: [Dominando os Pilares do Código Flexível e Resiliente para S/4HANA, RAP e Clean Core](./04.07_De_Construtor_a_Arquiteto_ABAP_Moderno.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [ABAP Objects](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-objects)
 

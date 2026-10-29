@@ -2,8 +2,9 @@
 
 ![Infográfico - Guia Rápido: Tabelas Dinâmicas no Fiori Elements](./03.07_Tabelas_Dinamicas_no_Fiori_Elements.png)
 
-> **Comece pelos slides: [Anatomia de Uma Tabela Inteligente em Fiori Elements](./03.07_Anatomia_da_Tabela_Fiori_Inteligente.pdf)**
-
+> **Comece pelos slides: [Tabelas: cores, ações e responsividade](./03.07_Tabelas_cores_ações_e_responsividade.pptx)**
+>
+> Material complementar em PDF: [Anatomia de Uma Tabela Inteligente em Fiori Elements](./03.07_Anatomia_da_Tabela_Fiori_Inteligente.pdf)
 ## Objetivos de Aprendizagem
 
 - Implementar **Criticality** (Cores Semânticas) para destacar colunas de status, compreendendo como mapear valores numéricos do backend para feedback visual no frontend.  

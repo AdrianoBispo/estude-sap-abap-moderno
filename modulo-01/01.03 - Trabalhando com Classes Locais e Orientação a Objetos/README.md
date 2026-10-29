@@ -2,7 +2,9 @@
 
 ![Infográfico - Classes Locais](./01.03_Classes_Locais.png)
 
-> **Comece pelos slides: [Trabalhando com Classes Locais e Orientação a Objetos no ABAP](./01.03_Trabalhando_com_Classes_Locais_OO_no_ABAP.pdf)**
+> **Comece pelos slides: [Classes locais e orientação a objetos](./01.03_Classes_locais_e_orientação_a_objetos.pptx)**
+>
+> Material complementar em PDF: [Trabalhando com Classes Locais e Orientação a Objetos no ABAP](./01.03_Trabalhando_com_Classes_Locais_OO_no_ABAP.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [Classes and Interfaces](https://help.sap.com/docs/abap-cloud/abap-keywords/classes-and-interfaces)
 
