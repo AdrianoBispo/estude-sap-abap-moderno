@@ -3,6 +3,8 @@
 ![Infográfico - ABAP Cloud: As Novas Regras do Jogo para um SAP Clean Core](./05.01_As_Novas_Regras_do_Jogo_SAP_Clean_Core.png)
 
 > **Comece pelos slides: [A Nova Era da Extensibilidade SAP](./05.01_SAP_Clean_Core_A_Nova_Extensibilidade.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-cloud)
 
 ## Objetivos de Aprendizagem
 
@@ -13,6 +15,8 @@
 - Compreender as restrições técnicas (Language Version 5) e os benefícios de arquitetura do modelo **ABAP Cloud** em comparação ao ABAP Clássico.
 
 - Identificar as nuances de governança e implementação entre **S/4HANA Cloud Public Edition** (SaaS puro) e **Private Edition** (Flexível), aplicando os princípios de Clean Core em ambos os cenários.
+
+- Descrever como a SAP recomenda tratar o código customizado em uma conversão: coletar uso, eliminar o que não é usado e adaptar o restante.
 
 ## 1. O Problema: O "Spaghetti" do Passado e a Dívida Técnica
 
@@ -131,7 +135,21 @@ O termo "ABAP Cloud" não se refere a um produto que você compra, mas sim a um 
   
   * **O Desafio:** A SAP recomenda fortemente seguir o Clean Core (Tier 1, com Tier 2 como ponte) para garantir "Cloud Readiness". No entanto, é permitido usar código legado (Tier 3) para facilitar migrações (Brownfield), com o entendimento de que isso gera dívida técnica para o futuro.
 
-> **Evolução recente (2025):** a SAP aposentou o modelo de 3 Tiers em favor dos **Clean Core Levels**: **A** (APIs liberadas, máxima estabilidade em upgrades), **B** (APIs e tecnologias clássicas), **C** (acesso a objetos internos, com riscos gerenciáveis) e **D** (objetos/técnicas não recomendados, como modificações — maior risco e dívida técnica). Os princípios deste módulo continuam válidos; muda a forma de classificar as extensões.
+> **Evolução recente (2025):** a SAP aposentou o modelo de 3 Tiers em favor dos **Clean Core Levels**: **A** (APIs liberadas, máxima estabilidade em upgrades), **B** (APIs e tecnologias clássicas), **C** (acesso a objetos internos, com riscos gerenciáveis) e **D** (objetos/técnicas não recomendados, como modificações — maior risco e dívida técnica). Os princípios deste módulo continuam válidos; muda a forma de classificar as extensões (detalhes e configuração do sistema na lição 05.05).
+
+## 6. Preparando o Código Legado para o S/4HANA
+
+Em uma conversão, boa parte das extensões antigas deixa de ser necessária: o S/4HANA traz novos modelos de dados, novas aplicações e funcionalidades que antes exigiam código Z. A SAP recomenda tratar o código customizado em etapas:
+
+1. **Coletar o uso real:** Use o **ABAP Call Monitor** (`SCMON`) ou o *Usage and Procedure Logging* (UPL), um ou outro, **no sistema produtivo**, por 6 a 18 meses, incluindo pelo menos um fechamento anual. A transação `SUSG` agrega esses dados, que o `SCMON` apaga depois de pouco tempo.
+
+2. **Identificar o que pode sair:** O app SAP Fiori **Custom Code Migration** (em um sandbox S/4HANA ou na SAP BTP, ABAP environment) ou o ATC cruzam a análise do código com os dados de uso e apontam extensões não usadas.
+
+3. **Guardar antes de apagar:** Defina um procedimento de backup e restauração, por exemplo com o gCTS (Git-enabled Change and Transport System).
+
+4. **Remover na conversão** o que não é usado e **adaptar** o restante: automaticamente, com os *Quick Fixes* do ATC; ou manualmente, guiado pelas SAP Notes listadas pelo **SAP Readiness Check**.
+
+> Converter o sistema (Brownfield) ou implementar do zero (Greenfield) muda o tamanho desse trabalho. A comparação está na lição 05.05.
 
 ## Diagrama de Decisão: Onde desenvolver minha extensão?
 

@@ -3,6 +3,8 @@
 ![Infográfico - Aprofundando no Modelo de Extensibilidade do S/4HANA Cloud](./05.04_Clean_Core_Extensibilidade_SAP_S4HANA.png)
 
 > **Comece pelos slides: [Dominando Cloud BAdIs para um Clean Core](./05.04_Cloud_BAdIs_for_a_Clean_Core.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [Enhancements Using BAdIs](https://help.sap.com/docs/abap-cloud/abap-keywords/enhancements-using-badis)
 
 ## Objetivos de Aprendizagem
 

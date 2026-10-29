@@ -3,6 +3,8 @@
 ![Infográfico - Extensibilidade SAP: A Evolução do Legado para o Clean Core](./05.03_Extensibilidade_SAP.png)
 
 > **Comece pelos slides: [Desmistificando o ABAP Cloud](./05.03_ABAP_Cloud_Guia_Arquitetural.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [Release Contracts](https://help.sap.com/docs/abap-cloud/abap-keywords/release-contracts)
 
 ## Objetivos de Aprendizagem
 
@@ -15,6 +17,8 @@
 - Compreender a taxonomia dos **Contratos de Estabilidade** (C0, C1, C2, C3) e como eles ditam o ciclo de vida e o escopo de uso dos objetos.  
 
 - Planejar e implementar a arquitetura de **Wrappers** (Classes Envelope) para encapsular código legado não liberado, permitindo sua reutilização segura em um ambiente Clean Core.
+
+- Reconhecer os **reuse services** da plataforma ABAP e usar as APIs liberadas deles em vez de reimplementar serviços técnicos.
 
 ## 1. O que é "ABAP Cloud"? Desfazendo a Confusão
 
@@ -124,6 +128,23 @@ SELECT FROM I_Product
   WHERE Product = @lv_material  
   INTO TABLE @DATA(lt_data).
 ```
+
+## 6. Reuse Services: Não Reinvente a Roda
+
+Os serviços técnicos que o ABAP sempre ofereceu continuam disponíveis no ABAP Cloud, agora como **reuse services** com APIs liberadas:
+
+* E-mail
+* Intervalos de numeração (*number ranges*) e documentos de modificação (*change documents*)
+* Fila de impressão
+* *Application jobs* e *application logs*
+* Tradução, unidades de medida, fusos horários
+* Taxas de câmbio e conversão de moedas
+
+Alguns pontos de entrada liberados são `CL_NUMBERRANGE_RUNTIME` (numeração), `CL_BALI_LOG` (application log), `CL_APJ_RT_API` (application jobs) e `CL_BCS_MAIL_MESSAGE` (e-mail). A biblioteca **XCO** (`XCO_CP_*`) reúne utilitários para tempo, strings, metadados do repositório e outros.
+
+Na SAP BTP também há serviços como **Forms by Adobe**, **Document Management** e **Workflow**.
+
+> **Antes de escrever um utilitário técnico**, procure em `Released Objects` no ADT: a chance de já existir uma API liberada e estável é grande.
 
 ## Tabela de Conversão: Legado vs. Cloud (De/Para)
 

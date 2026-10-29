@@ -3,6 +3,8 @@
 ![Infográfico - CDS Views: Do Legado ao Moderno](./02.04_CDS_Views.png)
 
 > **Comece pelos slides: [A Base de Aplicações Modernas: Dominando as CDS Views Essenciais](./02.04_CDS_Views_Essenciais_Uma_Nova_Arquitetura.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP CDS - View Entities](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-cds-view-entities)
 
 ## Objetivos de Aprendizagem
 

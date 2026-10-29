@@ -3,6 +3,8 @@
 ![Infográfico - Modernizando o ABAP: A Estratégia Clean Core para S/4HANA Private Cloud](./05.05_Modernizando_o_ABAP.png)
 
 > **Comece pelos slides: [Dominando os Dois Mundos: A Estratégia Clean Core Definitiva para SAP S/4HANA Private Cloud e On-Premise](./05.05_Dominando_os_Dois_Mundos_Estratégia_Clean_Core.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP Test Cockpit](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-test-cockpit)
 
 ## Objetivos de Aprendizagem
 
@@ -13,6 +15,8 @@
 - Utilizar o **ABAP Test Cockpit (ATC)** com variantes de verificação específicas para auditar a "Cloud Readiness" de código antigo, interpretando resultados e aplicando correções automáticas (Quick Fixes).  
 
 - Arquitetar a convivência híbrida entre o modelo **Tier 1 (Cloud)** e **Tier 3 (Classic)** no mesmo sistema Private Cloud, estabelecendo fronteiras claras para evitar a contaminação do novo código.
+
+- Aplicar os **níveis A–D do Clean Core** e preparar o sistema (componentes de software, autorizações e ATC) para desenvolver por nível.
 
 ## 1. O Dilema: Public vs Private Edition
 
@@ -80,7 +84,9 @@ Como saber se seu código Z antigo vai funcionar na nuvem ou se ele precisa de a
 
 O **ABAP Test Cockpit (ATC)** é a ferramenta de governança automatizada. Ele possui variantes de verificação específicas para este fim:
 
-* **SAP_CP_READINESS_REMOTE:** Verifica se o código utiliza objetos não liberados (ex: chamadas diretas a tabelas standard não permitidas).  
+* **ABAP_CLOUD_READINESS:** Verifica se o código está "pronto para ABAP Cloud": apenas tipos de objeto e instruções permitidos no ABAP Cloud e apenas APIs SAP liberadas. Gera uma lista de findings, muitos com *Quick Fix*.  
+
+* **ABAP_CLOUD_DEVELOPMENT_DEFAULT:** Garante as regras básicas do ABAP Cloud no código **novo**.  
 
 * **S4HANA_READINESS:** Verifica incompatibilidades funcionais e de banco de dados (ex: uso de tabelas que deixaram de existir no S/4HANA, como a MATC ou tabelas agregadas de FI).
 
@@ -113,6 +119,29 @@ Visualizando a convivência pacífica entre o novo e o velho:
         (O "Core Sujo" ou Legado Complexo)
 ```
 
+## 6. Dos 3 Tiers aos Níveis A–D do Clean Core
+
+Em 2025 a SAP evoluiu o modelo de 3 Tiers para o **conceito de níveis de Clean Core**. A mudança principal: o ABAP clássico deixa de ser tratado inteiro como "sujo". Cada extensão é avaliada pelo risco dos objetos SAP que usa.
+
+| Nível | Usa | Risco em upgrades |
+| :--- | :--- | :--- |
+| **A** | **Released APIs** e pontos de extensão liberados (ABAP Cloud, Key User, side-by-side na BTP) | Mínimo (equivale ao antigo Tier 1) |
+| **B** | **Classic APIs**: artefatos clássicos (ex.: BAPIs) que a SAP classifica como estáveis | Baixo |
+| **C** | **Objetos internos**, não classificados como API | Gerenciável, acompanhado pelo changelog da SAP |
+| **D** | **Objetos não recomendados**: modificações, escrita direta em tabelas SAP, enhancements implícitos | Alto: remediar |
+
+* **A extensão vale o seu pior objeto:** Ela é classificada pelo objeto de **menor** nível que usa.
+
+* **Nada se perde:** Wrappers construídos no modelo de Tiers (Tier 2) **não precisam ser migrados**. O objetivo é subir de nível sempre que possível.
+
+## 7. Preparando o Sistema para Desenvolvimento por Níveis
+
+1. **Componentes de software:** Com o report `RSMAINTAIN_SWCOMPONENTS` (a partir do ABAP Platform 2022), crie componentes do tipo **ABAP Cloud** (nível A: tudo dentro deles segue o ABAP Cloud) ou **ABAP Classic** (níveis B a D). Abaixo de cada um, um *structure package* e os pacotes de desenvolvimento.
+
+2. **Autorizações:** O objeto `S_ABPLNGVS` (ativado via `SACF`) restringe a *language version* que cada desenvolvedor pode usar. Por exemplo, um papel copiado de `SAP_BC_ABAP_DEVELOPER_5` limita a equipe ao nível A.
+
+3. **ATC:** Use as variantes da seção 4 e, se quiser medir os níveis, uma variante própria de **Clean Core**, cujos findings seguem a escala: nível A sem finding, B como informação (prioridade 3), C como aviso (prioridade 2) e D como erro (prioridade 1).
+
 ## Estratégia de 3 Passos para Clean Core no Private Cloud
 
 1. **Novos Projetos:** Tornar obrigatório o uso de **ABAP Cloud (Tier 1)** para qualquer novo desenvolvimento (ex: novos relatórios, novos apps Fiori).  
@@ -129,6 +158,8 @@ Visualizando a convivência pacífica entre o novo e o velho:
 
 * **Cloud Readiness:** O grau de conformidade de um código customizado com as regras e restrições do ABAP Cloud (uso de APIs liberadas, sem acesso ao SO, sintaxe moderna). É verificado automaticamente via ATC.  
 
+* **Níveis A–D do Clean Core:** Classificação de 2025 que sucede os 3 Tiers: A = APIs liberadas, B = APIs clássicas, C = objetos internos, D = não recomendado.  
+
 * **Tier 3 (Classic Extensibility):** Camada de extensibilidade disponível apenas no Private Edition/On-Premise que permite o desenvolvimento ABAP tradicional (não restrito). Deve ser evitada para novos projetos, servindo apenas como repositório de legado (os Wrappers liberados formam o Tier 2).
 
 ## Quiz de Fixação
@@ -140,4 +171,4 @@ Visualizando a convivência pacífica entre o novo e o velho:
   R: Criar uma classe Wrapper em ABAP Clássico (Tier 2 - Cloud API Enablement) que chama essa BAPI internamente. Em seguida, deve-se liberar explicitamente (Release Contract C1) essa classe Wrapper para que ela se torne visível e consumível pelo App Fiori no Tier 1.  
 
 3. Qual ferramenta devo usar para analisar em massa meu código Z legado e descobrir o que precisa ser ajustado para ser tecnicamente compatível com o banco de dados HANA e com as regras da nuvem?  
-  R: O ABAP Test Cockpit (ATC) com as variantes de verificação globais de prontidão para S/4HANA (S4HANA_READINESS) ou prontidão para Nuvem (SAP_CP_READINESS), que apontam usos de objetos obsoletos e violações de regras.
+  R: O ABAP Test Cockpit (ATC) com as variantes de verificação globais de prontidão para S/4HANA (S4HANA_READINESS) ou prontidão para ABAP Cloud (ABAP_CLOUD_READINESS), que apontam usos de objetos obsoletos e violações de regras.

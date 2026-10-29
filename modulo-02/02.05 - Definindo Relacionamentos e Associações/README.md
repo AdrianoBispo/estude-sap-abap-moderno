@@ -3,6 +3,8 @@
 ![Infográfico - ABAP CDS: Associações vs JOINs Clássicos](./02.05_Associacoes_vs_JOINs_Classicos.png)
 
 > **Comece pelos slides: [A Revolução Silenciosa: De Joins a Associações em ABAP CDS](./02.05_JOINs_para_Associações_ABAP_CDS.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [CDS DDL - CDS View Entity, SELECT, Associations](https://help.sap.com/docs/abap-cloud/abap-keywords/cds-ddl-cds-view-entity-select-associations)
 
 ## Objetivos de Aprendizagem
 
@@ -13,6 +15,8 @@
 - Interpretar e configurar a **Cardinalidade** (`[0..1]`, `[1..*]`, `[1..1]`), entendendo como ela influencia o otimizador do banco de dados e a geração de JOINS físicos.
   
 - Expor associações na lista de projeção para habilitar **Propriedades de Navegação** em serviços OData, permitindo que aplicações Fiori naveguem entre entidades (Drill-down).
+
+- Diferenciar **chaves estrangeiras** do Dicionário (relação entre tabelas) de **associações** CDS (relação entre views).
 
 ## 1. O Conceito de Associação ("Join on Demand")
 
@@ -122,6 +126,34 @@ Porém, para que consumidores externos (como um App Fiori ou outra CDS View) pos
 2. **OData Navigation:** No mundo OData, uma associação exposta vira uma **Navigation Property**. Isso permite que o Fiori Elements navegue de uma tela para outra automaticamente.  
    * *URL OData V4:* `.../Travel(TravelUUID=...)/_Customer` (no OData V2, o framework gera a navegação com o prefixo `to_`, ex: `to_Customer`)  
    * Isso habilita o usuário a clicar no ID do Cliente na tela de Viagem e abrir um pop-over com os dados do contato do cliente, tudo gerenciado pelo framework através da associação.
+
+## 6. Relacionamentos no Dicionário: Chaves Estrangeiras
+
+Associações relacionam **CDS views**. No Dicionário, a relação entre **tabelas** é declarada por uma **foreign key dependency**: a *foreign key table* aponta para a *check table*, ligando seus campos a todos os campos-chave dela.
+
+``` ABAP
+@EndUserText.label : 'Funcionários'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zemployee {
+  key client        : abap.clnt not null;
+  key employee_id   : zde_employee_id not null;
+  @AbapCatalog.foreignKey.keyType : #NON_KEY
+  @AbapCatalog.foreignKey.screenCheck : false
+  department_id     : zde_department_id
+    with foreign key [0..*,1] zdepartment
+      where client        = zemployee.client
+        and department_id = zemployee.department_id;
+}
+```
+
+* **Cardinalidade:** Declarada no próprio `with foreign key` (no exemplo, muitos funcionários para um departamento).
+
+* **`keyType`:** `#KEY` se todos os campos da chave estrangeira são chave da tabela, `#NON_KEY` caso contrário, e `#TEXT_KEY` para tabelas de texto.
+
+> **Importante:** chaves estrangeiras ficam na camada ABAP e **não** viram constraints no banco. No desenvolvimento moderno, seu papel é principalmente de documentação. As validações de entrada e as value helps que elas geravam nas telas clássicas são feitas hoje com associações CDS e com o RAP.
 
 ## Comparativo: Join vs Association
 

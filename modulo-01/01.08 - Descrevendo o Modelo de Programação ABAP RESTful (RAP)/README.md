@@ -3,6 +3,8 @@
 ![Infográfico - Desvendando o RAP](./01.08_Desvendando_o_RAP.png)
 
 > **Comece pelos slides: [Arquiteto de Software: Dominando ABAP RAP](./01.08_Arquiteto_de_Software_Dominando_ABAP_RAP.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP RAP Business Objects](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-rap-business-objects)
 
 ## Objetivos de Aprendizagem
 

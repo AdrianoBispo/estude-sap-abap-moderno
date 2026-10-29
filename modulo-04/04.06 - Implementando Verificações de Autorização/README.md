@@ -3,6 +3,8 @@
 ![Infográfico - Verificação de Autorização no SAP Moderno: ABAP vs CDS](./04.06_ABAP_vs_CDS.png)
 
 > **Comece pelos slides: [Segurança e Autorização no ABAP](./04.06_Seguranca_e_Autorizacao_no_ABAP.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP CDS - Access Control](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-cds-access-control)
 
 ## Objetivos de Aprendizagem
 

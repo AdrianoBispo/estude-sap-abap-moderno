@@ -3,6 +3,8 @@
 ![Infográfico - Atualização de Dados no ABAP Moderno](./01.07_Atualizacao_de_Dados_no_ABAP_RAP.png)
 
 > **Comece pelos slides: [Implementando Atualizações de Banco de Dados](./01.07_Implementando_Atualizacoes_de_Banco_de_Dados.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP EML - Consuming RAP BOs](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-eml-consuming-rap-bos)
 
 ## Objetivos de Aprendizagem
 

@@ -16,6 +16,20 @@ O conteúdo está organizado em módulos progressivos:
 | **[Módulo 4: Programação ABAP Intermediária](./modulo-04/README.md)** | Testes e análise com **ABAP Test Cockpit (ATC)**; testes unitários e **ABAP Profiling**; tipos de dados e conversões; manipulação de strings; performance com **Code Pushdown** e **Tabelas Internas**; verificações de autorização; orientação a objetos; tratamento de exceções e documentação. |
 | **[Módulo 5: Praticando a extensibilidade do Clean Core para SAP S/4HANA Cloud](./modulo-05/README.md)** | Desenvolvimento de extensões seguindo o conceito **Clean Core**: preservação do núcleo, facilitação de atualizações e compatibilidade com o **ABAP Cloud Development Model**. |
 
+### Ordem de Estudo Recomendada
+
+A numeração dos módulos não segue a ordem de pré-requisitos da jornada oficial da SAP. Para estudar na sequência da jornada:
+
+| Ordem | Módulo | Curso oficial correspondente |
+| :--- | :--- | :--- |
+| 1º | [Módulo 1](./modulo-01/README.md) | Learning Basic ABAP Programming (S4D400) |
+| 2º | [Módulo 4](./modulo-04/README.md) | Deepening Your ABAP Programming Knowledge (S4D401) |
+| 3º | [Módulo 2](./modulo-02/README.md) | Building Data Models with the ABAP Dictionary and ABAP CDS (S4D430), que exige o S4D401 |
+| 4º | [Módulo 5](./modulo-05/README.md) | Practicing Clean Core Extensibility for SAP S/4HANA Cloud (S4D426) |
+| Complementar | [Módulo 3](./modulo-03/README.md) | SAP Fiori Elements com OData V4 (não faz parte da jornada atual) |
+
+A jornada prepara para a certificação **SAP Certified – Back-End Developer – ABAP Cloud (C_ABAPD)**, que também avalia o uso do **Joule for Developers** (veja as lições 01.01 e 04.01).
+
 ## Organização e Nomenclatura dos Arquivos
 
 Para garantir a organização, a rastreabilidade e a sequência lógica de leitura dos arquivos do projeto, foi então definida a seguinte **Regra de Nomenclatura Hierárquica**: **`DD.SS_Slug_Descritivo`**
@@ -37,7 +51,9 @@ Contribuições são bem-vindas! Se você encontrar erros, tiver sugestões de m
 ## Links Úteis
   
   ### Documentação Oficial
-  - [ABAP - Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/ABENABAP.html)
+  - [ABAP Keyword Documentation – ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-keyword-documentation?locale=en-US) (versão restrita ao ABAP for Cloud Development; é a referência usada nas lições)
+  - [ABAP Keyword Documentation – Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keywords-standard-abap/abap-keyword-documentation?locale=en-US) (linguagem completa, incluindo o ABAP clássico)
+  - [ABAP Release News](https://help.sap.com/docs/abap-cloud/abap-keywords-standard-abap/abap-release-news?locale=en-US) (novidades da linguagem a cada release)
   - [ABAP RESTful Application Programming Model](https://help.sap.com/docs/abap-cloud/abap-rap/abap-restful-application-programming-model?locale=en-US&version=sap_btp)
 
   ### Aprenda Praticando - Tutoriais Oficiais da SAP
@@ -54,4 +70,4 @@ Este projeto é distribuído sob a licença MIT. Veja o arquivo `LICENSE` para m
 
 ---
 
-_Todo conteúdo presente nesse repositório foi gerado pelo Notebook LM com base nos cursos da jornada de aprendizagem [**"Acquiring Core ABAP Skills"**](https://learning.sap.com/learning-journeys/acquire-core-abap-skills) da plataforma SAP Learning (plataforma de aprendizagem oficial da SAP)._
+_O conteúdo deste repositório foi gerado com o Notebook LM a partir dos cursos da plataforma SAP Learning: os módulos 1, 2, 4 e 5 seguem a jornada de aprendizagem [**"Acquiring Core ABAP Skills"**](https://learning.sap.com/learning-journeys/acquiring-core-abap-skills), e o módulo 3 vem de um curso complementar sobre SAP Fiori Elements. As lições foram revisadas e complementadas com a documentação oficial da SAP._

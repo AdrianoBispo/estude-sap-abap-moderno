@@ -14,6 +14,8 @@
 
 - Justificar economicamente por que a consistência visual reduz o Custo Total de Propriedade (TCO), minimizando a necessidade de treinamento e erros operacionais.
 
+- Situar o **SAP Build** (low-code/no-code) ao lado do Fiori e entender o papel do desenvolvedor ABAP nesse cenário.
+
 ## 1. Adeus SAP GUI, Olá Experiência de Consumidor
 
 Durante décadas, o SAP foi sinônimo de eficiência no processamento de dados, mas também de telas cinzentas, densas e complexas (o famoso SAP GUI). O design era focado na **Funcionalidade**: "Como colocamos todos os campos possíveis em uma única tela para que o usuário não precise trocar de transação?". Isso resultou em transações "monstro" como a `VA01` (Criar Ordem de Venda) ou `ME21N` (Criar Pedido de Compra), que exigiam meses de treinamento para serem dominadas. O usuário precisava memorizar códigos de transação (T-Codes) e navegar por dezenas de abas.
@@ -102,6 +104,20 @@ Se você criar um aplicativo customizado (Z) que ignora os padrões do Fiori (ex
   3. **Manutenção:** Apps fora do padrão são mais difíceis de manter e adaptar a novas versões do design system da SAP.
 
 Usar **SAP Fiori Elements** é a estratégia mais segura. O framework garante que seu aplicativo siga rigorosamente as diretrizes da SAP, seja responsivo e acessível, protegendo o investimento da empresa.
+
+## 5. Além do Fiori: SAP Build e o Desenvolvedor Cidadão
+
+A nuvem acelera as mudanças de negócio, mas o número de desenvolvedores não cresce no mesmo ritmo. Por isso a SAP também aposta nos **builders** (desenvolvedores cidadãos): pessoas das áreas de negócio que criam soluções com ferramentas **low-code/no-code** aprovadas pela TI. A família **SAP Build**, na SAP BTP, reúne:
+
+* **SAP Build Apps:** Aplicações montadas com *drag and drop*.
+
+* **SAP Build Process Automation:** Automação de fluxos e tarefas sem código.
+
+* **SAP Build Work Zone:** Portais e sites que reúnem apps, processos e conteúdo.
+
+Essas ferramentas se conectam ao S/4HANA Cloud por conectores prontos e **APIs liberadas**, e por isso respeitam o Clean Core.
+
+> **Onde entra o desenvolvedor ABAP?** Ao publicar serviços RAP estáveis e liberados, você cria os blocos que os builders consomem com segurança.
 
 ## Os 5 Princípios (Mnemônico RASCD)
 

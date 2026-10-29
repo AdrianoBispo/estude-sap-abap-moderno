@@ -3,6 +3,8 @@
 ![Infográfico - A Evolução do ABAP](./01.01_A_Evolucao_do_ABAP.png)
 
 > **Comece pelos slides: [Iniciando a Jornada: O Paradigma do ABAP Moderno](./01.01_ABAP_Cloud_Clean_Core_E_ADT.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP Language Versions](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-language-versions)
 
 ## Objetivos de Aprendizagem
 
@@ -13,6 +15,8 @@
 - Entender a hierarquia de organização de software: _Componentes de Software, Pacotes e o papel do **abapGit**_.  
 
 - Criar, ativar e executar a primeira aplicação ABAP ("Hello World") utilizando uma _Classe Global_ e a _Interface de Console_, abandonando o conceito de _Reports_ tradicionais.
+
+- Conhecer o **Joule for Developers** (ABAP AI Capabilities) e usá-lo com senso crítico para explicar código, sugerir trechos e acelerar tarefas repetitivas.
 
 ## 1. Introdução ao Ambiente de Desenvolvimento Moderno
 
@@ -128,6 +132,22 @@ CLASS zcl_hello_world IMPLEMENTATION.
 
 ENDCLASS.
 ```
+
+## 5. Amplificando o Desenvolvimento com IA: Joule for Developers
+
+O **Joule for Developers** (ABAP AI Capabilities) é o conjunto de ferramentas de IA generativa integrado ao ADT. Ele não substitui o conhecimento de ABAP: acelera tarefas repetitivas e ajuda a entender código existente. Sua disponibilidade depende do sistema e da licença.
+
+* **Joule Chat:** Perguntas, explicações e exemplos de código em linguagem natural (`Window → Show View → Other... → Joule`).
+
+* **Predictive Code Completion:** Sugestões em cinza ("ghost text") que aparecem quando você faz uma pausa na digitação, em classes, interfaces e programas. Pode ser ligada ou desligada na barra de ferramentas do ADT.
+
+* **Explain:** Selecione um objeto ou um trecho de código e escolha `Joule → Explain` (ou `/explain` no chat). Ideal para entender código legado.
+
+* **Outras capacidades:** Geração de testes ABAP Unit (veja a lição 04.01) e de testes para CDS, criação de um serviço OData de UI (RAP) do zero e sugestão de lógica RAP (determinations e validations).
+
+Para colocar IA dentro das **suas** aplicações, existe o **ABAP AI SDK**, uma biblioteca ABAP para consumir modelos de linguagem (LLMs) via generative AI hub.
+
+> **Regra de ouro:** os resultados da IA variam. Revise sempre o código gerado, confirme que ele atende ao requisito e passe-o pelo ATC antes de liberar.
 
 ## Pontos de Atenção: O Que Mudou? (Clássico vs. Moderno)
 

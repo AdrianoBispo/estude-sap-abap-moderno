@@ -3,6 +3,8 @@
 ![Infográfico - Modelagem de Dados Inteligente](./02.03_Modelagem_de_Dados_Inteligente.png)
 
 > **Comece pelos slides: [Dominando Tipos de Dados Globais no ABAP](./02.03_ABAP_Dictionary_Fundamentos_Fiori.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [DDIC - Data Elements](https://help.sap.com/docs/abap-cloud/abap-keywords/ddic-data-elements)
 
 ## Objetivos de Aprendizagem
 
@@ -13,6 +15,8 @@
 - Entender o papel crítico dos **Value Helps** (Ajudas de Pesquisa) e **Rotinas de Conversão** associados aos tipos globais.  
 
 - Dominar o uso de **Enumerations** (Enumerações) como a alternativa moderna e type-safe para listas de valores fixos.
+
+- Definir **estruturas** (simples, aninhadas e com include) e **table types** no Dicionário, e saber quando preferir tipos públicos em uma classe ou interface.
 
 ## 1. A Hierarquia de Tipos do ABAP Dictionary
 
@@ -106,6 +110,47 @@ Diferente das tabelas (que usam código fonte `DEFINE TABLE`), a criação de Do
 3. **Labels (Crucial):** Vá na aba **"Field Labels"**. Preencha Short (10), Medium (20), Long (40) e Heading.  
    * *Dica:* Use textos que façam sentido isoladamente. Evite abreviações obscuras no label "Long".  
 4. **Ativação:** Salve e ative (`Ctrl+F3`). O objeto agora está disponível para uso em tabelas e CDS Views.
+
+## 5. Estruturas e Table Types do Dicionário
+
+Além de data elements e domínios, o Dicionário define tipos compostos reutilizáveis por qualquer classe.
+
+> **Antes de criar:** se o tipo só é usado por um grupo de classes, considere declará-lo como tipo público de uma classe ou interface global. Crie tipos no Dicionário quando o reuso for amplo.
+
+### Estruturas
+
+Definidas em código (Dictionary DDL), com o mesmo resultado de um `TYPES ... BEGIN OF` no ABAP:
+
+``` ABAP
+@EndUserText.label : 'Endereço'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+define structure zs_address {
+  street    : abap.char(60);
+  post_code : abap.char(10);
+  city      : abap.char(40);
+}
+```
+
+* **Estrutura aninhada:** Um componente tipado com outra estrutura (`address : zs_address;`). O acesso é em dois níveis: `ls_person-address-city`.
+
+* **Include:** Os componentes da estrutura incluída entram no mesmo nível (`ls_person-city`). Com **named include**, os campos também ficam acessíveis pelo nome do grupo. É um padrão muito usado nos tipos derivados do RAP. No ABAP: `INCLUDE TYPE zs_address AS address.` (é uma instrução própria, não uma adição de `TYPES`).
+
+### Table Types
+
+O editor de **table types** é baseado em formulário (não em código) e define:
+
+* **Row type:** Normalmente uma estrutura do Dicionário. Também pode ser um data element (tabela de uma coluna sem nome), uma referência ou um **ranges table** (colunas `SIGN`, `OPTION`, `LOW`, `HIGH`).
+
+* **Categoria de acesso:** Standard, Sorted ou Hashed.
+
+* **Chaves:** Chave primária (única ou não única; *row type* equivale a `table_line`) e chaves secundárias opcionais.
+
+Equivalente em ABAP:
+
+``` ABAP
+TYPES tt_addresses TYPE SORTED TABLE OF zs_address
+                   WITH UNIQUE KEY post_code city.
+```
 
 ## Relação Hierárquica: Tabela x Elemento x Domínio
 

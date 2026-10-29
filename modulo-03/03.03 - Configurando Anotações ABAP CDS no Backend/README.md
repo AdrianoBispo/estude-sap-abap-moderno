@@ -3,6 +3,8 @@
 ![Infográfico - Mapeando Anotações ABAP CDS para UI SAP Fiori](./03.03_Mapeando_Anotacoes_RAP.png)
 
 > **Comece pelos slides: [Construindo UIs Fiori Elements com Anotações ABAP CDS](./03.03_Blueprint_To_Application.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP CDS - SAP Annotations](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-cds-sap-annotations)
 
 ## Objetivos de Aprendizagem
 
@@ -165,6 +167,23 @@ annotate view Z_C_AGENCY with
 
 }
 ```
+
+## 7. Quem Lê Cada Anotação? ABAP vs. Frameworks
+
+Toda anotação é metadado, mas nem toda é lida pelo mesmo "consumidor". A documentação da SAP separa dois grupos:
+
+| Grupo | Quem avalia | Exemplos |
+| :--- | :--- | :--- |
+| **ABAP annotations** | O runtime ABAP (ativação, SQL, autorização) | `@AbapCatalog`, `@AccessControl`, `@ClientHandling`, `@EndUserText`, `@Environment`, `@Metadata`, `@Semantics` |
+| **Framework-specific** | Frameworks como RAP/SADL, Analytics, Enterprise Search e SAP Fiori Elements | `@UI`, `@Consumption`, `@ObjectModel`, `@OData`, `@Search`, `@Analytics` |
+
+Algumas famílias (como `@Semantics` e `@AccessControl`) aparecem nos dois grupos. É por isso que uma anotação `@UI` errada não impede a ativação da view, mas aparece (ou some) na tela: quem a interpreta é o Fiori Elements.
+
+* **Ajuda rápida:** No editor CDS do ADT, posicione o cursor na anotação e pressione `F1`.
+
+* **Anotações obsoletas:** `@ClientDependent` foi substituída por `@ClientHandling`.
+
+* **Cuidado com material antigo:** O guia *ABAP Programming Model for SAP Fiori* do SAP Help lista essas anotações, mas o modelo transacional dele é baseado em **BOPF**, hoje substituído pelo **RAP**.
 
 ## Mapeamento Visual: Anotação -> Tela
 

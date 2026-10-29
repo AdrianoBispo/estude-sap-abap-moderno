@@ -3,6 +3,8 @@
 ![Infográfico - A Evolução do Processamento de Strings em ABAP](./04.03_A_Evolucao_do_Processamento_de_Strings.png)
 
 > **Comece pelos slides: [ABAP Moderno: Processamento de Strings](./04.03_ABAP_String_Processing_Evolution.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [Regular Expressions (regex)](https://help.sap.com/docs/abap-cloud/abap-keywords/regular-expressions-regex)
 
 ## Objetivos de Aprendizagem
 
@@ -13,6 +15,8 @@
 - Utilizar funções predicativas como **contains** (inclusive com os parâmetros `start`/`end`) e **matches** diretamente em condições lógicas, eliminando variáveis auxiliares e melhorando a legibilidade.  
 
 - Realizar concatenações e formatações avançadas com **String Templates**, integrando lógica de apresentação diretamente na construção da string.
+
+- Tornar textos do código **traduzíveis** com **text symbols**, sabendo quais outros textos (data elements, anotações, mensagens) já são traduzíveis por padrão.
 
 ## 1. Funções Embutidas: O Fim do "TRANSLATE"
 
@@ -143,6 +147,29 @@ CLASS zcl_string_proc IMPLEMENTATION.
 
 ENDCLASS.
 ```
+
+## 5. Textos Traduzíveis: Text Symbols
+
+Os textos que chegam à interface precisam aparecer no idioma de logon do usuário. Rótulos de **data elements**, anotações como `@EndUserText` em CDS e metadata extensions, e mensagens de **message classes** são traduzíveis por padrão. **Literais no código-fonte não são**: o conteúdo é sempre o mesmo, em qualquer idioma.
+
+Quando um literal com texto de negócio chega à UI, substitua-o por um **text symbol**, armazenado no *text pool* da classe global:
+
+* **ID de 3 caracteres** (dígitos e/ou letras, ex.: `001`, `HAU`), único no text pool.
+
+* **Comprimento máximo:** Defina bem acima do tamanho atual (limite técnico: 255). Ele é um limite rígido para o tradutor e evita abreviações forçadas.
+
+``` ABAP
+" Literal: nunca é traduzido
+out->write( 'Voos encontrados:' ).
+
+" Text symbol isolado
+out->write( TEXT-001 ).
+
+" Literal com text symbol: usa o texto traduzido se existir; o literal é o fallback
+out->write( 'Voos encontrados:'(001) ).
+```
+
+**Dicas:** Use o *quick fix* (`Ctrl+1`) sobre o literal para criar o text symbol automaticamente. Mantenha o literal e o text symbol idênticos: a verificação estendida (SLIN) do ATC avisa quando eles divergem. O idioma original do objeto aparece na aba **Properties** do ADT.
 
 ## Comparação: Antigo vs Novo
 

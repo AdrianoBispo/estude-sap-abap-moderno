@@ -3,6 +3,8 @@
 ![Infográfico - Princípios para um Código ABAP OO Eficaz](./04.07_Principios_para_um_Codigo_ABAP_OO_Eficaz.png)
 
 > **Comece pelos slides: [Dominando os Pilares do Código Flexível e Resiliente para S/4HANA, RAP e Clean Core](./04.07_De_Construtor_a_Arquiteto_ABAP_Moderno.pdf)**
+>
+> **Referência oficial (ABAP Keyword Documentation):** [ABAP Objects](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-objects)
 
 ## Objetivos de Aprendizagem
 
@@ -71,6 +73,8 @@ ENDCLASS.
 ```
 
 ## 3. Exceções Baseadas em Classe (CX_*)
+
+> Esta seção é uma visão geral. A definição de classes de exceção, mensagens T100 e o tratamento completo estão na lição **04.08**.
 
 O tratamento de erros no ABAP evoluiu drasticamente. O modelo antigo usava `EXCEPTIONS error = 1` e verificava a variável de sistema `sy-subrc`.
 
