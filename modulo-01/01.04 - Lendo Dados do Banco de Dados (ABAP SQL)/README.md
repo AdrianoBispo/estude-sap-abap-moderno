@@ -208,7 +208,7 @@ ENDCLASS.
 
 ## 6. Lendo Dados de uma CDS View
 
-Em vez de ler a tabela diretamente, o `SELECT` pode usar uma **CDS View Entity** como fonte de dados. É o caminho preferido no ABAP Cloud, onde os dados SAP são acessados por views liberadas (ex.: `I_Product`; veja a lição 05.03).
+Em vez de ler a tabela diretamente, o `SELECT` pode usar uma **CDS View Entity** como fonte de dados. É o caminho preferido no ABAP Cloud, onde os dados SAP são acessados por views liberadas (ex.: `I_Product`; veja a lição 04.03).
 
 * **Reuso:** A lógica SQL da view (cálculos, joins, filtros) não precisa ser reescrita.
 

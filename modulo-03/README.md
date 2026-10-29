@@ -1,27 +1,21 @@
-# Módulo 3: Introdução à Criação de um Aplicativo SAP Fiori Elements com Base em um Serviço OData V4 RAP
+# Módulo 3: Modelagem de Dados com ABAP Dictionary e CDS
 
-![Guia Visual: Ciclo de Vida de Um App Fiori Elements](./03.00_Ciclo_de_Vida_de_Um_App_Fiori_Elements.png)
+![Guia Visual: Modelagem de Dados RAP](./03.00_Modelagem_de_Dados_RAP.png)
 
-Material baseado no curso [**"Getting Started with Creating an SAP Fiori Elements App Based on an OData V4 RAP Service"**](https://learning.sap.com/courses/getting-started-with-creating-an-sap-fiori-elements-app-based-on-an-odata-v4-rap-service) da SAP Learning. Jornada introdutória para desenvolvedores, arquitetos e consultores que desejam criar aplicações SAP Fiori utilizando o modelo de programação ABAP RESTful (RAP) e OData V4.
+Material baseado no curso [**"Data Modelling in ABAP Dictionary and ABAP Core Data Services"**](https://learning.sap.com/courses/data-modelling-in-abap-dictionary-and-abap-core-data-services) da SAP Learning. Este conteúdo intermediário destina-se a profissionais que desejam aprofundar conhecimentos em modelagem de dados no ambiente ABAP Moderno (RAP).
 
-> **Comece por aqui: [RAP e Fiori elements: a jornada completa](./03.00_RAP_e_Fiori_elements_a_jornada_completa.pptx)**
+> **Comece por aqui: [ABAP CDS: modelagem arquitetural](./03.00_ABAP_CDS_modelagem_arquitetural.pptx)**
 >
-> Material complementar em PDF: [RAP Fiori Elements: Jornada Completa](./03.00_RAP_Fiori_Elements_Jornada_Completa.pdf)
-
-> **[Aqui você encontra uma lista de exercícios simulados dos conteúdos deste módulo para ajudar nos seus estudos.](https://learnsap.enable-now.cloud.sap/pub/mmcp/index.html?library=library.txt&show=book!BO_8BC72D3BB2E765AF#slide!SL_3DFBCEC28C0D793)**
+> Material complementar em PDF: [ABAP CDS e Modelagem Arquitetural](./03.00_ABAP_CDS_Modelagem_Arquitetural.pdf)
 
 ## Conteúdo
 
 | Diretórios | Descrição |
 | :--- | :--- |
-| [**Visão Geral do SAP Fiori Elements para OData V4**](./03.01%20-%20Vis%C3%A3o%20Geral%20do%20SAP%20Fiori%20Elements%20para%20OData%20V4/README.md) | Introdução aos conceitos e arquitetura do SAP Fiori Elements com OData V4. |
-| [**Visão Geral do RAP: A Camada de Exposição de Serviços**](./03.02%20-%20Vis%C3%A3o%20Geral%20do%20RAP_%20A%20Camada%20de%20Exposi%C3%A7%C3%A3o%20de%20Servi%C3%A7os%20(Service%20Provisioning)/README.md) | Detalhes sobre a camada de Service Provisioning no modelo RAP. |
-| [**Configurando Anotações ABAP CDS no Backend**](./03.03%20-%20Configurando%20Anota%C3%A7%C3%B5es%20ABAP%20CDS%20no%20Backend/README.md) | Uso de anotações CDS para controlar o comportamento e a UI. |
-| [**Visão Geral das SAP Fiori Tools**](./03.04%20-%20Vis%C3%A3o%20Geral%20das%20SAP%20Fiori%20Tools/README.md) | Ferramentas essenciais para o desenvolvimento de aplicações Fiori. |
-| [**Entendendo os Floorplans do SAP Fiori Elements**](./03.05%20-%20Entendendo%20os%20Floorplans%20do%20SAP%20Fiori%20Elements/README.md) | Exploração dos diferentes layouts e modelos de página disponíveis. |
-| [**Configurando Relatórios de Lista e Páginas de Objeto**](./03.06%20-%20Configurando%20Relat%C3%B3rios%20de%20Lista%20e%20P%C3%A1ginas%20de%20Objeto/README.md) | Configuração de List Reports e Object Pages. |
-| [**Configurando Tabelas (Cores e Ações)**](./03.07%20-%20Configurando%20Tabelas%20(Cores%20e%20A%C3%A7%C3%B5es)/README.md) | Personalização de tabelas, incluindo cores semânticas e ações customizadas. |
-| [**Visão Geral do Conceito de Navegação em Apps SAP Fiori Elements**](./03.08%20-%20Vis%C3%A3o%20Geral%20do%20Conceito%20de%20Navega%C3%A7%C3%A3o%20em%20Apps%20SAP%20Fiori%20Elements/README.md) | Estruturas e fluxo de navegação entre páginas e aplicações. |
-| [**Configurações Avançadas de Páginas de Objeto**](./03.09%20-%20Configura%C3%A7%C3%B5es%20Avan%C3%A7adas%20de%20P%C3%A1ginas%20de%20Objeto/README.md) | Técnicas avançadas para customização de Object Pages. |
-| [**Examinando o Modelo de Programação Flexível (FPM)**](./03.10%20-%20Examinando%20o%20Modelo%20de%20Programa%C3%A7%C3%A3o%20Flex%C3%ADvel%20(FPM)/README.md) | Extensibilidade e flexibilidade utilizando o Flexible Programming Model. |
-| [**Implantando um Aplicativo SAP Fiori Elements**](./03.11%20-%20Implantando%20um%20Aplicativo%20SAP%20Fiori%20Elements/README.md) | Processo de deployment da aplicação Fiori. |
+| [**Explorando a Modelagem de Dados no ABAP**](./03.01%20-%20Explorando%20a%20Modelagem%20de%20Dados%20no%20ABAP/README.md) | Visão geral sobre modelagem de dados em ABAP. |
+| [**Criando Tabelas de Banco de Dados (Source-Based)**](./03.02%20-%20Criando%20Tabelas%20de%20Banco%20de%20Dados%20(Source-Based)/README.md) | Criação de tabelas utilizando a abordagem baseada em código (Source-Based). |
+| [**Definindo Tipos de Dados Globais**](./03.03%20-%20Definindo%20Tipos%20de%20Dados%20Globais/README.md) | Definição e uso de tipos de dados globais no dicionário de dados. |
+| [**Definindo CDS Views Básicas (Interface Views)**](./03.04%20-%20Definindo%20CDS%20Views%20B%C3%A1sicas%20(Interface%20Views)/README.md) | Criação de interface views básicas com Core Data Services (CDS). |
+| [**Definindo Relacionamentos e Associações**](./03.05%20-%20Definindo%20Relacionamentos%20e%20Associa%C3%A7%C3%B5es/README.md) | Configuração de relacionamentos e associações entre entidades CDS. |
+| [**Usando Code Pushdown em CDS Views (Expressões SQL)**](./03.06%20-%20Usando%20Code%20Pushdown%20em%20CDS%20Views%20(Express%C3%B5es%20SQL)/README.md) | Otimização de performance movendo lógica para o banco de dados via Code Pushdown. |
+| [**Definindo Meta Objetos (Metadata Extensions)**](./03.07%20-%20Definindo%20Meta%20Objetos%20(Metadata%20Extensions)/README.md) | Enriquecimento de modelos de dados utilizando extensões de metadados. |
