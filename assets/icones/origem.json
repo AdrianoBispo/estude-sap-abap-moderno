@@ -1,0 +1,992 @@
+{
+ "alerta": {
+  "apresentacao": "02.07",
+  "imagem": "image27.png",
+  "duas_cores": false
+ },
+ "alvo": {
+  "apresentacao": "02.00",
+  "imagem": "image115.png",
+  "duas_cores": false
+ },
+ "anel-saida": {
+  "apresentacao": "03.00",
+  "imagem": "image48.png",
+  "duas_cores": false
+ },
+ "anuncio": {
+  "apresentacao": "01.07",
+  "imagem": "image59.png",
+  "duas_cores": false
+ },
+ "aperto-de-maos": {
+  "apresentacao": "01.02",
+  "imagem": "image81.png",
+  "duas_cores": false
+ },
+ "api-engrenagem": {
+  "apresentacao": "01.08",
+  "imagem": "image114.png",
+  "duas_cores": true
+ },
+ "api-globo": {
+  "apresentacao": "01.00",
+  "imagem": "image129.png",
+  "duas_cores": true
+ },
+ "api-hub": {
+  "apresentacao": "01.00",
+  "imagem": "image6.png",
+  "duas_cores": false
+ },
+ "api-janela": {
+  "apresentacao": "01.08",
+  "imagem": "image40.png",
+  "duas_cores": false
+ },
+ "arquivo-codigo": {
+  "apresentacao": "01.01",
+  "imagem": "image73.png",
+  "duas_cores": false
+ },
+ "arquivo-codigo-engrenagem": {
+  "apresentacao": "01.00",
+  "imagem": "image131.png",
+  "duas_cores": false
+ },
+ "arquivo-novo": {
+  "apresentacao": "02.07",
+  "imagem": "image7.png",
+  "duas_cores": false
+ },
+ "arvore-mais-menos": {
+  "apresentacao": "02.04",
+  "imagem": "image124.png",
+  "duas_cores": false
+ },
+ "banco-calculo": {
+  "apresentacao": "01.04",
+  "imagem": "image23.png",
+  "duas_cores": false
+ },
+ "banco-dados": {
+  "apresentacao": "01.01",
+  "imagem": "image75.png",
+  "duas_cores": false
+ },
+ "banco-documentos": {
+  "apresentacao": "02.03",
+  "imagem": "image25.png",
+  "duas_cores": false
+ },
+ "banco-engrenagens": {
+  "apresentacao": "02.01",
+  "imagem": "image143.png",
+  "duas_cores": false
+ },
+ "banco-executar": {
+  "apresentacao": "02.05",
+  "imagem": "image30.png",
+  "duas_cores": true
+ },
+ "banco-hana": {
+  "apresentacao": "01.08",
+  "imagem": "image39.png",
+  "duas_cores": false
+ },
+ "banco-janela": {
+  "apresentacao": "02.01",
+  "imagem": "image142.png",
+  "duas_cores": false
+ },
+ "banco-rede": {
+  "apresentacao": "01.08",
+  "imagem": "image219.png",
+  "duas_cores": false
+ },
+ "banco-relacoes": {
+  "apresentacao": "01.00",
+  "imagem": "image127.png",
+  "duas_cores": false
+ },
+ "banco-servidor": {
+  "apresentacao": "02.03",
+  "imagem": "image37.png",
+  "duas_cores": false
+ },
+ "banco-sincronizar": {
+  "apresentacao": "01.07",
+  "imagem": "image12.png",
+  "duas_cores": false
+ },
+ "bancos": {
+  "apresentacao": "02.00",
+  "imagem": "image109.png",
+  "duas_cores": false
+ },
+ "bandeja-upload": {
+  "apresentacao": "01.08",
+  "imagem": "image225.png",
+  "duas_cores": false
+ },
+ "bifurcacao": {
+  "apresentacao": "02.07",
+  "imagem": "image5.png",
+  "duas_cores": false
+ },
+ "bloco": {
+  "apresentacao": "01.05",
+  "imagem": "image107.png",
+  "duas_cores": false
+ },
+ "blocos": {
+  "apresentacao": "02.00",
+  "imagem": "image126.png",
+  "duas_cores": false
+ },
+ "blocos-codigo": {
+  "apresentacao": "01.08",
+  "imagem": "image164.png",
+  "duas_cores": false
+ },
+ "blocos-montar": {
+  "apresentacao": "03.00",
+  "imagem": "image38.png",
+  "duas_cores": false
+ },
+ "cabeca-ideia": {
+  "apresentacao": "01.02",
+  "imagem": "image82.png",
+  "duas_cores": false
+ },
+ "cadeado-negado": {
+  "apresentacao": "02.04",
+  "imagem": "image25.png",
+  "duas_cores": true
+ },
+ "caixa-entrada": {
+  "apresentacao": "01.02",
+  "imagem": "image35.png",
+  "duas_cores": false
+ },
+ "caixa-veloz": {
+  "apresentacao": "02.04",
+  "imagem": "image132.png",
+  "duas_cores": false
+ },
+ "calculadora": {
+  "apresentacao": "02.06",
+  "imagem": "image58.png",
+  "duas_cores": false
+ },
+ "calendario": {
+  "apresentacao": "01.02",
+  "imagem": "image33.png",
+  "duas_cores": false
+ },
+ "calendario-2": {
+  "apresentacao": "02.06",
+  "imagem": "image60.png",
+  "duas_cores": false
+ },
+ "calendario-relogio": {
+  "apresentacao": "02.04",
+  "imagem": "image96.png",
+  "duas_cores": false
+ },
+ "calendario-texto": {
+  "apresentacao": "02.04",
+  "imagem": "image126.png",
+  "duas_cores": false
+ },
+ "calendario-usuario": {
+  "apresentacao": "01.01",
+  "imagem": "image77.png",
+  "duas_cores": false
+ },
+ "camadas": {
+  "apresentacao": "02.00",
+  "imagem": "image112.png",
+  "duas_cores": false
+ },
+ "camadas-3": {
+  "apresentacao": "02.03",
+  "imagem": "image111.png",
+  "duas_cores": true
+ },
+ "camadas-planta": {
+  "apresentacao": "02.00",
+  "imagem": "image125.png",
+  "duas_cores": false
+ },
+ "camadas-upload": {
+  "apresentacao": "02.01",
+  "imagem": "image160.png",
+  "duas_cores": false
+ },
+ "cardapio": {
+  "apresentacao": "01.08",
+  "imagem": "image139.png",
+  "duas_cores": true
+ },
+ "celular-app": {
+  "apresentacao": "02.01",
+  "imagem": "image116.png",
+  "duas_cores": false
+ },
+ "cerebro": {
+  "apresentacao": "01.02",
+  "imagem": "image36.png",
+  "duas_cores": false
+ },
+ "cerebro-banco": {
+  "apresentacao": "02.00",
+  "imagem": "image92.png",
+  "duas_cores": false
+ },
+ "cerebro-engrenagem": {
+  "apresentacao": "01.07",
+  "imagem": "image6.png",
+  "duas_cores": false
+ },
+ "certificado": {
+  "apresentacao": "01.01",
+  "imagem": "image28.png",
+  "duas_cores": false
+ },
+ "chave": {
+  "apresentacao": "01.01",
+  "imagem": "image16.png",
+  "duas_cores": false
+ },
+ "chave-2": {
+  "apresentacao": "02.04",
+  "imagem": "image134.png",
+  "duas_cores": false
+ },
+ "chaves-seta": {
+  "apresentacao": "02.04",
+  "imagem": "image4.png",
+  "duas_cores": false
+ },
+ "check-circulo": {
+  "apresentacao": "02.04",
+  "imagem": "image138.png",
+  "duas_cores": false
+ },
+ "checkbox": {
+  "apresentacao": "02.02",
+  "imagem": "image106.png",
+  "duas_cores": false
+ },
+ "checklist": {
+  "apresentacao": "03.00",
+  "imagem": "image56.png",
+  "duas_cores": false
+ },
+ "chip": {
+  "apresentacao": "01.01",
+  "imagem": "image17.png",
+  "duas_cores": false
+ },
+ "clique": {
+  "apresentacao": "01.06",
+  "imagem": "image61.png",
+  "duas_cores": false
+ },
+ "codigo-escudo": {
+  "apresentacao": "02.03",
+  "imagem": "image113.png",
+  "duas_cores": true
+ },
+ "cofre": {
+  "apresentacao": "02.00",
+  "imagem": "image18.png",
+  "duas_cores": false
+ },
+ "compasso-martelo": {
+  "apresentacao": "01.08",
+  "imagem": "image167.png",
+  "duas_cores": false
+ },
+ "condicao-case": {
+  "apresentacao": "02.04",
+  "imagem": "image113.png",
+  "duas_cores": false
+ },
+ "condicao-if": {
+  "apresentacao": "02.04",
+  "imagem": "image112.png",
+  "duas_cores": false
+ },
+ "conjuntos": {
+  "apresentacao": "02.01",
+  "imagem": "image10.png",
+  "duas_cores": false
+ },
+ "coroa": {
+  "apresentacao": "03.00",
+  "imagem": "image163.png",
+  "duas_cores": false
+ },
+ "cpu-escudo": {
+  "apresentacao": "01.01",
+  "imagem": "image83.png",
+  "duas_cores": false
+ },
+ "cronometro": {
+  "apresentacao": "02.03",
+  "imagem": "image8.png",
+  "duas_cores": false
+ },
+ "cubo": {
+  "apresentacao": "01.04",
+  "imagem": "image66.png",
+  "duas_cores": false
+ },
+ "cubo-arvore": {
+  "apresentacao": "01.05",
+  "imagem": "image108.png",
+  "duas_cores": false
+ },
+ "cubo-solido": {
+  "apresentacao": "02.01",
+  "imagem": "image93.png",
+  "duas_cores": false
+ },
+ "desenvolvedor": {
+  "apresentacao": "01.01",
+  "imagem": "image31.png",
+  "duas_cores": false
+ },
+ "desfazer": {
+  "apresentacao": "02.04",
+  "imagem": "image111.png",
+  "duas_cores": false
+ },
+ "diferente": {
+  "apresentacao": "02.05",
+  "imagem": "image29.png",
+  "duas_cores": false
+ },
+ "distribuir": {
+  "apresentacao": "02.05",
+  "imagem": "image52.png",
+  "duas_cores": false
+ },
+ "documento-aprovado": {
+  "apresentacao": "02.04",
+  "imagem": "image121.png",
+  "duas_cores": true
+ },
+ "documento-certificado": {
+  "apresentacao": "01.01",
+  "imagem": "image85.png",
+  "duas_cores": false
+ },
+ "documento-engrenagem": {
+  "apresentacao": "02.00",
+  "imagem": "image7.png",
+  "duas_cores": true
+ },
+ "documento-etiqueta": {
+  "apresentacao": "01.08",
+  "imagem": "image237.png",
+  "duas_cores": false
+ },
+ "documento-lista": {
+  "apresentacao": "02.04",
+  "imagem": "image116.png",
+  "duas_cores": false
+ },
+ "documentos": {
+  "apresentacao": "01.02",
+  "imagem": "image24.png",
+  "duas_cores": false
+ },
+ "editor-layout": {
+  "apresentacao": "02.00",
+  "imagem": "image94.png",
+  "duas_cores": false
+ },
+ "elo": {
+  "apresentacao": "02.01",
+  "imagem": "image61.png",
+  "duas_cores": false
+ },
+ "elo-quebrado": {
+  "apresentacao": "03.00",
+  "imagem": "image166.png",
+  "duas_cores": false
+ },
+ "embaralhar": {
+  "apresentacao": "01.00",
+  "imagem": "image73.png",
+  "duas_cores": false
+ },
+ "engrenagem": {
+  "apresentacao": "03.00",
+  "imagem": "image44.png",
+  "duas_cores": false
+ },
+ "engrenagem-ajuste": {
+  "apresentacao": "02.04",
+  "imagem": "image100.png",
+  "duas_cores": false
+ },
+ "engrenagem-atualizar": {
+  "apresentacao": "01.08",
+  "imagem": "image28.png",
+  "duas_cores": false
+ },
+ "engrenagem-embaralhar": {
+  "apresentacao": "02.07",
+  "imagem": "image90.png",
+  "duas_cores": false
+ },
+ "engrenagem-planta": {
+  "apresentacao": "02.03",
+  "imagem": "image36.png",
+  "duas_cores": false
+ },
+ "engrenagens": {
+  "apresentacao": "01.03",
+  "imagem": "image69.png",
+  "duas_cores": false
+ },
+ "engrenagens-ciclo": {
+  "apresentacao": "01.01",
+  "imagem": "image8.png",
+  "duas_cores": false
+ },
+ "engrenagens-rede": {
+  "apresentacao": "02.01",
+  "imagem": "image110.png",
+  "duas_cores": false
+ },
+ "engrenagens-troca": {
+  "apresentacao": "02.01",
+  "imagem": "image167.png",
+  "duas_cores": false
+ },
+ "escudo": {
+  "apresentacao": "01.01",
+  "imagem": "image57.png",
+  "duas_cores": false
+ },
+ "escudo-alerta": {
+  "apresentacao": "01.07",
+  "imagem": "image14.png",
+  "duas_cores": false
+ },
+ "etiqueta": {
+  "apresentacao": "02.00",
+  "imagem": "image44.png",
+  "duas_cores": false
+ },
+ "etiqueta-2": {
+  "apresentacao": "02.04",
+  "imagem": "image135.png",
+  "duas_cores": false
+ },
+ "etiqueta-arroba": {
+  "apresentacao": "03.00",
+  "imagem": "image34.png",
+  "duas_cores": false
+ },
+ "etiqueta-codigo": {
+  "apresentacao": "02.01",
+  "imagem": "image64.png",
+  "duas_cores": false
+ },
+ "etiqueta-comentario": {
+  "apresentacao": "02.03",
+  "imagem": "image40.png",
+  "duas_cores": false
+ },
+ "exportar": {
+  "apresentacao": "02.04",
+  "imagem": "image18.png",
+  "duas_cores": false
+ },
+ "ferramentas-elo": {
+  "apresentacao": "03.00",
+  "imagem": "image165.png",
+  "duas_cores": false
+ },
+ "ferramentas-engrenagem": {
+  "apresentacao": "01.02",
+  "imagem": "image80.png",
+  "duas_cores": false
+ },
+ "fluxo-caixas": {
+  "apresentacao": "01.08",
+  "imagem": "image32.png",
+  "duas_cores": false
+ },
+ "fluxo-setas": {
+  "apresentacao": "03.00",
+  "imagem": "image135.png",
+  "duas_cores": false
+ },
+ "foguete": {
+  "apresentacao": "01.02",
+  "imagem": "image79.png",
+  "duas_cores": false
+ },
+ "foguete-2": {
+  "apresentacao": "02.02",
+  "imagem": "image18.png",
+  "duas_cores": false
+ },
+ "formulario": {
+  "apresentacao": "03.05",
+  "imagem": "image11.png",
+  "duas_cores": false
+ },
+ "fundacao": {
+  "apresentacao": "02.01",
+  "imagem": "image102.png",
+  "duas_cores": false
+ },
+ "funil": {
+  "apresentacao": "01.08",
+  "imagem": "image235.png",
+  "duas_cores": true
+ },
+ "garcom-bandeja": {
+  "apresentacao": "01.08",
+  "imagem": "image296.png",
+  "duas_cores": false
+ },
+ "git": {
+  "apresentacao": "01.01",
+  "imagem": "image56.png",
+  "duas_cores": false
+ },
+ "globo-codigo": {
+  "apresentacao": "02.05",
+  "imagem": "image83.png",
+  "duas_cores": false
+ },
+ "globo-nuvem": {
+  "apresentacao": "01.08",
+  "imagem": "image38.png",
+  "duas_cores": false
+ },
+ "grafico-alta": {
+  "apresentacao": "02.01",
+  "imagem": "image165.png",
+  "duas_cores": false
+ },
+ "grafico-tendencia": {
+  "apresentacao": "02.03",
+  "imagem": "image114.png",
+  "duas_cores": true
+ },
+ "hierarquia": {
+  "apresentacao": "02.01",
+  "imagem": "image127.png",
+  "duas_cores": false
+ },
+ "hub": {
+  "apresentacao": "02.00",
+  "imagem": "image81.png",
+  "duas_cores": false
+ },
+ "identidade-escudo": {
+  "apresentacao": "01.05",
+  "imagem": "image42.png",
+  "duas_cores": false
+ },
+ "interruptor-engrenagem": {
+  "apresentacao": "02.07",
+  "imagem": "image6.png",
+  "duas_cores": false
+ },
+ "janela-codigo": {
+  "apresentacao": "02.01",
+  "imagem": "image168.png",
+  "duas_cores": false
+ },
+ "janela-formulario": {
+  "apresentacao": "02.05",
+  "imagem": "image85.png",
+  "duas_cores": false
+ },
+ "janelas": {
+  "apresentacao": "01.01",
+  "imagem": "image12.png",
+  "duas_cores": false
+ },
+ "janelas-grafico": {
+  "apresentacao": "02.03",
+  "imagem": "image31.png",
+  "duas_cores": false
+ },
+ "lampada": {
+  "apresentacao": "02.01",
+  "imagem": "image89.png",
+  "duas_cores": false
+ },
+ "lapis": {
+  "apresentacao": "01.07",
+  "imagem": "image10.png",
+  "duas_cores": false
+ },
+ "link": {
+  "apresentacao": "01.02",
+  "imagem": "image25.png",
+  "duas_cores": false
+ },
+ "lista-etiquetas": {
+  "apresentacao": "02.03",
+  "imagem": "image41.png",
+  "duas_cores": false
+ },
+ "livro-ajuda": {
+  "apresentacao": "02.03",
+  "imagem": "image43.png",
+  "duas_cores": false
+ },
+ "lupa": {
+  "apresentacao": "01.06",
+  "imagem": "image59.png",
+  "duas_cores": false
+ },
+ "lupa-mensagem": {
+  "apresentacao": "02.05",
+  "imagem": "image21.png",
+  "duas_cores": true
+ },
+ "lupa-pergunta": {
+  "apresentacao": "02.03",
+  "imagem": "image42.png",
+  "duas_cores": false
+ },
+ "lupa-texto": {
+  "apresentacao": "02.02",
+  "imagem": "image19.png",
+  "duas_cores": false
+ },
+ "mapa": {
+  "apresentacao": "01.07",
+  "imagem": "image62.png",
+  "duas_cores": false
+ },
+ "memoria": {
+  "apresentacao": "01.07",
+  "imagem": "image68.png",
+  "duas_cores": false
+ },
+ "monitor": {
+  "apresentacao": "03.00",
+  "imagem": "image52.png",
+  "duas_cores": false
+ },
+ "monitor-codigo": {
+  "apresentacao": "01.01",
+  "imagem": "image69.png",
+  "duas_cores": false
+ },
+ "monitor-codigo-engrenagem": {
+  "apresentacao": "01.01",
+  "imagem": "image79.png",
+  "duas_cores": false
+ },
+ "monitor-cursor": {
+  "apresentacao": "01.08",
+  "imagem": "image112.png",
+  "duas_cores": true
+ },
+ "monitor-painel": {
+  "apresentacao": "01.00",
+  "imagem": "image125.png",
+  "duas_cores": false
+ },
+ "navegador-clique": {
+  "apresentacao": "01.08",
+  "imagem": "image228.png",
+  "duas_cores": false
+ },
+ "navegador-foguete": {
+  "apresentacao": "01.08",
+  "imagem": "image248.png",
+  "duas_cores": true
+ },
+ "nuvem-cadeado": {
+  "apresentacao": "01.01",
+  "imagem": "image10.png",
+  "duas_cores": false
+ },
+ "nuvem-documento": {
+  "apresentacao": "01.00",
+  "imagem": "image4.png",
+  "duas_cores": false
+ },
+ "nuvem-engrenagem": {
+  "apresentacao": "01.00",
+  "imagem": "image10.png",
+  "duas_cores": false
+ },
+ "nuvem-foguete": {
+  "apresentacao": "03.00",
+  "imagem": "image159.png",
+  "duas_cores": false
+ },
+ "nuvem-seguranca": {
+  "apresentacao": "01.01",
+  "imagem": "image81.png",
+  "duas_cores": false
+ },
+ "nuvem-upload": {
+  "apresentacao": "01.00",
+  "imagem": "image5.png",
+  "duas_cores": false
+ },
+ "odata-v2-v4": {
+  "apresentacao": "01.08",
+  "imagem": "image141.png",
+  "duas_cores": false
+ },
+ "olho": {
+  "apresentacao": "01.07",
+  "imagem": "image40.png",
+  "duas_cores": false
+ },
+ "olho-lupa": {
+  "apresentacao": "03.00",
+  "imagem": "image158.png",
+  "duas_cores": false
+ },
+ "organograma": {
+  "apresentacao": "03.00",
+  "imagem": "image150.png",
+  "duas_cores": false
+ },
+ "painel-layout": {
+  "apresentacao": "02.03",
+  "imagem": "image27.png",
+  "duas_cores": false
+ },
+ "paleta": {
+  "apresentacao": "02.00",
+  "imagem": "image118.png",
+  "duas_cores": false
+ },
+ "pasta": {
+  "apresentacao": "03.05",
+  "imagem": "image10.png",
+  "duas_cores": false
+ },
+ "pecas-encaixe": {
+  "apresentacao": "01.08",
+  "imagem": "image43.png",
+  "duas_cores": false
+ },
+ "piramide": {
+  "apresentacao": "02.07",
+  "imagem": "image9.png",
+  "duas_cores": false
+ },
+ "planilha": {
+  "apresentacao": "02.07",
+  "imagem": "image8.png",
+  "duas_cores": false
+ },
+ "planta-baixa": {
+  "apresentacao": "01.05",
+  "imagem": "image26.png",
+  "duas_cores": false
+ },
+ "planta-codigo": {
+  "apresentacao": "03.00",
+  "imagem": "image157.png",
+  "duas_cores": false
+ },
+ "planta-engrenagem": {
+  "apresentacao": "02.03",
+  "imagem": "image108.png",
+  "duas_cores": false
+ },
+ "planta-engrenagens": {
+  "apresentacao": "02.03",
+  "imagem": "image11.png",
+  "duas_cores": false
+ },
+ "planta-medidas": {
+  "apresentacao": "03.00",
+  "imagem": "image35.png",
+  "duas_cores": false
+ },
+ "play": {
+  "apresentacao": "03.00",
+  "imagem": "image107.png",
+  "duas_cores": false
+ },
+ "ponte": {
+  "apresentacao": "01.04",
+  "imagem": "image63.png",
+  "duas_cores": false
+ },
+ "predio": {
+  "apresentacao": "01.05",
+  "imagem": "image27.png",
+  "duas_cores": false
+ },
+ "quebra-cabeca": {
+  "apresentacao": "03.00",
+  "imagem": "image164.png",
+  "duas_cores": false
+ },
+ "quebra-cabeca-fluxo": {
+  "apresentacao": "01.05",
+  "imagem": "image40.png",
+  "duas_cores": false
+ },
+ "ramificacao": {
+  "apresentacao": "01.01",
+  "imagem": "image14.png",
+  "duas_cores": false
+ },
+ "ramificacao-nuvem": {
+  "apresentacao": "01.01",
+  "imagem": "image87.png",
+  "duas_cores": false
+ },
+ "reciclar": {
+  "apresentacao": "02.01",
+  "imagem": "image94.png",
+  "duas_cores": false
+ },
+ "rede-cubo": {
+  "apresentacao": "01.08",
+  "imagem": "image127.png",
+  "duas_cores": false
+ },
+ "regua-compasso": {
+  "apresentacao": "02.00",
+  "imagem": "image40.png",
+  "duas_cores": false
+ },
+ "robo-braco": {
+  "apresentacao": "01.00",
+  "imagem": "image117.png",
+  "duas_cores": false
+ },
+ "robo-caixas": {
+  "apresentacao": "01.08",
+  "imagem": "image199.png",
+  "duas_cores": false
+ },
+ "semaforo": {
+  "apresentacao": "03.00",
+  "imagem": "image105.png",
+  "duas_cores": true
+ },
+ "servidor-rede": {
+  "apresentacao": "01.04",
+  "imagem": "image21.png",
+  "duas_cores": true
+ },
+ "servidor-torre": {
+  "apresentacao": "02.01",
+  "imagem": "image47.png",
+  "duas_cores": false
+ },
+ "setas-cruzadas": {
+  "apresentacao": "02.03",
+  "imagem": "image39.png",
+  "duas_cores": false
+ },
+ "setas-divisao": {
+  "apresentacao": "01.05",
+  "imagem": "image109.png",
+  "duas_cores": false
+ },
+ "sobreposicao": {
+  "apresentacao": "01.08",
+  "imagem": "image233.png",
+  "duas_cores": false
+ },
+ "tabela": {
+  "apresentacao": "01.00",
+  "imagem": "image123.png",
+  "duas_cores": false
+ },
+ "tabela-janela": {
+  "apresentacao": "02.03",
+  "imagem": "image104.png",
+  "duas_cores": false
+ },
+ "tablet-grafico": {
+  "apresentacao": "01.08",
+  "imagem": "image157.png",
+  "duas_cores": false
+ },
+ "tablet-perfil": {
+  "apresentacao": "02.01",
+  "imagem": "image166.png",
+  "duas_cores": false
+ },
+ "tablet-tabela": {
+  "apresentacao": "01.08",
+  "imagem": "image109.png",
+  "duas_cores": false
+ },
+ "tags-codigo": {
+  "apresentacao": "02.02",
+  "imagem": "image4.png",
+  "duas_cores": false
+ },
+ "terminal": {
+  "apresentacao": "01.01",
+  "imagem": "image18.png",
+  "duas_cores": false
+ },
+ "terminal-arquivo": {
+  "apresentacao": "02.04",
+  "imagem": "image21.png",
+  "duas_cores": false
+ },
+ "texto": {
+  "apresentacao": "02.01",
+  "imagem": "image95.png",
+  "duas_cores": false
+ },
+ "tipos-dados": {
+  "apresentacao": "01.05",
+  "imagem": "image111.png",
+  "duas_cores": false
+ },
+ "tomada": {
+  "apresentacao": "03.00",
+  "imagem": "image57.png",
+  "duas_cores": false
+ },
+ "usuario": {
+  "apresentacao": "02.04",
+  "imagem": "image95.png",
+  "duas_cores": false
+ },
+ "usuario-chave": {
+  "apresentacao": "03.00",
+  "imagem": "image153.png",
+  "duas_cores": false
+ },
+ "usuario-engrenagem": {
+  "apresentacao": "03.00",
+  "imagem": "image169.png",
+  "duas_cores": false
+ },
+ "varinha": {
+  "apresentacao": "01.04",
+  "imagem": "image11.png",
+  "duas_cores": false
+ },
+ "wireframe": {
+  "apresentacao": "02.03",
+  "imagem": "image112.png",
+  "duas_cores": true
+ }
+}
