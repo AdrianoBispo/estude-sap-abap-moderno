@@ -2,7 +2,9 @@
 
 ![Infográfico - Guia de Performance para Tabelas Internas ABAP](./04.05_Guia_de_Performance_para_Tabelas_ABAP.png)
 
-> **Comece pelos slides: [ABAP Moderno: Performance de Elite em Tabelas Internas](./04.05_ABAP_Performance_Tabelas_Internas.pdf)**
+> **Comece pelos slides: [Melhorando a performance de tabelas internas](./04.05_Melhorando_a_performance_de_tabelas_internas.pptx)**
+>
+> Material complementar em PDF: [ABAP Moderno: Performance de Elite em Tabelas Internas](./04.05_ABAP_Performance_Tabelas_Internas.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [itab - Using Secondary Keys](https://help.sap.com/docs/abap-cloud/abap-keywords/itab-using-secondary-keys)
 

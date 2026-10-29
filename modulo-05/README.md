@@ -4,7 +4,9 @@
 
 Material baseado no curso [**"Practicing Clean Core Extensibility for SAP S/4HANA Cloud"**](https://learning.sap.com/courses/practicing-clean-core-extensibility-for-sap-s-4hana-cloud) da SAP Learning. Uma jornada intermediária para profissionais que desejam dominar a criação de extensões no **SAP S/4HANA Cloud**, alinhadas aos princípios de **Clean Core**.
 
-> **Comece por aqui: [Do Legado à Agilidade: Guia de Arquitetura S/4HANA](./05.00_Do_Legado_à_Agilidade_Guia_de_Arquitetura_S4HANA.pdf)**
+> **Comece por aqui: [Do legado à agilidade: Clean Core no S/4HANA](./05.00_Do_legado_à_agilidade_Clean_Core_no_S4HANA.pptx)**
+>
+> Material complementar em PDF: [Do Legado à Agilidade: Guia de Arquitetura S/4HANA](./05.00_Do_Legado_à_Agilidade_Guia_de_Arquitetura_S4HANA.pdf)
 
 ## Conteúdo
 

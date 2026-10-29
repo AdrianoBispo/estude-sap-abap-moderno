@@ -2,7 +2,9 @@
 
 ![Infográfico - Otimização de Tabelas Internas](./01.06_Otimizacao_de_Tabelas_Internas.png)
 
-> **Comece pelos slides: [ABAP Moderno: Tabelas Internas Complexas](./01.06_ABAP_Moderno_Tabelas_Internas_Complexas.pdf)**
+> **Comece pelos slides: [Trabalhando com tabelas internas complexas](./01.06_Trabalhando_com_tabelas_internas_complexas.pptx)**
+>
+> Material complementar em PDF: [ABAP Moderno: Tabelas Internas Complexas](./01.06_ABAP_Moderno_Tabelas_Internas_Complexas.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [Internal Tables (itab)](https://help.sap.com/docs/abap-cloud/abap-keywords/internal-tables-itab)
 

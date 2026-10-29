@@ -2,8 +2,9 @@
 
 ![Infográfico - Implantando um Aplicativo SAP Fiori Elements](./03.11_Do_Codigo_ao_Launchpad.png)
 
-> **Comece pelos slides: [Guia Completo para o Deploy de Apps Fiori Elements no S/4HANA](./03.11_Fiori_Deploy_Do_Código_Ao_Usuário.pdf)**
-
+> **Comece pelos slides: [Deploy de um app Fiori elements](./03.11_Deploy_de_um_app_Fiori_elements.pptx)**
+>
+> Material complementar em PDF: [Guia Completo para o Deploy de Apps Fiori Elements no S/4HANA](./03.11_Fiori_Deploy_Do_Código_Ao_Usuário.pdf)
 ## Objetivos de Aprendizagem
 
 - Compreender profundamente o ciclo de vida de **Deployment** (Implantação), transformando um projeto de desenvolvimento local em um artefato de produção hospedado no servidor ABAP.  

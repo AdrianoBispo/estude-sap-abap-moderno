@@ -2,7 +2,9 @@
 
 ![Infográfico - As Vantagens da Metadata Extensions](./02.07_A_Vantagem_das_Metadatas_Extensions.png)
 
-> **Comece pelos slides: [Definindo Meta Objetos (Metadata Extensions)](./02.07_Definindo_Meta_Objetos.pdf)**
+> **Comece pelos slides: [Meta objetos do Dicionário e do CDS](./02.07_Meta_objetos_do_Dicionário_e_do_CDS.pptx)**
+>
+> Material complementar em PDF: [Definindo Meta Objetos (Metadata Extensions)](./02.07_Definindo_Meta_Objetos.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [ABAP CDS - Metadata Extensions](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-cds-metadata-extensions)
 

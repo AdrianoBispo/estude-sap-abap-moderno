@@ -4,7 +4,9 @@
 
 Material baseado no curso [**"Deepening Your ABAP Programming Knowledge"**](https://learning.sap.com/courses/deepening-your-abap-programming-knowledge) da SAP Learning. Voltado para desenvolvedores com conhecimentos básicos em ABAP que desejam aprofundar suas habilidades, cobrindo tópicos essenciais para escrever código eficiente, seguro e bem estruturado.
 
-> **Comece por aqui: [Excelência ABAP: Robustez, Performance e Design](./04.00_Excelência_ABAP_Robustez_Performance_Design.pdf)**
+> **Comece por aqui: [Excelência em ABAP: robustez, performance e design](./04.00_Excelência_em_ABAP_robustez_performance_e_design.pptx)**
+>
+> Material complementar em PDF: [Excelência ABAP: Robustez, Performance e Design](./04.00_Excelência_ABAP_Robustez_Performance_Design.pdf)
 
 ## Conteúdo
 

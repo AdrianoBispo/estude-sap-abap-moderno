@@ -4,7 +4,9 @@
 
 Material baseado no curso [**"Data Modelling in ABAP Dictionary and ABAP Core Data Services"**](https://learning.sap.com/courses/data-modelling-in-abap-dictionary-and-abap-core-data-services) da SAP Learning. Este conteúdo intermediário destina-se a profissionais que desejam aprofundar conhecimentos em modelagem de dados no ambiente ABAP Moderno (RAP).
 
-> **Comece por aqui: [ABAP CDS e Modelagem Arquitetural](./02.00_ABAP_CDS_Modelagem_Arquitetural.pdf)**
+> **Comece por aqui: [ABAP CDS: modelagem arquitetural](./02.00_ABAP_CDS_modelagem_arquitetural.pptx)**
+>
+> Material complementar em PDF: [ABAP CDS e Modelagem Arquitetural](./02.00_ABAP_CDS_Modelagem_Arquitetural.pdf)
 
 ## Conteúdo
 

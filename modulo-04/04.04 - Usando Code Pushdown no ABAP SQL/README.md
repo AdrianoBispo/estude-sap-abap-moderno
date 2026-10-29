@@ -2,7 +2,9 @@
 
 ![Infográfico - Modernize seu ABAP com Code Pushdown](./04.04_Modernize_seu_ABAP_com_Code_Pushdown.png)
 
-> **Comece pelos slides: [Usando Code Pushdown no ABAP SQL](./04.04_Usando_Code_Pushdown_no_ABAP_SQL.pdf)**
+> **Comece pelos slides: [Code pushdown no ABAP SQL](./04.04_Code_pushdown_no_ABAP_SQL.pptx)**
+>
+> Material complementar em PDF: [Usando Code Pushdown no ABAP SQL](./04.04_Usando_Code_Pushdown_no_ABAP_SQL.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [ABAP SQL](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-sql)
 

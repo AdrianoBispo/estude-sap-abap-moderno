@@ -2,8 +2,9 @@
 
 ![Infográfico - Potencialize suas Objects Pages no SAP Fiori Elements](./03.09_Potencialize_suas_Object_Pages_.png)
 
-> **Comece pelos slides: [Construindo uma Object Page de Alta Performance](./03.09_De_Básico_a_Brilhante.pdf)**
-
+> **Comece pelos slides: [Object Page avançada](./03.09_Object_Page_avançada.pptx)**
+>
+> Material complementar em PDF: [Construindo uma Object Page de Alta Performance](./03.09_De_Básico_a_Brilhante.pdf)
 ## Objetivos de Aprendizagem
 
 - Configurar **Header Facets** para exibir informações críticas (KPIs, Status, Contatos) no cabeçalho colapsável da página, melhorando a capacidade de decisão rápida do usuário.  

@@ -2,7 +2,9 @@
 
 ![Infográfico - Modernizando Tabelas ABAP](./02.02_Modernizando_Tabelas_ABAP.png)
 
-> **Comece pelos slides: [A Evolução da Modelagem de Dados no ABAP](./02.02_A_Evolucao_da_Modelagem_de_Dados_no_ABAP.pdf)**
+> **Comece pelos slides: [Criando tabelas de banco de dados](./02.02_Criando_tabelas_de_banco_de_dados.pptx)**
+>
+> Material complementar em PDF: [A Evolução da Modelagem de Dados no ABAP](./02.02_A_Evolucao_da_Modelagem_de_Dados_no_ABAP.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [DDIC - Database Tables](https://help.sap.com/docs/abap-cloud/abap-keywords/ddic-database-tables)
 

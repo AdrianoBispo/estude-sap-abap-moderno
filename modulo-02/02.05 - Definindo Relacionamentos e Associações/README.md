@@ -2,7 +2,9 @@
 
 ![Infográfico - ABAP CDS: Associações vs JOINs Clássicos](./02.05_Associacoes_vs_JOINs_Classicos.png)
 
-> **Comece pelos slides: [A Revolução Silenciosa: De Joins a Associações em ABAP CDS](./02.05_JOINs_para_Associações_ABAP_CDS.pdf)**
+> **Comece pelos slides: [Relacionamentos e associações](./02.05_Relacionamentos_e_associações.pptx)**
+>
+> Material complementar em PDF: [A Revolução Silenciosa: De Joins a Associações em ABAP CDS](./02.05_JOINs_para_Associações_ABAP_CDS.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [CDS DDL - CDS View Entity, SELECT, Associations](https://help.sap.com/docs/abap-cloud/abap-keywords/cds-ddl-cds-view-entity-select-associations)
 

@@ -2,7 +2,9 @@
 
 ![Infográfico - A Triade da Qualidade de Código ABAP Moderno](./04.01_A_Triade_da_Qualidade_ABAP.png)
 
-> **Comece pelos slides: [Dominando a Qualidade de Código no ABAP Moderno para S/4HANA](./04.01_Qualidade_ABAP_do_Funcional_ao_Robusto.pdf)**
+> **Comece pelos slides: [Analisando e testando código](./04.01_Analisando_e_testando_código.pptx)**
+>
+> Material complementar em PDF: [Dominando a Qualidade de Código no ABAP Moderno para S/4HANA](./04.01_Qualidade_ABAP_do_Funcional_ao_Robusto.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [ABAP Unit](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-unit)
 

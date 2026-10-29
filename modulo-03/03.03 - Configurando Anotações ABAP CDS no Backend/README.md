@@ -2,7 +2,9 @@
 
 ![Infográfico - Mapeando Anotações ABAP CDS para UI SAP Fiori](./03.03_Mapeando_Anotacoes_RAP.png)
 
-> **Comece pelos slides: [Construindo UIs Fiori Elements com Anotações ABAP CDS](./03.03_Blueprint_To_Application.pdf)**
+> **Comece pelos slides: [Anotações ABAP CDS para a UI](./03.03_Anotações_ABAP_CDS_para_a_UI.pptx)**
+>
+> Material complementar em PDF: [Construindo UIs Fiori Elements com Anotações ABAP CDS](./03.03_Blueprint_To_Application.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [ABAP CDS - SAP Annotations](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-cds-sap-annotations)
 

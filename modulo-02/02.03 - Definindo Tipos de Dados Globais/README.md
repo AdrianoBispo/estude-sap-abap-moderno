@@ -2,7 +2,9 @@
 
 ![Infográfico - Modelagem de Dados Inteligente](./02.03_Modelagem_de_Dados_Inteligente.png)
 
-> **Comece pelos slides: [Dominando Tipos de Dados Globais no ABAP](./02.03_ABAP_Dictionary_Fundamentos_Fiori.pdf)**
+> **Comece pelos slides: [Definindo tipos de dados globais](./02.03_Definindo_tipos_de_dados_globais.pptx)**
+>
+> Material complementar em PDF: [Dominando Tipos de Dados Globais no ABAP](./02.03_ABAP_Dictionary_Fundamentos_Fiori.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [DDIC - Data Elements](https://help.sap.com/docs/abap-cloud/abap-keywords/ddic-data-elements)
 

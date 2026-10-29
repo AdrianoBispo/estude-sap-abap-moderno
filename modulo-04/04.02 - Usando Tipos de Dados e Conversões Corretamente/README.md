@@ -2,7 +2,9 @@
 
 ![Infográfico - Guia Rápido de Tipos de Dados e Conversões Seguras](./04.02_Guia_Rapido_Tipos_de_Dados_e_Conversoes_Seguras.png)
 
-> **Comece pelos slides: [ABAP Moderno: Tipos de Dados e Conversões](./04.02_ABAP_Moderno_Tipos_e_Conversões.pdf)**
+> **Comece pelos slides: [Tipos de dados e conversões corretas](./04.02_Tipos_de_dados_e_conversões_corretas.pptx)**
+>
+> Material complementar em PDF: [ABAP Moderno: Tipos de Dados e Conversões](./04.02_ABAP_Moderno_Tipos_e_Conversões.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [Built-In ABAP Types](https://help.sap.com/docs/abap-cloud/abap-keywords/built-in-abap-types)
 

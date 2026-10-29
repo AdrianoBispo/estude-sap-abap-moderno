@@ -2,7 +2,9 @@
 
 ![Infográfico - A Evolução do ABAP](./01.01_A_Evolucao_do_ABAP.png)
 
-> **Comece pelos slides: [Iniciando a Jornada: O Paradigma do ABAP Moderno](./01.01_ABAP_Cloud_Clean_Core_E_ADT.pdf)**
+> **Comece pelos slides: [Iniciando a jornada no ABAP moderno](./01.01_Iniciando_a_jornada_no_ABAP_moderno.pptx)**
+>
+> Material complementar em PDF: [Iniciando a Jornada: O Paradigma do ABAP Moderno](./01.01_ABAP_Cloud_Clean_Core_E_ADT.pdf)
 >
 > **Referência oficial (ABAP Keyword Documentation):** [ABAP Language Versions](https://help.sap.com/docs/abap-cloud/abap-keywords/abap-language-versions)
 
