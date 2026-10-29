@@ -64,6 +64,13 @@ Contribuições são bem-vindas! Se você encontrar erros, tiver sugestões de m
   - [Tutorial SAP - Use o Mockserver e a Biblioteca de Teste OPA com SAP Fiori Elements para aplicações OData V4](https://developers.sap.com/group.fiori-elements-mockserver-opa.html)
   - [Tutorial SAP - Trabalhe com projetos de adaptação SAPUI5 para fazer alterações e estender o código-fonte de uma variante de aplicação SAP Fiori no SAP S/4HANA Cloud Public Edition](https://developers.sap.com/group.sapui5-adaptation-projects.html)
 
+  ### Aprenda Praticando - Projeto de Minha Autoria
+  - [SAP ABAP RAP - App de Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app): projeto de estudo de minha autoria que aplica na prática os conceitos deste guia. Reúne oito apps SAP Fiori para gestão de clientes, estoque, pedidos de compras e reembolsos, quatro de gestão e quatro de análise de dados.
+    - **Backend**: RAP Managed com Draft, CDS View Entities, EML e serviços OData V4. O mesmo código roda no **SAP BTP, ABAP environment** (ABAP Cloud) e no **SAP S/4HANA On-Premise** (Standard ABAP).
+    - **Front-end**: SAP Fiori Elements V4 (List Report + Object Page) nas apps de gestão e SAPUI5 freestyle com gráficos `sap.viz` nas análises, todas reunidas num launchpad local.
+    - **Funcionalidades**: preenchimento de endereço pela API ViaCEP, reserva e baixa de estoque, pagamento simulado, cancelamento com fluxo de reembolso, histórico imutável dos pedidos, importação em massa por planilha e autorização por perfil.
+    - **Qualidade e documentação**: testes com ABAP Unit, OPA5 e QUnit, análise estática com abaplint, especificação técnica, diagramas e fluxogramas das operações dos Business Objects.
+
 ## Licença
 
 Este projeto é distribuído sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
