@@ -51,19 +51,22 @@ Por padrão, uma CDS View é "fechada". O framework ignora arquivos de extensão
 Para "abrir" a view, precisamos adicionar uma anotação de cabeçalho específica no arquivo .ddls:
 
 ``` CDS
-@AccessControl.authorizationCheck: #CHECK  
-@EndUserText.label: 'Consumption View for Travel'
+@AccessControl.authorizationCheck: #NOT_REQUIRED  
+@EndUserText.label: 'Pedido - Projection (App Pedidos de Compras)'
 
 
 /* A LINHA MÁGICA: */  
 
 @Metadata.allowExtensions: true 
 
-define view entity Z_C_TRAVEL   
-  as select from Z_I_TRAVEL   
+define root view entity ZC_PC_PEDIDO_APP  
+  provider contract transactional_query  
+  as projection on ZR_PC_PEDIDO  
 
 { ... }
 ```
+
+O trecho acima é o cabeçalho real da view de consumo do app de pedidos do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app).
 
 **Ponto de Atenção:** Se você criar o arquivo MDE, ativá-lo e o Fiori continuar mostrando a tela sem formatação, 90% das vezes o erro é ter esquecido de colocar `@Metadata.allowExtensions: true` na CDS View original. O framework falha silenciosamente (não dá erro), apenas ignora as extensões.
 
@@ -71,75 +74,70 @@ define view entity Z_C_TRAVEL
 
 No ADT (Eclipse), criamos um objeto do tipo "Metadata Extension" (clique direito no Core Data Services > Metadata Extension). A sintaxe utiliza o comando `annotate entity` (ou o sinônimo `annotate view`), vinculando-se à entidade CDS. Toda Metadata Extension precisa declarar a anotação `@Metadata.layer`.
 
-### Exemplo Prático: Configurando a Tela de Viagens
+### Exemplo Prático: Configurando a Tela de Pedidos
 
-Vamos configurar nossa View de Consumo (`Z_C_TRAVEL`) para gerar um **List Report** (Relatório de Lista) profissional. Nossos objetivos de UI são:
+Vamos configurar a View de Consumo (`ZC_PC_PEDIDO_APP`) para gerar um **List Report** (Relatório de Lista) profissional. Nossos objetivos de UI são:
 
-1. **TravelID:** Deve ser a primeira coluna e também um filtro de pesquisa.  
-2. **AgencyID:** Deve aparecer na lista com alta prioridade.  
-3. **OverallStatus:** Deve ter destaque visual (cores) e prioridade máxima.
+1. **NumeroPedido:** Deve ser a primeira coluna, com alta prioridade.  
+2. **CpfCliente:** Deve aparecer na lista e também como filtro de pesquisa.  
+3. **StatusPedido:** Deve ter destaque visual (cores) e prioridade máxima.
 
-**Arquivo: `Z_C_TRAVEL.ddlx`**
+**Arquivo: `ZC_PC_PEDIDO_APP.ddlx`** (versão simplificada do arquivo real)
 
 ``` CDS
 @Metadata.layer: #CORE  
 
-annotate entity Z_C_TRAVEL with  
+annotate entity ZC_PC_PEDIDO_APP with  
 {  
   /* ----------------------------------------------------------- */  
   /* Cabeçalho e Facetas (Estrutura da Página de Detalhes)       */  
   /* ----------------------------------------------------------- */  
-  /* Define que a Object Page terá uma seção chamada "Detalhes"  */  
+  /* Define que a Object Page terá uma seção "Dados do Pedido"   */  
   /* exibindo os campos anotados com @UI.identification          */  
 
-  @UI.facet: [ { id: 'Travel',   
+  @UI.facet: [ { id: 'DadosPedido',   
                  purpose: #STANDARD,   
                  type: #IDENTIFICATION_REFERENCE,   
-                 label: 'Detalhes da Viagem',   
-                 position: 10 } ]
+                 label: 'Dados do Pedido',   
+                 position: 20 } ]
 
   /* ----------------------------------------------------------- */  
   /* Configuração Campo a Campo                                  */  
   /* ----------------------------------------------------------- */
 
-  /* Campo: ID da Viagem */  
+  /* Campo: Número do Pedido */  
   /* lineItem: position 10 coloca na primeira coluna */  
   /* importance: #HIGH garante que nunca suma, mesmo em celulares */  
-  /* selectionField: position 10 coloca como primeiro filtro no topo */  
-  /* identification: posição do campo na seção "Detalhes" da Object Page */  
+  /* identification: posição do campo na seção "Dados do Pedido" da Object Page */  
   @UI: {   
-    lineItem:       [ { position: 10, importance: #HIGH } ],   
-    selectionField: [ { position: 10 } ],   
-    identification: [ { position: 10 } ]   
+    lineItem:       [ { position: 10, label: 'Pedido', importance: #HIGH } ],   
+    identification: [ { position: 10, label: 'Número do pedido' } ]   
   }  
-  TravelID;
+  NumeroPedido;
 
-  /* Campo: ID da Agência */  
+  /* Campo: CPF do Cliente */  
+  /* selectionField: position 20 coloca como filtro no topo */  
   @UI: {   
-    lineItem:       [ { position: 20, importance: #HIGH } ],   
-    selectionField: [ { position: 20 } ],   
-    identification: [ { position: 20 } ]   
+    lineItem:       [ { position: 20, label: 'CPF' } ],   
+    selectionField: [ { position: 20 } ]   
   }  
-  AgencyID;
+  CpfCliente;
 
-  /* Campo: ID do Cliente */  
-  /* importance: #MEDIUM significa que em telas pequenas, este campo pode ser ocultado */  
-  @UI: {   
-    lineItem:       [ { position: 30, importance: #MEDIUM } ],   
-    selectionField: [ { position: 30 } ],   
-    identification: [ { position: 30 } ]   
-  }  
-  CustomerID;
-
-  /* Campo: Preço Total */  
-  @UI.lineItem:   [ { position: 40 } ]  
-  TotalPrice;
+  /* Campo: Valor Total */  
+  @UI.lineItem:   [ { position: 60, label: 'Total', importance: #HIGH } ]  
+  ValorTotal;
 
   /* Campo: Status (com criticalidade/cor) */  
   /* A propriedade 'criticality' aponta para outro campo da view que retorna 0,1,2,3 */  
   /* Isso fará o Status aparecer Verde/Amarelo/Vermelho automaticamente */  
-  @UI.lineItem:   [ { position: 50, importance: #HIGH, criticality: 'StatusCriticality' } ]  
-  OverallStatus;  
+  @UI: {   
+    lineItem:       [ { position: 40, label: 'Status do pedido',   
+                        criticality: 'StatusPedidoCriticality', importance: #HIGH } ],   
+    identification: [ { position: 40, label: 'Status do pedido',   
+                        criticality: 'StatusPedidoCriticality' } ],   
+    selectionField: [ { position: 30 } ]   
+  }  
+  StatusPedido;  
     
 }
 ```
@@ -158,13 +156,13 @@ Você deve ter notado a anotação `@Metadata.layer: #CORE` no início do arquiv
 
 4. **`#PARTNER`:** Para parceiros que implementam e estendem a solução em clientes.
 
-5. **`#CUSTOMER`:** A camada final. O cliente tem a palavra final. Se o cliente criar uma extensão nessa camada dizendo que o campo TotalPrice deve ficar oculto, essa configuração vence todas as anteriores.
+5. **`#CUSTOMER`:** A camada final. O cliente tem a palavra final. Se o cliente criar uma extensão nessa camada dizendo que o campo ValorTotal deve ficar oculto, essa configuração vence todas as anteriores.
 
 * **Cenário de Exemplo:**
   
-  * Na camada **`#CORE`**, definimos `AgencyID` na posição 20.  
+  * Na camada **`#CORE`**, definimos `CpfCliente` na posição 20.  
 
-  * Um parceiro cria uma extensão na camada **`#PARTNER`** e define `AgencyID` na posição 90.  
+  * Um parceiro cria uma extensão na camada **`#PARTNER`** e define `CpfCliente` na posição 90.  
 
   * O usuário verá o campo na posição 90. O sistema faz o "merge" das anotações em tempo de execução, com a camada superior sobrescrevendo a inferior.
 
@@ -177,12 +175,14 @@ Metadata Extensions mudam **anotações**. Para adicionar **campos** a objetos d
 Um objeto separado, do cliente, que adiciona campos à tabela ou estrutura original. Ao ativar, os campos passam a existir na tabela do banco.
 
 ``` ABAP
-@EndUserText.label : 'Extensão da agência'
+@EndUserText.label : 'Extensão do item de estoque'
 @AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
-extend type /dmo/agency with zz_agency_ext {
-  zzcategoryzag : abap.char(1);
+extend type zta_pc_item with zzpc_ext_item {
+  zzgarantia_meses : abap.int1;
 }
 ```
+
+* **Pré-requisito:** A tabela original precisa permitir extensões. No projeto, `zta_pc_item` é `#NOT_EXTENSIBLE`; para receber o campo de garantia, ela teria de mudar para uma categoria extensível (veja o próximo item).
 
 * **Namespace `ZZ`/`YY`:** A SAP garante que nunca entregará campos com esses prefixos, evitando conflitos em upgrades.
 
@@ -193,13 +193,13 @@ extend type /dmo/agency with zz_agency_ext {
 ### CDS View Extensions
 
 ``` ABAP
-extend view entity /DMO/E_Agency with
+extend view entity ZR_PC_ITEM with
 {
-  Agency.zzcategoryzag as ZZCategoryZAG
+  zta_pc_item.zzgarantia_meses as ZZGarantiaMeses
 }
 ```
 
-* A extensão endereça os campos pelo **alias da fonte de dados** da view original (aqui, `Agency`) e pode adicionar e expor novas associações.
+* A extensão endereça os campos pelo **nome ou alias da fonte de dados** da view original (aqui, a tabela `zta_pc_item`) e pode adicionar e expor novas associações.
 
 * O controle é feito por `@AbapCatalog.extensibility` (`extensible`, `elementSuffix`, `allowNewDatasources`, `dataSources`).
 

@@ -107,11 +107,11 @@ No ABAP SQL clássico, usávamos `sy-datum` ou `sy-uname`. No DDL (definição d
 * **`$session.system_date`:** A data atual do servidor.
 
 ``` CDS
-/* Flag: É minha viagem? */
+/* Flag: É meu pedido? */
 case   
   when created_by = $session.user then 'X'   
   else ''   
-end as IsMyTravel
+end as IsMeuPedido
 ```
 
 ## 4. Conversão de Tipos: `CAST`
@@ -138,63 +138,60 @@ O comando `CAST` é vital quando precisamos alinhar tipos de dados. O ABAP e o S
 #### Exemplos:
 
 ``` CDS
-/* Convertendo Preço para Decimal com mais dígitos, evitando overflow em cálculos */
-cast( total_price as abap.dec(17,2) ) as PriceDecimal
+/* Convertendo o Valor para Decimal com mais dígitos, evitando overflow em cálculos */
+cast( valor_total as abap.dec(17,2) ) as ValorDecimal
 
 /* Convertendo para Char para uso em string */
-cast( travel_id as abap.char(8) ) as TravelIdChar
+cast( qtde_item_pedido as abap.char(10) ) as QtdeTexto
 ```
 
-## 5. Exemplo Prático: Enriquecendo a View de Viagens
+## 5. Exemplo Prático: Enriquecendo a View de Pedidos
 
-Vamos aplicar todos esses conceitos na nossa *Interface View `Z_I_TRAVEL_COMPUTED`*. Imagine que precisamos de campos calculados para suportar uma interface Fiori rica em informações visuais.
+Vamos aplicar todos esses conceitos em uma view sobre a tabela de pedidos do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app). Imagine que precisamos de campos calculados para suportar uma interface Fiori rica em informações visuais.
 
 ``` CDS
 @AccessControl.authorizationCheck: #NOT_REQUIRED  
-@EndUserText.label: 'Viagens com Cálculos Avançados'  
-define view entity Z_I_TRAVEL_COMPUTED  
-  as select from zrap_travel  
+@EndUserText.label: 'Pedidos com Cálculos Avançados'  
+define view entity ZI_PC_PEDIDO_CALC  
+  as select from zta_pc_pedido  
 
 {  
 
-  key travel_uuid,  
-      travel_id,  
-      begin_date,  
-      end_date,  
-      total_price,  
-      booking_fee,  
-      currency_code,  
-      overall_status,  
-      created_by,
+  key pedido_uuid,  
+      numero_pedido,  
+      status_pedido,  
+      valor_total,  
+      currency,  
+      created_by,  
+      created_at,
 
       /* --- 1. Aritmética e Conversão --- */  
-      /* Calcula o Custo Total Real (Preço + Taxa) */  
+      /* Valor com 10% de frete estimado */  
       /* O CAST para decimal (ponto fixo) mantém a precisão monetária e evita overflow */  
-      @Semantics.amount.currencyCode: 'currency_code'  
-      cast( total_price as abap.dec(17,2) ) + cast( booking_fee as abap.dec(17,2) ) as GrandTotal,
+      division( cast( valor_total as abap.dec(17,2) ) * 11, 10, 2 ) as ValorComFrete,
 
       /* --- 2. Funções de Data --- */  
-      /* Calcula a duração da viagem em dias */  
-      dats_days_between( begin_date, end_date ) as DurationDays,
-
-      /* Verifica quantos dias faltam para o início (ou se já passou) */  
-      dats_days_between( $session.system_date, begin_date ) as DaysUntilStart,
+      /* created_at é um timestamp em UTC: primeiro vira data, depois conta os dias */  
+      dats_days_between(  
+        tstmp_to_dats( cast( created_at as abap.dec(15,0) ),  
+                       'UTC', $session.client, 'NULL' ),  
+        $session.system_date ) as DiasDesdeCriacao,
 
       /* --- 3. Lógica Condicional (Criticality) --- */  
       /* Define a cor do status para o Fiori (3=Verde, 2=Amarelo, 1=Vermelho) */  
-      case overall_status  
-        when 'A' then 3  -- Aceito (Verde)  
-        when 'O' then 2  -- Aberto (Amarelo)  
-        when 'X' then 1  -- Cancelado (Vermelho)  
-        else 0           -- Desconhecido (Cinza)  
+      case status_pedido  
+        when 'FINALIZADO'           then 3  -- Finalizado (Verde)  
+        when 'AGUARDANDO_APROVACAO' then 2  -- Aguardando (Amarelo)  
+        when 'CANCELADO'            then 1  -- Cancelado (Vermelho)  
+        else 0                              -- Aberto (Cinza)  
       end as StatusCriticality,
 
       /* --- 4. Variável de Sessão e Lógica Booleana --- */  
-      /* Cria um indicador visual se a viagem já aconteceu (Histórico) */  
+      /* Indicador de pedido encerrado (finalizado ou cancelado) */  
       case   
-        when begin_date < $session.system_date then 'X'  
+        when status_pedido = 'FINALIZADO' or status_pedido = 'CANCELADO' then 'X'  
         else ''  
-      end as IsPastTravel,  
+      end as IsEncerrado,  
         
       /* Verifica se o usuário atual é o dono do registro */  
       case   
@@ -204,6 +201,8 @@ define view entity Z_I_TRAVEL_COMPUTED
 }
 ```
 
+> **Como o projeto faz:** a cor de cada status fica na lista de códigos `ZTA_PC_CODELIST` e é lida por associação, em vez do `case` acima. Já o indicador de pedido encerrado é uma **coluna física** (`pedido_encerrado`), mantida por uma determination do BO: a anotação `hidden` da Object Page não reconhece um `case` vindo da projeção como booleano.
+
 ## 6. Agregações (`SUM`, `MAX`, `MIN`)
 
 Embora as _Interface Views_ (como a acima) geralmente retornem uma linha para cada registro da tabela (granularidade 1:1), o CDS também é poderoso para criar views analíticas (OLAP). Para isso, usamos funções de agregação e a cláusula `GROUP BY`.
@@ -211,61 +210,64 @@ Embora as _Interface Views_ (como a acima) geralmente retornem uma linha para ca
 * **Regra do `GROUP BY`:** Se você usar uma função de agregação (`SUM`, `COUNT`, `AVG`, `MIN`, `MAX`) em qualquer campo da lista de seleção, **todos** os outros campos que não são agregados devem obrigatoriamente constar na cláusula `GROUP BY`.
 
 ``` CDS
-@EndUserText.label: 'Estatísticas de Viagem por Cliente'  
-define view entity Z_I_TRAVEL_STATS  
-  as select from zrap_travel  
+@EndUserText.label: 'Estatísticas de Pedidos por Cliente'  
+define view entity ZI_PC_PEDIDO_STATS  
+  as select from zta_pc_pedido  
 
 {  
   /* Chave do Agrupamento: cliente + moeda identificam cada linha do resultado */  
 
-  key customer_id,  
-  key currency_code as CurrencyCode,  
+  key cliente_uuid as ClienteUUID,  
+  key currency     as Currency,  
         
       /* Agregações */  
-      count(*) as NumberOfTravels,  
+      count(*) as QtdePedidos,  
         
-      @Semantics.amount.currencyCode: 'CurrencyCode'  
-      sum( total_price ) as TotalSpent,  
+      @Semantics.amount.currencyCode: 'Currency'  
+      sum( valor_total ) as TotalComprado,  
         
-      avg( total_price as abap.dec(15,2) ) as AverageTicketPrice  
+      avg( valor_total as abap.dec(15,2) ) as TicketMedio  
 }
 
 /* Agrupamento Obrigatório */  
-group by customer_id, currency_code
+group by cliente_uuid, currency
 ```
 
-**Nota:** Neste exemplo, se um cliente tiver viagens em EUR e USD, ele aparecerá em duas linhas diferentes (uma para cada moeda), pois `currency_code` faz parte do grupo.
+**Nota:** Neste exemplo, se um cliente tiver pedidos em BRL e USD, ele aparecerá em duas linhas diferentes (uma para cada moeda), pois `currency` faz parte do grupo. Os apps de análise do projeto seguem outro caminho: o cubo `ZI_PC_PEDIDO_CUBE` marca `ValorTotal` com `@Aggregation.default: #SUM` e o serviço OData agrega na hora, conforme os filtros escolhidos na tela.
 
 ## 7. CDS Views com Parâmetros de Entrada
 
 Um `WHERE` é opcional para o consumidor. **Parâmetros de entrada** permitem que a view **exija** uma informação e a use nos cálculos: a moeda de destino de uma conversão, uma data de corte antes de uma agregação, o idioma de um texto.
 
 ``` ABAP
-define view entity ZI_FlightsFrom
+define view entity ZC_PC_PEDIDOS_DESDE
   with parameters
-    P_MinDate : abap.dats
-  as select from /dmo/flight
+    P_DataMin : abap.dats
+  as select from ZR_PC_PEDIDO
 {
-  key carrier_id                 as AirlineID,
-  key connection_id              as ConnectionID,
-  key flight_date                as FlightDate,
-      seats_max - seats_occupied as FreeSeats
+  key PedidoUUID,
+      NumeroPedido,
+      StatusPedido,
+      @Semantics.amount.currencyCode: 'Currency'
+      ValorTotal,
+      Currency
 }
-where flight_date >= $parameters.P_MinDate
+where tstmp_to_dats( cast( CreatedAt as abap.dec(15,0) ),
+                     'UTC', $session.client, 'NULL' ) >= $parameters.P_DataMin
 ```
 
 * **Tipos:** Somente elementares (tipo built-in `abap.<tipo>` ou data element). Estruturas, tabelas e referências não são permitidas.
 
 * **Uso dentro da view:** Com o prefixo `$parameters.`, na lista de elementos, em `CASE`, em expressões e funções (ex.: `currency_conversion`), no `WHERE` e em filtros de path expressions.
 
-* **Consumo em outra view:** `from ZI_FlightsFrom( P_MinDate: $parameters.P_MinDate )`, com dois-pontos como operador de atribuição. Repassar o parâmetro dessa forma é comum em pilhas de views.
+* **Consumo em outra view:** `from ZC_PC_PEDIDOS_DESDE( P_DataMin: $parameters.P_DataMin )`, com dois-pontos como operador de atribuição. Repassar o parâmetro dessa forma é comum em pilhas de views.
 
 * **Consumo no ABAP SQL:** O operador é o sinal de igual:
 
 ``` ABAP
-SELECT FROM zi_flightsfrom( p_mindate = @lv_data_corte )
-  FIELDS AirlineID, ConnectionID, FlightDate, FreeSeats
-  INTO TABLE @DATA(lt_voos).
+SELECT FROM zc_pc_pedidos_desde( p_datamin = @lv_data_corte )
+  FIELDS NumeroPedido, StatusPedido, ValorTotal
+  INTO TABLE @DATA(lt_pedidos).
 ```
 
 No **Data Preview**, o ADT pede os valores dos parâmetros (marcados com `*`, obrigatórios) antes de exibir o resultado.

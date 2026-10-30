@@ -46,9 +46,9 @@ Quando você executa o assistente de deploy pela primeira vez, ele gera um arqui
 1. **Target System (Conexão):** Você seleciona o sistema S/4HANA de destino. A ferramenta usa suas credenciais para autenticar e verificar permissões.  
 
 2. **App Details (Metadados ABAP):**  
-   * **Name:** O nome técnico da aplicação BSP (ex: `z_travel_app`). Deve ser único no sistema e seguir convenções de nomenclatura (geralmente até 15 caracteres).  
+   * **Name:** O nome técnico da aplicação BSP (ex: `ZPC_PEDIDOS`, o BSP do app Pedidos de Compras do [projeto](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app)). Deve ser único no sistema e seguir convenções de nomenclatura (geralmente até 15 caracteres).  
    * **Description:** Descrição visível na transação `SE80`.  
-   * **Package:** O Pacote ABAP de destino. Se for `$TMP`, é um objeto local (não transportável). Se for um pacote produtivo (ex: `Z_MAIN`), o sistema exigirá uma **Transport Request**.  
+   * **Package:** O Pacote ABAP de destino. Se for `$TMP`, é um objeto local (não transportável). Se for um pacote produtivo (ex: `ZAVBS_PC_PEDIDOS`, no projeto), o sistema exigirá uma **Transport Request**.  
    * **Transport Request (TR):** O "container de remessa" que levará seu aplicativo do ambiente de Desenvolvimento para Qualidade e Produção. O assistente pode criar uma nova TR ou usar uma existente.  
 
 3. **Execução (Build & Upload):**  
@@ -67,22 +67,22 @@ A configuração no S/4HANA moderno segue uma hierarquia de dois níveis para ma
 Pense nisso como um "Armazém de Peças". É onde o desenvolvedor define *o que* o aplicativo é.
 
 * **Target Mapping (Mapeamento de Destino):** É a regra de roteamento.  
-  * *Semantic Object:* Travel  
+  * *Semantic Object:* ZPCPedidoCompra  
   * *Action:* manage  
-  * *App ID:* Aponta para o seu app BSP `z_travel_app`.  
-  * *Significado:* "Sempre que alguém quiser 'Gerenciar Viagens', use este código fonte".  
+  * *App ID:* Aponta para o app BSP `ZPC_PEDIDOS`.  
+  * *Significado:* "Sempre que alguém quiser 'Gerenciar Pedidos de Compras', use este código fonte".  
 
 * **Tile (Bloco):** É a representação visual.  
-  * *Título:* "Gerenciar Viagens"  
-  * *Ícone:* `sap-icon://travel-itinerary`  
-  * *Parâmetros:* Pode ser estático ou dinâmico (mostrando um número contador, ex: "5 Viagens Pendentes").
+  * *Título:* "Pedidos de Compras"  
+  * *Ícone:* `sap-icon://sales-order` (o mesmo do `manifest.json` do app)  
+  * *Parâmetros:* Pode ser estático ou dinâmico (mostrando um número contador, ex: "5 Pedidos Aguardando Aprovação").
 
 ### B. Business Catalog (Catálogo de Negócio)
 
 Pense nisso como o "Menu do Restaurante". É onde o consultor funcional ou arquiteto define *quem* vê o quê.
 
 * Você não cria Tiles aqui. Você **referencia** Tiles do Catálogo Técnico.  
-* Um Business Catalog agrupa funções que fazem sentido para uma pessoa (ex: "Catálogo de Gestão de Viagens", que contém o Tile de "Criar", "Aprovar" e "Relatórios").  
+* Um Business Catalog agrupa funções que fazem sentido para uma pessoa (ex: "Catálogo de Pedidos de Compras", que contém os Tiles de "Pedidos de Compras", "Gestão de Reembolsos" e "Análise de Pedidos").  
 * É este objeto que será atribuído à segurança (Roles).
 
 ## 4. IAM: Dando Acesso ao Usuário
@@ -90,7 +90,7 @@ Pense nisso como o "Menu do Restaurante". É onde o consultor funcional ou arqui
 No modelo **ABAP Cloud** (S/4HANA Cloud e BTP), o acesso não é mais gerenciado via perfis técnicos complexos (PFCG manual). Usamos o conceito simplificado de IAM (Identity and Access Management).
 
 1. **Business Role (Papel de Negócio):**  
-   * Cria-se um papel que representa uma função de trabalho na empresa (ex: Z_TRAVEL_MANAGER_ROLE).  
+   * Cria-se um papel que representa uma função de trabalho na empresa (ex: `ZPC_BR_COMUM` e `ZPC_BR_ADMIN`, as Business Roles do projeto).  
    * Esta role pode ser derivada de templates padrão da SAP para herdar permissões básicas.  
 
 2. **Atribuição de Catálogo:**  
@@ -129,7 +129,7 @@ Visualize o caminho que seu código percorre desde o seu teclado até a tela do 
       ^ (Atribuído a)  
       |  
 [ 5. Gestão de Identidade (IAM) ]  
-      |-- Business Role (Papel: Gerente de Viagens)  
+      |-- Business Role (Papel: ZPC_BR_COMUM)  
       |-- Business User (Usuário: João Silva)
 ```
 

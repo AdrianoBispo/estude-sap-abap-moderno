@@ -38,33 +38,35 @@ A **Service Definition** é o artefato de projeção onde selecionamos explicita
 
 * **O Problema do Excesso:** Imagine que seu modelo de dados de "Vendas" possui 50 CDS Views interconectadas (Cabeçalho, Item, Divisão de Remessa, Parceiro, Endereço, etc.). Se você expusesse tudo automaticamente, o serviço ficaria pesado, confuso e inseguro.  
 
-* **A Solução (Escopo):** Para um App de "Aprovar Viagens", você expõe apenas Travel e Customer. Para um App de "Auditoria", você expõe Travel, Booking e Log. A Service Definition permite criar múltiplas "janelas" para o mesmo modelo de dados subjacente.
+* **A Solução (Escopo):** Para um App de "Pedidos de Compras", você expõe Pedido, ItemPedido e os value helps. Para um App de "Análise", você expõe apenas a view analítica de pedidos. A Service Definition permite criar múltiplas "janelas" para o mesmo modelo de dados subjacente.
 
 * **A Arte do Aliasing (Renomeação):** Uma prática recomendada é usar o _AS Alias_ para desacoplar o nome técnico do ABAP (interno) do nome público da API (externo). Isso permite que você refatore o nome da CDS View no futuro sem quebrar a URL que o frontend utiliza.
 
-* *Interno:* `Z_C_TRAVEL_PROCESS_V2` (Longo, técnico, versionado).  
-* *Externo:* `Travel` (Limpo, legível, semântico).  
+* *Interno:* `ZC_PC_PEDIDO_APP` (Longo, técnico, com prefixo de pacote).  
+* *Externo:* `Pedido` (Limpo, legível, semântico).  
 
-### Exemplo de Código Expandido:
+### Exemplo de Código Expandido (projeto Pedidos de Compras, reconstruído a partir do `$metadata` do app):
 
 ``` CDS
-@EndUserText.label: 'Serviço para App de Viagens'  
-define service Z_UI_TRAVEL_V4 {  
+@EndUserText.label: 'Pedidos de Compras'  
+define service ZUI_PC_PEDIDOS_COMPRAS {  
     
-  /* Entidade Raiz */  
-  expose Z_C_TRAVEL as Travel;  
+  /* Entidade Raiz e filhas da composição */  
+  expose ZC_PC_PEDIDO_APP      as Pedido;  
+  expose ZC_PC_ITEM_PEDIDO_APP as ItemPedido;  
+  expose ZC_PC_PAGAMENTO_APP   as Pagamento;  
     
-  /* Entidades Associadas e Value Helps */  
+  /* Value Helps */  
   /* É vital expor as entidades que servem como tabelas de texto ou help */  
-  expose /DMO/I_Customer as Customer;  
-  expose /DMO/I_Agency   as Agency;  
-  expose I_Currency      as Currency;  
+  expose ZC_PC_CLIENTE_VH      as ClienteVH;  
+  expose ZC_PC_ITEM_VH         as ItemVH;  
+  expose ZC_PC_STATUSPED_VH    as StatusPedidoVH;  
     
-  /* Nota: Se Z_C_TRAVEL tem uma associação para _Booking,   
-     e queremos que o Fiori navegue para os itens,   
-     precisamos expor a view de Booking aqui também: associações  
-     cujo destino não é exposto no serviço não aparecem como  
-     propriedades de navegação nos metadados. */  
+  /* Nota: ZC_PC_PEDIDO_APP tem a composição _Itens.   
+     Para o Fiori navegar até os itens, a view ZC_PC_ITEM_PEDIDO_APP  
+     precisa estar exposta aqui: associações cujo destino não é  
+     exposto no serviço não aparecem como propriedades de navegação  
+     nos metadados. */  
 
 }
 ```

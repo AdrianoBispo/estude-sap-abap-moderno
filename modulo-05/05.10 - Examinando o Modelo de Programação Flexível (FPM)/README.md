@@ -95,9 +95,9 @@ Embora seja tecnicamente possível editar o `manifest.json` manualmente para reg
 
 1. Abra o projeto no VS Code / BAS.  
 2. Clique com botão direito em webapp > **Show Page Map**.  
-3. Selecione a página desejada (ex: Object Page da entidade Travel).  
+3. Selecione a página desejada (ex: Object Page da entidade Pedido, no app Pedidos de Compras).  
 4. Clique no ícone de lápis ou **Add Custom Section**.  
-5. Defina o título da seção (ex: "Geolocalização") e a posição (ex: "After General Information").  
+5. Defina o título da seção (ex: "Entrega") e a posição (ex: "After General Information").  
 6. A ferramenta gera automaticamente:  
    * O arquivo `.fragment.xml` para o layout.  
    * O arquivo `.js` (Controller Extension) para a lógica.  
@@ -108,21 +108,21 @@ Embora seja tecnicamente possível editar o `manifest.json` manualmente para reg
 Visualize como o FPM permite a "mistura" de componentes:
 
 ```
-[ Object Page Standard - Viagem 100 ]  
+[ Object Page Standard - Pedido 0000000100 ]  
 -------------------------------------------------------  
 | Header (Standard - RAP)                             |  
-| [ Título: Viagem para Berlim ] [ Status: Aprovado ] |  
+| [ Título: 0000000100 ] [ Status: Aguardando aprov.] |  
 -------------------------------------------------------  
 |                                                     |  
-| [ Section: Geral (Standard - RAP) ]                 |  
-|   - Form: ID, Data, Cliente (Gerado via Anotações)  |  
+| [ Section: Dados do Pedido (Standard - RAP) ]       |  
+|   - Form: Número, Cliente, Valor (via Anotações)    |  
 |                                                     |  
-| [ Section: Geolocalização (CUSTOM - FPM) ]          | <--- Sua View XML Injetada  
-|   - [ Container HTML: Google Maps API ]             | <--- Seu JavaScript Customizado  
-|   - [ <macros:Field id="Lat" /> ]                   | <--- Building Block (Lê do OData)  
+| [ Section: Entrega (CUSTOM - FPM) ]                 | <--- Sua View XML Injetada  
+|   - [ Container HTML: mapa do endereço ]            | <--- Seu JavaScript Customizado  
+|   - [ <macros:Field id="Endereco" /> ]              | <--- Building Block (Lê do OData)  
 |                                                     |  
 | [ Section: Itens (Standard - RAP) ]                 |  
-|   - Tabela de Voos                                  |  
+|   - Tabela de Itens do pedido                       |  
 -------------------------------------------------------
 ```
 

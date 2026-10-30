@@ -42,60 +42,59 @@ O Modo Estrito não é uma configuração que você liga; ele é ativado automat
 
 ### Selecionando Múltiplas Linhas (Tabela Interna)
 
-Vamos analisar uma consulta na tabela /dmo/connection (Modelo de Voo).
+Vamos analisar uma consulta na tabela `zta_pc_item`, a tabela de itens de estoque do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app).
 
 * Estilo Antigo (Obsoleto no Cloud):  
   Exigia declaração prévia e a ordem das cláusulas era rígida.  
 ``` ABAP
-  DATA: lt_connections TYPE TABLE OF /dmo/connection.  
+  DATA: lt_itens TYPE TABLE OF zta_pc_item.  
   " Sintaxe antiga: sem vírgulas, sem @, INTO no meio  
-  SELECT * FROM /dmo/connection INTO TABLE lt_connections  
-           WHERE carrier_id = 'LH'.
+  SELECT * FROM zta_pc_item INTO TABLE lt_itens  
+           WHERE categoria = 'ELETRONICOS'.
 ```
 
 * Estilo Moderno (Recomendado):  
   Permite renomear colunas (AS), usar literais e declarar o destino na hora.  
 ``` ABAP
-  DATA(lv_airline) = 'LH'.
+  DATA(lv_categoria) = 'ELETRONICOS'.
 
   " A sintaxe moderna flui como uma frase lógica:  
   " DE ONDE -> O QUE -> COMO FILTRAR -> COMO ORDENAR -> PARA ONDE  
-  SELECT FROM /dmo/connection  
+  SELECT FROM zta_pc_item  
     FIELDS   
-      carrier_id,   
-      connection_id,   
-      airport_from AS departure_airport, " ALIAS: Renomeando coluna  
-      airport_to   AS arrival_airport,   " ALIAS: Renomeando coluna  
-      distance  
-    WHERE carrier_id = @lv_airline  
-    ORDER BY carrier_id, connection_id DESCENDING " Ordenação mista  
-    INTO TABLE @DATA(lt_flights).
+      sku,   
+      nome,   
+      qtde_estoque    AS estoque,    " ALIAS: Renomeando coluna  
+      qtde_disponivel AS disponivel, " ALIAS: Renomeando coluna  
+      preco_unitario  
+    WHERE categoria = @lv_categoria  
+    ORDER BY nome, sku DESCENDING " Ordenação mista  
+    INTO TABLE @DATA(lt_itens).
 ```
 
-  *Nota:* A tabela lt_flights terá os campos carrier_id, connection_id, departure_airport, etc. O tipo é inferido automaticamente.
+  *Nota:* A tabela lt_itens terá os campos sku, nome, estoque, disponivel e preco_unitario. O tipo é inferido automaticamente.
 
 ### Selecionando uma Única Linha (Estrutura)
 
 Existem duas formas principais de ler um único registro.
 
 A. `SELECT SINGLE` (Leitura por Chave)  
-Ideal quando você tem a chave primária completa e quer validar existência ou ler atributos.  
+Ideal quando você tem a chave primária completa (ou um campo único, como o SKU) e quer validar existência ou ler atributos.  
 ``` ABAP
-SELECT SINGLE FROM /dmo/connection  
-  FIELDS airport_from, airport_to  
-  WHERE carrier_id = 'AA'  
-    AND connection_id = '0017'  
-  INTO @DATA(ls_flight_info).
+SELECT SINGLE FROM zta_pc_item  
+  FIELDS nome, qtde_disponivel  
+  WHERE sku = 'SKU-ELE-0000000001'  
+  INTO @DATA(ls_item).
 ```
 
 B. `SELECT ... UP TO 1 ROWS` (Amostragem)  
 Ideal quando você não tem a chave completa e quer apenas "o primeiro que encontrar" ou "o mais recente" (se combinado com ORDER BY).  
 ``` ABAP
-SELECT FROM /dmo/connection  
-  FIELDS connection_id  
-  WHERE airport_from = 'JFK'  
-  ORDER BY distance ASCENDING " Pega o voo mais curto saindo de JFK  
-  INTO TABLE @DATA(lt_one_flight)  
+SELECT FROM zta_pc_pedido  
+  FIELDS numero_pedido, valor_total  
+  WHERE cliente_uuid = @lv_cliente  
+  ORDER BY created_at DESCENDING " Pega o pedido mais recente do cliente  
+  INTO TABLE @DATA(lt_ultimo_pedido)  
   UP TO 1 ROWS.
 ```
 
@@ -103,8 +102,8 @@ SELECT FROM /dmo/connection
 
 No Strict Mode, o parser do SQL precisa de uma distinção clara entre o que pertence ao **Banco de Dados** e o que pertence ao **Programa ABAP**.
 
-* `carrier_id`: É uma coluna que existe na tabela do banco.  
-* `@lv_airline`: É uma variável ("Host Variable") hospedada na memória do programa ABAP.
+* `categoria`: É uma coluna que existe na tabela do banco.  
+* `@lv_categoria`: É uma variável ("Host Variable") hospedada na memória do programa ABAP.
 
 Por que isso importa?  
 O `@` é uma marcação sintática que elimina ambiguidades: o compilador sabe exatamente o que é coluna e o que é variável ABAP. (Vale lembrar que o ABAP SQL sempre enviou as variáveis ABAP ao banco como parâmetros — *bind variables* —, o que protege contra SQL Injection e permite reaproveitar planos de execução; o `@` torna isso explícito no código, mas não muda esse mecanismo.)  
@@ -112,10 +111,10 @@ O `@` é uma marcação sintática que elimina ambiguidades: o compilador sabe e
 
 ``` ABAP
 " ERRADO no Strict Mode  
-SELECT FROM /dmo/flight FIELDS * WHERE carrier_id = lv_id INTO TABLE @data(lt_tab).
+SELECT FROM zta_pc_item FIELDS * WHERE categoria = lv_categoria INTO TABLE @data(lt_tab).
 
 " CORRETO  
-SELECT FROM /dmo/flight FIELDS * WHERE carrier_id = @lv_id INTO TABLE @data(lt_tab).
+SELECT FROM zta_pc_item FIELDS * WHERE categoria = @lv_categoria INTO TABLE @data(lt_tab).
 ```
 
 ## 4. Variáveis de Sistema: O Painel de Controle
@@ -135,7 +134,7 @@ Após cada comando SELECT, o sistema atualiza duas variáveis críticas na estru
 
 ## 5. Exemplo Prático: Buscando e Exibindo Dados
 
-Neste exemplo expandido, vamos usar uma tabela de intervalos (Range) para filtro e analisar a contagem de registros.
+Neste exemplo, vamos filtrar os itens de estoque de uma categoria que ainda têm saldo folgado e analisar a contagem de registros.
 
 ``` ABAP
 CLASS zcl_read_data DEFINITION  
@@ -154,51 +153,50 @@ CLASS zcl_read_data IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     " 1. Preparação de Filtros  
-    DATA(lv_carrier) = 'UA'.   
-    DATA(lv_min_distance) = 1000.
+    DATA(lv_categoria) = 'INFORMATICA'.   
+    DATA(lv_min_disponivel) = 10.
 
     " 2. SELECT com Expressões Lógicas e Projeção  
-    " Queremos voos da UA com distância maior que 1000, ordenados pela maior distância  
-    SELECT FROM /dmo/connection  
+    " Queremos itens de informática com mais de 10 unidades livres, do maior saldo para o menor  
+    SELECT FROM zta_pc_item  
       FIELDS   
-        carrier_id,   
-        connection_id,   
-        airport_from,   
-        airport_to,   
-        distance,   
-        distance_unit  
-      WHERE carrier_id = @lv_carrier  
-        AND distance   > @lv_min_distance  
-      ORDER BY distance DESCENDING  
+        sku,   
+        nome,   
+        qtde_estoque,   
+        qtde_disponivel,   
+        preco_unitario,   
+        currency  
+      WHERE categoria       = @lv_categoria  
+        AND qtde_disponivel > @lv_min_disponivel  
+      ORDER BY qtde_disponivel DESCENDING  
       INTO TABLE @DATA(lt_results).
 
     " 3. Análise do Resultado  
     IF sy-subrc = 0.  
       " Sucesso: Mostra quantos registros achou usando sy-dbcnt  
-      out->write( |Sucesso! Foram encontrados { sy-dbcnt } voos longos da { lv_carrier }.| ).  
+      out->write( |Sucesso! Foram encontrados { sy-dbcnt } itens de { lv_categoria } com saldo folgado.| ).  
       out->write( '--------------------------------------------------' ).
 
-      LOOP AT lt_results INTO DATA(ls_flight).  
+      LOOP AT lt_results INTO DATA(ls_item).  
         " Exibe detalhes  
-        out->write( |Voo { ls_flight-connection_id }: { ls_flight-distance } { ls_flight-distance_unit } | &&  
-                    |({ ls_flight-airport_from } -> { ls_flight-airport_to })| ).  
+        out->write( |{ ls_item-sku } { ls_item-nome }: { ls_item-qtde_disponivel } disponíveis | &&  
+                    |({ ls_item-preco_unitario } { ls_item-currency })| ).  
       ENDLOOP.  
         
     ELSE.  
       " Falha  
-      out->write( |Nenhum voo encontrado com distância maior que { lv_min_distance }.| ).  
+      out->write( |Nenhum item com mais de { lv_min_disponivel } unidades disponíveis.| ).  
     ENDIF.
 
     " 4. Exemplo de SELECT SINGLE  
-    " Verificando se existe algum voo específico  
-    SELECT SINGLE FROM /dmo/connection  
+    " Verificando se existe um item específico  
+    SELECT SINGLE FROM zta_pc_item  
       FIELDS @abap_true  
-      WHERE carrier_id = 'AA'  
-        AND connection_id = '0017'  
+      WHERE sku = 'SKU-ELE-0000000001'  
       INTO @DATA(lv_exists).
 
     IF lv_exists = abap_true.  
-      out->write( 'O voo AA 0017 existe no banco de dados.' ).  
+      out->write( 'O item SKU-ELE-0000000001 existe no banco de dados.' ).  
     ENDIF.
 
   ENDMETHOD.
@@ -216,15 +214,16 @@ Em vez de ler a tabela diretamente, o `SELECT` pode usar uma **CDS View Entity**
 
 * **Associações:** Uma associação exposta pela view permite ler dados relacionados com uma **path expression**. A barra invertida (`\`) é obrigatória antes do nome da associação.
 
+No projeto, a view `ZR_PC_ITEM` lê `zta_pc_item` e expõe a associação `_CategoriaTxt`, que leva à lista de códigos com a descrição de cada categoria:
+
 ``` ABAP
-SELECT FROM /dmo/i_connection
-  FIELDS AirlineID,
-         ConnectionID,
-         \_Airline-Name AS AirlineName, " Path expression: lê o nome em /DMO/I_Carrier
-         DepartureAirport,
-         DestinationAirport
-  WHERE AirlineID = 'LH'
-  INTO TABLE @DATA(lt_connections).
+SELECT FROM zr_pc_item
+  FIELDS Sku,
+         Nome,
+         \_CategoriaTxt-Descricao AS Categoria, " Path expression: lê a descrição em ZR_PC_CODELIST
+         QtdeDisponivel
+  WHERE QtdeDisponivel > 0
+  INTO TABLE @DATA(lt_itens).
 ```
 
 **Dicas de ferramenta:** `F8` sobre a data definition abre o **Data Preview** da view (com `Follow Association` no menu de contexto), e `Ctrl+Shift+G` sobre uma tabela mostra o **Where-used List**, útil para descobrir quais CDS views já leem aquela tabela.

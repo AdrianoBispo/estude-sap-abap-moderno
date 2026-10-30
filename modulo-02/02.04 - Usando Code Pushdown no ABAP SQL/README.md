@@ -42,28 +42,30 @@ Podemos calcular preços, impostos, margens e datas direto na query. O banco de 
 
 **Atenção aos Nulos:** Em operações SQL, `5 + NULL = NULL`. Para evitar que um campo vazio anule seu cálculo, usamos a função `COALESCE( campo, 0 )`, que retorna o primeiro valor não nulo (neste caso, zero se o campo for nulo).
 
+Os exemplos desta lição usam as tabelas do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app): pedidos (`zta_pc_pedido`), itens do pedido (`zta_pc_item_ped`), clientes (`zta_pc_cliente`) e itens de estoque (`zta_pc_item`).
+
 ``` ABAP
-SELECT FROM zrap_travel  
-  FIELDS travel_id,  
-         total_price,  
-         booking_fee,  
+SELECT FROM zta_pc_item_ped  
+  FIELDS item_pedido_uuid,  
+         qtde_item_pedido,  
+         preco_unitario_snap,  
            
-         " Cálculo direto no banco: Soma simples  
-         " Se booking_fee for nulo, o resultado seria nulo sem tratamento  
-         ( total_price + booking_fee ) AS grand_total,  
+         " Cálculo direto no banco: quantidade x preço  
+         " COALESCE evita que um preço nulo anule o resultado  
+         qtde_item_pedido * COALESCE( preco_unitario_snap, 0 ) AS valor_calculado,  
            
          " Cálculo com Literais  
          " 90% do preço (10% de desconto): multiplica por 9 e divide por 10  
          " DIVISION( dividendo, divisor, casas_decimais ) faz divisão decimal  
-         DIVISION( total_price * 9, 10, 2 ) AS discounted_price,  
+         DIVISION( preco_unitario_snap * 9, 10, 2 ) AS preco_com_desconto,  
            
-         " Cálculo de Margem (Divisão)  
+         " Cálculo de Índice (Divisão)  
          " DIV( a, b ) faz divisão inteira; DIVISION( a, b, dec ) faz divisão  
          " com casas decimais; o operador / não é permitido em expressões inteiras  
          " (exige operandos de ponto flutuante ou decfloat, ex: CAST( ... AS D34N ))  
-         DIVISION( total_price, 100, 2 ) AS price_index
+         DIVISION( preco_unitario_snap, 100, 2 ) AS indice_preco
 
-  WHERE currency_code = 'EUR'  
+  WHERE currency = 'BRL'  
   INTO TABLE @DATA(lt_results).
 ```
 
@@ -72,27 +74,27 @@ SELECT FROM zrap_travel
 Manipulação de texto também pode ser feita no banco, economizando loops ABAP. Além da concatenação, temos funções para caixa alta/baixa, substituição e comprimento.
 
 ``` ABAP
-SELECT FROM /dmo/customer  
-  FIELDS customer_id,  
+SELECT FROM zta_pc_cliente  
+  FIELDS cliente_uuid,  
            
          " Concatenação Simples com operador &&  
-         first_name && last_name AS raw_name,  
+         nome && cpf AS texto_bruto,  
            
          " Função dedicada com separador (Mais limpo que && ' ' &&)  
-         concat_with_space( first_name, last_name, 1 ) AS full_name,  
+         concat_with_space( nome, cpf, 1 ) AS nome_cpf,  
            
          " Normalização para busca (Tudo em Maiúsculo)  
-         upper( last_name ) AS upper_name,  
+         upper( nome ) AS nome_maiusculo,  
            
-         " Extração de parte do texto (Primeiras 3 letras)  
-         substring( last_name, 1, 3 ) AS short_name
+         " Extração de parte do texto (Primeiros 3 dígitos do CPF)  
+         substring( cpf, 1, 3 ) AS cpf_inicio
 
-  INTO TABLE @DATA(lt_names).
+  INTO TABLE @DATA(lt_nomes).
 ```
 
 ## 3. Lógica Condicional (CASE)
 
-O famoso IF/ELSE dentro do loop pode ser eliminado usando CASE no SQL. Isso permite transformar códigos técnicos (ex: 'X', 'A') em textos descritivos ou categorizações diretamente na extração.
+O famoso IF/ELSE dentro do loop pode ser eliminado usando CASE no SQL. Isso permite transformar códigos técnicos (ex: 'ABERTO', 'CANCELADO') em textos descritivos ou categorizações diretamente na extração.
 
 Existem duas formas de CASE:
 
@@ -100,29 +102,31 @@ Existem duas formas de CASE:
 2. **Complex CASE:** Permite condições lógicas variadas (WHEN a > b).
 
 ``` ABAP
-SELECT FROM zrap_travel  
-  FIELDS travel_id,  
-         overall_status,  
-         total_price,  
+SELECT FROM zta_pc_pedido  
+  FIELDS numero_pedido,  
+         status_pedido,  
+         valor_total,  
            
          " Simple CASE: Tradução de Status  
-         CASE overall_status  
-           WHEN 'A' THEN 'Aceito'  
-           WHEN 'X' THEN 'Rejeitado'  
-           WHEN 'O' THEN 'Aberto'  
-           ELSE 'Pendente' " Valor padrão se nenhum coincidir  
-         END AS status_text,  
+         CASE status_pedido  
+           WHEN 'ABERTO'     THEN 'Aberto'  
+           WHEN 'FINALIZADO' THEN 'Finalizado'  
+           WHEN 'CANCELADO'  THEN 'Cancelado'  
+           ELSE 'Em andamento' " Valor padrão se nenhum coincidir  
+         END AS status_texto,  
            
          " Complex CASE: Categorização baseada em valores  
          CASE  
-           WHEN total_price < 1000 THEN 'Econômica'  
-           WHEN total_price BETWEEN 1000 AND 5000 THEN 'Executiva'  
-           WHEN total_price > 5000 THEN 'Primeira Classe'  
+           WHEN valor_total < 500 THEN 'Pequeno'  
+           WHEN valor_total BETWEEN 500 AND 5000 THEN 'Médio'  
+           WHEN valor_total > 5000 THEN 'Grande'  
            ELSE 'Não Classificado'  
-         END AS price_category
+         END AS faixa_valor
 
   INTO TABLE @DATA(lt_status).
 ```
+
+> No projeto, os textos e as cores de cada status ficam na lista de códigos `ZTA_PC_CODELIST` e são lidos por associação (lição 03.05). Assim, um novo status não exige mudar o código.
 
 ## 4. Agregações e Agrupamento (`GROUP BY`)
 
@@ -132,32 +136,32 @@ Se você precisa de um relatório de totais, **nunca** traga os dados detalhados
 * **Regra Fundamental:** Se usar qualquer função de agregação, **qualquer campo** na lista de seleção que *não* for agregado deve obrigatoriamente estar na cláusula `GROUP BY`. O banco precisa saber "somar o quê por quem".
 
 * **`HAVING` vs. `WHERE`:**
-  * **`WHERE:`** Filtra os dados **antes** de agrupar (ex: "Considere apenas viagens em Dólar").  
-  * **`HAVING:`** Filtra os dados **depois** de agrupar (ex: "Mostre apenas clientes que gastaram mais de 1 milhão no total").
+  * **`WHERE:`** Filtra os dados **antes** de agrupar (ex: "Considere apenas pedidos finalizados").  
+  * **`HAVING:`** Filtra os dados **depois** de agrupar (ex: "Mostre apenas clientes que compraram mais de 50 mil no total").
 
 ``` ABAP
-SELECT FROM zrap_travel  
-  FIELDS customer_id,  
-         currency_code,  
+SELECT FROM zta_pc_pedido  
+  FIELDS cliente_uuid,  
+         currency,  
            
-         " Contar quantas viagens existem neste grupo  
-         COUNT( * ) AS total_travels,  
+         " Contar quantos pedidos existem neste grupo  
+         COUNT( * ) AS total_pedidos,  
            
-         " Somar o valor total das viagens  
-         SUM( total_price ) AS total_spent,  
+         " Somar o valor total dos pedidos  
+         SUM( valor_total ) AS total_comprado,  
            
-         " Encontrar o valor da viagem mais cara e mais barata  
-         MAX( total_price ) AS max_spent,  
-         MIN( total_price ) AS min_spent
+         " Encontrar o valor do pedido mais caro e do mais barato  
+         MAX( valor_total ) AS maior_pedido,  
+         MIN( valor_total ) AS menor_pedido
 
-  " Filtra ANTES de somar (apenas viagens de 2023 em diante)  
-  WHERE begin_date >= '20230101'  
+  " Filtra ANTES de somar (apenas pedidos finalizados)  
+  WHERE status_pedido = 'FINALIZADO'  
     
   " Agrupa por Cliente e Moeda (obrigatório pois estão no FIELDS)  
-  GROUP BY customer_id, currency_code  
+  GROUP BY cliente_uuid, currency  
     
   " Filtra DEPOIS de somar (apenas "Grandes Clientes")  
-  HAVING SUM( total_price ) > 50000   
+  HAVING SUM( valor_total ) > 50000   
     
   INTO TABLE @DATA(lt_analytics).
 ```
@@ -171,24 +175,24 @@ SELECT FROM zrap_travel
 * **UNION:** Junta os resultados e executa um passo extra de **ordenação e remoção de duplicatas**. É mais lento e deve ser usado apenas se você realmente precisar garantir unicidade entre os conjuntos.
 
 ``` ABAP
-" Seleciona Voos Ativos  
-SELECT FROM /dmo/connection  
-  FIELDS carrier_id, connection_id, distance  
-  WHERE distance > 2000
+" Seleciona Pedidos Grandes atuais  
+SELECT FROM zta_pc_pedido  
+  FIELDS numero_pedido, cliente_uuid, valor_total  
+  WHERE valor_total > 2000
 
 UNION ALL " Junta com...
 
-" Seleciona Voos de uma tabela de histórico (exemplo hipotético)  
-SELECT FROM /dmo/conn_hist  
-  FIELDS carrier_id, connection_id, distance  
-  WHERE distance > 2000
+" Seleciona Pedidos Grandes de uma tabela de arquivo (exemplo hipotético)  
+SELECT FROM zta_pc_pedido_arq  
+  FIELDS numero_pedido, cliente_uuid, valor_total  
+  WHERE valor_total > 2000
 
-INTO TABLE @DATA(lt_all_long_flights).
+INTO TABLE @DATA(lt_pedidos_grandes).
 ```
 
 ## 6. Exemplo Prático: Relatório Analítico via Código
 
-Vamos criar uma classe que gera um relatório de gastos por agência, classificando-as como "VIP" ou "Standard", utilizando todo o poder do Code Pushdown: Agregação, `CASE`, Aritmética e Filtro Pós-Agregação.
+Vamos criar uma classe que gera um relatório de compras por cliente, classificando-os como "Platinum", "Gold" ou "Standard", utilizando todo o poder do Code Pushdown: Agregação, `CASE`, Aritmética e Filtro Pós-Agregação.
 
 ``` ABAP
 CLASS zcl_sql_pushdown DEFINITION  
@@ -207,45 +211,50 @@ CLASS zcl_sql_pushdown IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     " Query Analítica Complexa  
-    " Objetivo: Analisar performance de agências que operam em grandes volumes  
-    SELECT FROM zrap_travel  
-      FIELDS agency_id,  
-             currency_code,  
+    " Objetivo: Analisar os clientes que compram em grandes volumes  
+    SELECT FROM zta_pc_pedido  
+      FIELDS cliente_uuid,  
+             currency,  
                
              " 1. Contagem e Soma (Agregação)  
-             COUNT( * ) AS number_of_travels,  
-             SUM( total_price ) AS total_amount,
+             COUNT( * ) AS qtde_pedidos,  
+             SUM( valor_total ) AS valor_comprado,
 
-             " 2. Média de preço por viagem (Ticket Médio)  
+             " 2. Média de valor por pedido (Ticket Médio)  
              " Casting para decimal garante precisão na média  
-             AVG( total_price AS DEC( 15,2 ) ) AS average_ticket,
+             AVG( valor_total AS DEC( 15,2 ) ) AS ticket_medio,
 
              " 3. Classificação baseada na soma (Code Pushdown Lógico)  
              " O CASE avalia o resultado da agregação SUM()  
              CASE   
-               WHEN SUM( total_price ) > 100000 THEN 'Platinum Partner'  
-               WHEN SUM( total_price ) > 10000  THEN 'Gold Partner'  
-               ELSE 'Standard Partner'  
-             END AS partner_category
+               WHEN SUM( valor_total ) > 100000 THEN 'Cliente Platinum'  
+               WHEN SUM( valor_total ) > 10000  THEN 'Cliente Gold'  
+               ELSE 'Cliente Standard'  
+             END AS categoria_cliente
 
-      " Agrupamento Obrigatório para campos não agregados (Agency, Currency)  
-      GROUP BY agency_id, currency_code  
+      " Pedidos cancelados não contam como compra  
+      WHERE status_pedido <> 'CANCELADO'
+
+      " Agrupamento Obrigatório para campos não agregados (Cliente, Moeda)  
+      GROUP BY cliente_uuid, currency  
         
       " Filtro pós-agregação (HAVING):   
-      " Removemos agências pequenas para focar a análise  
-      HAVING SUM( total_price ) > 1000  
+      " Removemos clientes pequenos para focar a análise  
+      HAVING SUM( valor_total ) > 1000  
         
       " Ordenar do maior faturamento para o menor  
-      ORDER BY total_amount DESCENDING  
+      ORDER BY valor_comprado DESCENDING  
       INTO TABLE @DATA(lt_report).
 
     " Exibição no Console  
-    out->write( name = 'Relatório de Agências' data = lt_report ).
+    out->write( name = 'Relatório de Clientes' data = lt_report ).
 
   ENDMETHOD.
 
 ENDCLASS.
 ```
+
+> O app de análise de pedidos do projeto faz esse tipo de agregação pelo cubo `ZI_PC_PEDIDO_CUBE`, com `@Aggregation.default: #SUM` (lição 03.06): o banco soma, e só os totais chegam à tela.
 
 ## 7. Combinando Tabelas: JOINs
 
@@ -260,19 +269,19 @@ Quando o resultado precisa de colunas de mais de uma fonte, usamos um **JOIN** e
 No ABAP SQL, a coluna é qualificada pela fonte com o **til (`~`)**, porque o ponto já encerra a instrução. Com aliases (`AS`), o alias passa a ser obrigatório no lugar do nome da tabela. A qualificação só é exigida para colunas que existem nas duas fontes.
 
 ``` ABAP
-SELECT FROM /dmo/carrier AS a
-         INNER JOIN /dmo/connection AS c
-           ON a~carrier_id = c~carrier_id
-  FIELDS a~carrier_id,          " Existe nas duas tabelas: qualificação obrigatória
-         name AS carrier_name,  " Só existe em /DMO/CARRIER
-         connection_id,
-         airport_from_id,
-         airport_to_id
-  WHERE currency_code = 'EUR'
+SELECT FROM zta_pc_pedido AS p
+         INNER JOIN zta_pc_cliente AS c
+           ON p~cliente_uuid = c~cliente_uuid
+  FIELDS p~cliente_uuid,        " Existe nas duas tabelas: qualificação obrigatória
+         numero_pedido,
+         nome AS cliente,       " Só existe em ZTA_PC_CLIENTE
+         cpf,
+         valor_total
+  WHERE status_pedido = 'ABERTO'
   INTO TABLE @DATA(lt_result).
 ```
 
-**Self-join:** Para unir uma tabela com ela mesma (ex.: conexões com uma escala, em que o destino do 1º trecho é a origem do 2º), os aliases são indispensáveis para distinguir as duas ocorrências.
+**Self-join:** Para unir uma tabela com ela mesma (ex.: comparar dois pedidos do mesmo cliente), os aliases são indispensáveis para distinguir as duas ocorrências.
 
 > **JOIN ou associação?** Se a mesma junção servir a vários consumidores, modele-a como **associação** em uma CDS View (lição 03.05) e leia com path expressions. Use o JOIN no ABAP SQL para necessidades pontuais.
 

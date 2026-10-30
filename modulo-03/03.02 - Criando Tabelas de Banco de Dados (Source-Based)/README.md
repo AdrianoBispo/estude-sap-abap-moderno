@@ -54,7 +54,7 @@ Ao definir as colunas, o desenvolvedor tem duas opções. A escolha correta impa
 
 ### A. Data Elements (Recomendado para Negócio)
 
-Refere-se a um objeto global do dicionário (ex: `/dmo/customer_id`).
+Refere-se a um objeto global do dicionário (ex: `sysuuid_x16`, ou um data element próprio como `zpc_numero_pedido`).
 
 * **Vantagem:** Herda automaticamente os Rótulos de Campo (Field Labels) traduzidos, a Ajuda de Pesquisa (`F4`) e a documentação `F1`.  
 * **Resultado:** Quando você cria um App Fiori sobre essa tabela, a coluna já aparece com o nome correto ("Cliente") em todos os idiomas, sem esforço extra.
@@ -67,46 +67,40 @@ Refere-se a tipos técnicos diretos (ex: `abap.char(10)`, `abap.int4`).
 
 * **Desvantagem:** Se usado em campos de tela, o Fiori mostrará o nome técnico da coluna (ex: MY_COL), exigindo que você redefina o label manualmente em cada CDS View.
 
-## 4. Exemplo Prático: Tabela de Viagens (Travel)
+## 4. Exemplo Prático: Tabela de Pedidos de Compra
 
-Vamos criar a tabela `zrap_travel`, que será a fundação do nosso aplicativo de gestão de viagens. Observe o uso estratégico de anotações semânticas e campos de auditoria.
+A tabela `zta_pc_pedido` é a fundação do app de pedidos do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app). Observe o uso de anotações semânticas e dos campos de auditoria (versão simplificada do arquivo real).
 
 ``` CDS
-@EndUserText.label : 'Tabela de Viagens - RAP Demo'  
+@EndUserText.label : 'Pedido de compra'  
 @AbapCatalog.enhancement.category : #NOT_EXTENSIBLE  
 @AbapCatalog.tableCategory : #TRANSPARENT  
 @AbapCatalog.deliveryClass : #A  
 @AbapCatalog.dataMaintenance : #RESTRICTED  
-define table zrap_travel {
+define table zta_pc_pedido {
 
   // Chaves Primárias  
   key client      : abap.clnt not null;  
-  key travel_uuid : sysuuid_x16 not null;
+  key pedido_uuid : sysuuid_x16 not null;
 
-  // Campos de Dados (Usando Data Elements para semântica rica)  
-  travel_id       : /dmo/travel_id;  
-  agency_id       : /dmo/agency_id;  
-  customer_id     : /dmo/customer_id;  
-  begin_date      : /dmo/begin_date;  
-  end_date        : /dmo/end_date;
+  // Campos de Dados (no projeto, tipos embutidos)  
+  numero_pedido   : abap.char(10);  
+  cliente_uuid    : sysuuid_x16;  
+  status_pedido   : abap.char(40);  
+  status_pagamento : abap.char(30);  
+  observacao      : abap.char(500);
 
   // Campos de Valor e Moeda (Ligação Semântica Obrigatória)  
-  @Semantics.amount.currencyCode : 'zrap_travel.currency_code'  
-  booking_fee     : /dmo/booking_fee;
-
-  @Semantics.amount.currencyCode : 'zrap_travel.currency_code'  
-  total_price     : /dmo/total_price;
-
-  currency_code   : /dmo/currency_code;  
-  description     : /dmo/description;  
-  overall_status  : /dmo/overall_status;
+  currency        : abap.cuky;  
+  @Semantics.amount.currencyCode : 'zta_pc_pedido.currency'  
+  valor_total     : abap.curr(15,2);
 
   // Campos Administrativos (Audit Trail - Gerenciados pelo RAP)  
-  created_by      : syuname;  
-  created_at      : timestampl;  
-  last_changed_by : syuname;  
-  last_changed_at : timestampl;  
-  local_last_changed_at : timestampl;
+  created_by            : abp_creation_user;  
+  created_at            : abp_creation_tstmpl;  
+  last_changed_by       : abp_lastchange_user;  
+  last_changed_at       : abp_lastchange_tstmpl;  
+  local_last_changed_at : abp_locinst_lastchange_tstmpl;
 }
 ```
 
@@ -114,16 +108,18 @@ define table zrap_travel {
 
 * **MANDT / Client:** O campo de mandante (`abap.clnt`) deve ser sempre o primeiro da chave. O banco de dados SAP isola logicamente os dados por mandante, e esquecer este campo torna a tabela "Client-Independent" (visível em todos os mandantes), o que raramente é desejado para dados de negócio.  
 
-* **UUID como Chave (sysuuid_x16):** No desenvolvimento moderno RAP, preferimos usar UUIDs (Identificadores Únicos Universais) como chaves primárias técnicas em vez de números sequenciais semânticos (como TRAVEL_ID).  
-  * *Por que?* Isso permite a criação de rascunhos (**Drafts**) e a numeração tardia (**Late Numbering**). O `travel_id` legível vira apenas um campo secundário de busca, enquanto o UUID garante a integridade referencial.  
+* **UUID como Chave (sysuuid_x16):** No desenvolvimento moderno RAP, preferimos usar UUIDs (Identificadores Únicos Universais) como chaves primárias técnicas em vez de números sequenciais semânticos (como `numero_pedido`).  
+  * *Por que?* Isso permite a criação de rascunhos (**Drafts**) e a numeração tardia (**Late Numbering**). O `numero_pedido` legível (ex.: `0000000001`, vindo do intervalo de numeração `ZPC_NR`) vira apenas um campo secundário de busca, enquanto o UUID garante a integridade referencial.  
 
-* **Semântica de Moeda (@Semantics.amount...):** O SAP precisa saber que o número 100.00 no campo `total_price` se refere à moeda armazenada em `currency_code`. Sem essa anotação, o sistema não sabe se são 100 Dólares ou 100 Ienes (que não têm decimais), podendo exibir valores errados na UI.  
+* **Semântica de Moeda (@Semantics.amount...):** O SAP precisa saber que o número 100.00 no campo `valor_total` se refere à moeda armazenada em `currency`. Sem essa anotação, o sistema não sabe se são 100 Reais ou 100 Ienes (que não têm decimais), podendo exibir valores errados na UI.  
 
-* **Campos de Auditoria:** Os campos `created_by`, `last_changed_at`, etc., não são apenas decorativos. O framework RAP Managed pode ser configurado para preencher esses campos automaticamente em cada operação de Create/Update, garantindo rastreabilidade sem que você precise escrever código para isso.
+* **Campos de Auditoria:** Os campos `created_by`, `last_changed_at`, etc., não são apenas decorativos. Os tipos `abp_*` identificam esses campos para o framework RAP Managed, que os preenche automaticamente em cada operação de Create/Update, garantindo rastreabilidade sem que você precise escrever código para isso.  
+
+* **Tipos embutidos nos campos de negócio:** O projeto usa `abap.char(10)` e `abap.curr(15,2)` em vez de data elements próprios. Por isso, cada rótulo de tela é definido nas views CDS com `@EndUserText.label` (ex.: *Número do pedido*), exatamente a desvantagem descrita na seção 3. Em um produto de verdade, data elements como `zpc_numero_pedido` evitariam essa repetição.
 
 ## Tabela de Decisão: Data Element vs Built-in Type
 
-| Critério | Data Element (Ex: `/dmo/customer_id`) | Built-in Type (Ex: `abap.char(10)`) |
+| Critério | Data Element (Ex: `zpc_numero_pedido`) | Built-in Type (Ex: `abap.char(10)`) |
 | ----- | ----- | ----- |
 | **Reutilização** | Alta. O mesmo elemento é usado em tabelas, estruturas e assinaturas de métodos, garantindo consistência de tipo em todo o sistema. | Baixa. A definição é local e isolada. Se o tamanho mudar, precisa ser alterado em cada lugar manualmente. |
 | **Semântica (UI)** | Automática. Traz consigo Textos Curtos, Médios, Longos e Cabeçalhos traduzidos para todas as línguas do sistema. | Manual. O campo não tem texto associado. O desenvolvedor deve redefinir o rótulo (@EndUserText.label) em cada CDS View que usar o campo. |
