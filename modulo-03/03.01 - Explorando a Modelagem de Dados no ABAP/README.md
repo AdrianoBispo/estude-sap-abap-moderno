@@ -82,7 +82,7 @@ No S/4HANA e no RAP, desencorajamos o acesso direto a tabelas físicas (como VBA
 3. **Consumption / Projection Views (Camada de Consumo):**  
    * **Função:** Atender a uma necessidade específica de uma tela (UI) ou API.  
    * **Características:** É a "ponta do iceberg". Filtra apenas os campos que o App Fiori precisa. Contém anotações de UI (@UI), rótulos específicos e parâmetros de pesquisa.  
-   * **Nomenclatura Padrão:** C_NomeEspecifico (ex: C_SalesOrderAnalytics, C_ApproveTravel).  
+   * **Nomenclatura Padrão:** C_NomeEspecifico (ex: C_SalesOrderAnalytics, ou ZC_PC_PEDIDO_APP no projeto Pedidos de Compras).  
    * **Anotação:** @VDM.viewType: #CONSUMPTION
 
 ## 5. Exemplo Conceitual de VDM (Cenário de Vendas)

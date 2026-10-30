@@ -44,7 +44,7 @@ No ABAP moderno, a melhor prática é vincular a exceção a uma **Message Class
 
 * **Vantagens:**
   1. **Tradução:** As mensagens da SE91 são traduzíveis via SE63. O sistema exibe o erro no idioma de logon do usuário automaticamente.  
-  2. **Parâmetros:** Suporte a placeholders (&1, &2, &3, &4) que são substituídos por atributos da classe de exceção em tempo de execução (ex: "Viagem &1 não encontrada").  
+  2. **Parâmetros:** Suporte a placeholders (&1, &2, &3, &4) que são substituídos por atributos da classe de exceção em tempo de execução (ex: "Estoque insuficiente para o item &1 (disponível: &2)", a mensagem 011 da classe `ZPC_MSG` do projeto Pedidos de Compras).  
   3. **Busca:** Facilita encontrar onde a mensagem é usada (Where-Used List).
 
 ## 3. Exemplo Prático: Criando e Disparando

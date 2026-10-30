@@ -45,10 +45,11 @@ O comando **AUTHORITY-CHECK** é a instrução ABAP que consulta o buffer de aut
 O comando verifica se o usuário possui *alguma* autorização em seu perfil que corresponda a *todos* os valores especificados.
 
 ``` ABAP
-" Cenário: Verificar se o usuário pode ALTERAR (02) dados da Agência 000001  
-AUTHORITY-CHECK OBJECT 'S_AGENCY'    " Nome do Objeto de Autorização (SU21)  
-  ID 'AGENCYNUM' FIELD '000001'      " Valor específico que queremos checar  
-  ID 'ACTVT'     FIELD '02'.         " 02 = Alterar
+" Cenário: Verificar se o usuário pode ALTERAR (02) clientes de SP  
+" (objeto do projeto Pedidos de Compras com o campo de UF da seção 7.6 do abap/README.md)  
+AUTHORITY-CHECK OBJECT 'ZPC_ADMIN'   " Nome do Objeto de Autorização  
+  ID 'ZPC_UF' FIELD 'SP'             " Valor específico que queremos checar  
+  ID 'ACTVT'  FIELD '02'.            " 02 = Alterar
 
 " Análise do Retorno (sy-subrc)  
 CASE sy-subrc.  
@@ -59,7 +60,7 @@ CASE sy-subrc.
     " Ação: Bloquear o processo e lançar erro.  
     RAISE EXCEPTION TYPE cx_demo_auth_failure.  
   WHEN 12.  
-    " Falha: Nenhuma autorização foi encontrada para o objeto 'S_AGENCY'  
+    " Falha: Nenhuma autorização foi encontrada para o objeto 'ZPC_ADMIN'  
     " (o usuário não tem nenhuma autorização para ele — ou o objeto nem existe).  
     " Ação: Tratar também como falta de autorização (e verificar o nome do objeto).  
     RAISE EXCEPTION TYPE cx_demo_auth_failure.  
@@ -74,10 +75,10 @@ ENDCASE.
 
 ## 3. Verificação Implícita: CDS Access Control (DCL)
 
-Imagine um cenário onde você precisa exibir um relatório de Viagens. A tabela tem 10 milhões de registros. O usuário João só pode ver viagens da Agência "Rio de Janeiro".
+Imagine um cenário onde você precisa exibir um relatório de Clientes. A tabela tem 10 milhões de registros. A usuária Ana só pode ver clientes do Rio de Janeiro (UF RJ).
 
 * **Abordagem Antiga (Ineficiente):**  
-  1. SELECT * FROM viagens (Traz 10 milhões de linhas para o ABAP).  
+  1. SELECT * FROM clientes (Traz 10 milhões de linhas para o ABAP).  
   2. LOOP.  
   3. AUTHORITY-CHECK.  
   4. Se falhar, DELETE a linha.  
@@ -89,29 +90,29 @@ Imagine um cenário onde você precisa exibir um relatório de Viagens. A tabela
 
 ### Anatomia de um Arquivo DCL
 
-O DCL é um artefato separado (extensão `.dcls`) que protege uma CDS View específica.
+O DCL é um artefato separado (extensão `.dcls`) que protege uma CDS View específica. O exemplo abaixo é a regra por UF do roteiro opcional de DCL do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app) (seção 7.6 do `abap/README.md`).
 
 ``` CDS
-@EndUserText.label: 'Controle de Acesso para Viagens'  
+@EndUserText.label: 'Acesso aos clientes'  
 @MappingRole: true  
-define role Z_I_TRAVEL_DCL {  
+define role ZC_PC_CLIENTE_APP {  
     
-  // Define que estamos protegendo a view Z_I_TRAVEL  
-  grant select on Z_I_TRAVEL  
+  // Define que estamos protegendo a view ZC_PC_CLIENTE_APP  
+  grant select on ZC_PC_CLIENTE_APP  
     
   // A cláusula WHERE define a regra.  
   // aspect pfcg_auth é a função mágica que conecta com os perfis do usuário (PFCG)  
-  where ( AgencyID ) = aspect pfcg_auth( S_AGENCY,      // Objeto de Autorização  
-                                         AGENCYNUM,     // Campo do Objeto  
-                                         ACTVT = '03'   // Filtro Fixo: Apenas Leitura  
-                                       );  
+  where ( UfPrincipal ) = aspect pfcg_auth( ZPC_ADMIN,     // Objeto de Autorização  
+                                            ZPC_UF,        // Campo do Objeto  
+                                            ACTVT = '03'   // Filtro Fixo: Apenas Leitura  
+                                          );  
 
 }
 ```
 
-**Como funciona em tempo de execução?** Quando qualquer programa (Fiori, GUI, API) executa `SELECT * FROM Z_I_TRAVEL`, o runtime ABAP lê as autorizações do usuário atual. Se o usuário tiver acesso apenas à agência '001', a query enviada ao banco é reescrita internamente para:  
+**Como funciona em tempo de execução?** Quando qualquer programa (Fiori, GUI, API) executa `SELECT * FROM ZC_PC_CLIENTE_APP`, o runtime ABAP lê as autorizações do usuário atual. Se a usuária tiver acesso apenas à UF 'RJ', a query enviada ao banco é reescrita internamente para:  
 ``` ABAP
-SELECT * FROM Z_I_TRAVEL WHERE AgencyID = '001'.  
+SELECT * FROM ZC_PC_CLIENTE_APP WHERE UfPrincipal = 'RJ'.  
 ```
 
 **Vantagens:**
@@ -121,44 +122,42 @@ SELECT * FROM Z_I_TRAVEL WHERE AgencyID = '001'.
 
 ## 4. Exemplo Prático: Protegendo uma Ação de Negócio
 
-No exemplo abaixo (trecho simplificado: supõe que `is_travel` e `out` estejam disponíveis no método), combinamos a segurança de dados (DCL na View, não mostrado aqui) com a segurança de aplicação (`AUTHORITY-CHECK` no método). O usuário pode ver a viagem (graças ao DCL), mas vamos verificar se ele tem poder de "Aprovação".
+No exemplo abaixo, do projeto Pedidos de Compras (simplificado), combinamos a segurança de dados (DCL na View, não mostrado aqui) com a segurança de aplicação (`AUTHORITY-CHECK` no método). O usuário pode ver o pedido (graças ao DCL), mas vamos verificar se ele pode executar ações como **Aprovar pedido** (atividade 16 do objeto `ZPC_PEDIDO`).
 
 ``` ABAP
-CLASS zcl_auth_demo IMPLEMENTATION.
+CLASS zcl_pc_auth IMPLEMENTATION.
 
-  METHOD accept_travel.  
-    " Entrada: Estrutura da viagem contendo o ID da agência  
+  METHOD verificar_pedido.  
+    " Entrada: a atividade exigida pela operação (01, 02, 06 ou 16)  
       
-    " 1. Preparação dos dados  
-    DATA(lv_agency_id) = is_travel-agency_id.  
-      
-    " Definimos que a atividade '02' (Modificar) ou uma customizada '70' (Admin)  
-    " é necessária para aprovar. Vamos usar '02' neste exemplo.  
-    CONSTANTS: lc_actvt_approve TYPE activ_auth VALUE '02'.
-
-    " 2. Execução da Verificação  
-    AUTHORITY-CHECK OBJECT 'Z_O_TRAVEL'      " Objeto Customizado Z  
-      ID 'AGENCY_ID' FIELD lv_agency_id      " Verifica a jurisdição (Agência)  
-      ID 'ACTVT'     FIELD lc_actvt_approve. " Verifica a ação
-
-    " 3. Tomada de Decisão  
-    IF sy-subrc = 0.  
-      " Sucesso: Loga auditoria e prossegue  
-      out->write( |Usuário { sy-uname } autorizado a aprovar viagem da agência { lv_agency_id }.| ).  
-      " ... lógica de aprovação ...  
-        
-    ELSE.  
-      " Falha: qualquer valor diferente de 0 significa "não autorizado"  
-      " (4 = sem autorização para os valores; 12 = nenhuma autorização para o objeto)  
-      out->write( |Erro: Usuário { sy-uname } sem permissão de aprovação para agência { lv_agency_id }.| ).  
-        
-      " Em RAP, adicionaríamos uma mensagem ao container REPORTED  
-      " APPEND VALUE #( ... ) TO reported-travel.  
+    " 1. Modo educacional do Trial: sem Business Roles, tudo é liberado  
+    IF zif_pc_constants=>c_modo_trial = abap_true.  
+      rv_autorizado = abap_true.  
+      RETURN.  
     ENDIF.
 
+    " 2. Execução da Verificação  
+    AUTHORITY-CHECK OBJECT 'ZPC_PEDIDO'      " Objeto Customizado Z  
+      ID 'ACTVT' FIELD iv_actvt.             " Verifica a ação
+
+    " 3. Tomada de Decisão: qualquer valor diferente de 0 significa "não autorizado"  
+    "    (4 = sem autorização para os valores; 12 = nenhuma autorização para o objeto)  
+    rv_autorizado = xsdbool( sy-subrc = 0 ).  
+  ENDMETHOD.
+
+  METHOD pedido_pode_executar.  
+    rv_autorizado = verificar_pedido( zif_pc_auth=>c_actvt-executar ).   " '16'  
   ENDMETHOD.
 
 ENDCLASS.
+
+" No behavior pool do pedido (get_global_authorizations), o RAP traduz o resultado:  
+" sem autorização, o app esconde os botões das ações.  
+IF requested_authorizations-%action-AprovarPedido = if_abap_behv=>mk-on.  
+  result-%action-AprovarPedido = COND #( WHEN zcl_pc_auth=>pedido_pode_executar( ) = abap_true  
+                                         THEN if_abap_behv=>auth-allowed  
+                                         ELSE if_abap_behv=>auth-unauthorized ).  
+ENDIF.
 ```
 
 ## 5. Tratando Erros de Autorização (SU53 e Trace)

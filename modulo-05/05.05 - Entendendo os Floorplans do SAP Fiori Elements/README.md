@@ -32,7 +32,7 @@ Esta é a área de controle superior. Sua função principal é reduzir o univer
   
   * **Adapt Filters (Adaptar Filtros):** Um botão crucial que abre um diálogo permitindo ao usuário adicionar campos de filtro que não estão visíveis por padrão. Isso permite que a barra de filtros permaneça limpa ("Simple"), mas poderosa quando necessário.  
   
-  * **Gerenciamento de Variantes (Variant Management):** Permite que o usuário salve uma combinação de filtros (ex: "Viagens Abertas do Cliente X") como uma visão favorita para acesso rápido futuro.
+  * **Gerenciamento de Variantes (Variant Management):** Permite que o usuário salve uma combinação de filtros (ex: "Pedidos Abertos do Cliente X") como uma visão favorita para acesso rápido futuro.
 
 ### B. Área de Conteúdo (Content Area)
 
@@ -45,7 +45,7 @@ Abaixo da barra de filtros reside a área de resultados. Esta seção é altamen
   
   * **Barra de Ferramentas da Tabela (Table Toolbar):** O centro de comando operacional. Contém:  
     * **Ações `CRUD` Padrão:** Botões como *Criar* e *Excluir*, controlados pelas capacidades do Behavior Definition (`BDEF`).  
-    * **Ações Customizadas:** Botões específicos de negócio (ex: "Copiar Viagem", "Simular Preço") definidos via anotações `@UI.lineItem` com type `#FOR_ACTION`.  
+    * **Ações Customizadas:** Botões específicos de negócio (ex: "Efetuar Pagamento", "Aprovar pedido") definidos via anotações `@UI.lineItem` com type `#FOR_ACTION`.  
     * **Ações de Sistema:** Botões para *Exportar para Excel*, *Configurações de Coluna* (personalização) e *Tela Cheia*.  
   
   * **Tabela (Smart Table):** O grid de dados propriamente dito. Configurada via `@UI.lineItem`, ela suporta renderização responsiva (colunas que somem em telas pequenas), navegação para detalhes (clique na linha) e indicadores visuais de status (Criticality).
@@ -58,7 +58,7 @@ A *Object Page* é o coração transacional do aplicativo. Enquanto o List Repor
 
 A faixa superior fixa que permanece visível mesmo quando a página rola. Ela fornece o contexto imediato "Onde estou?".
 
-* **Conteúdo:** Mostra o **Título do Objeto** (ex: "Viagem 001234") e informações críticas de resumo, como o Status do documento ("Confirmado", "Pendente").  
+* **Conteúdo:** Mostra o **Título do Objeto** (ex: "Pedido 0000001234") e informações críticas de resumo, como o Status do documento ("Aberto", "Aguardando aprovação").  
 * **Ações Globais:** Botões que afetam o objeto inteiro, como *Editar*, *Deletar* ou ações de fluxo de trabalho como *Aprovar/Rejeitar*.  
 * **Configuração:** Controlado principalmente pela anotação `@UI.headerInfo`.
 
@@ -176,8 +176,8 @@ Veja como essa hierarquia se traduz no código (CDS Annotation) e na tela:
 1. Qual é a diferença funcional e estrutural entre uma `Collection Facet` e uma `Reference Facet`?  
   R: A `Collection Facet` é estrutural; ela funciona como uma pasta ou container para organizar o layout (geralmente criando Seções/Abas). A `Reference Facet` é conteudista; ela aponta para as definições de campos ou tabelas (anotações de UI) que serão efetivamente renderizados dentro dessas seções.  
 
-2. Se eu quiser adicionar uma lista de "Passageiros" (uma entidade filha) dentro da página de detalhes da "Viagem", que tipo de estrutura de faceta devo criar?  
-  R: Você deve criar uma `Reference Facet` do tipo `#LINEITEM_REFERENCE`. Esta faceta deve apontar para a associação de Passageiros (propriedade `targetElement`) e referenciará automaticamente a anotação `@UI.lineItem` definida na entidade Passageiro para desenhar a tabela.  
+2. Se eu quiser adicionar uma lista de "Itens" (uma entidade filha) dentro da página de detalhes do "Pedido", que tipo de estrutura de faceta devo criar?  
+  R: Você deve criar uma `Reference Facet` do tipo `#LINEITEM_REFERENCE`. Esta faceta deve apontar para a associação de Itens (propriedade `targetElement`, ex.: `_Itens`) e referenciará automaticamente a anotação `@UI.lineItem` definida na entidade ItemPedido para desenhar a tabela.  
 
 3. Onde, no processo de desenvolvimento RAP, são configuradas as Facetas e qual anotação é utilizada?  
   R: As facetas são configuradas na camada de projeção, normalmente dentro das Metadata Extensions (`.ddlx`) associadas à Consumption View. A anotação utilizada é a `@UI.facet`, que aceita uma lista (array) de definições de facetas.

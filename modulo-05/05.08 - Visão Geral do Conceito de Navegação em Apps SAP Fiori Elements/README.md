@@ -23,17 +23,17 @@ No universo SAP Fiori, a navegação não é apenas "clicar num link para mudar 
 
 Este é o padrão hierárquico. O usuário começa em uma visão ampla e mergulha nos detalhes.
 
-* **Cenário:** Você está na lista de todas as viagens (List Report). Você clica na Viagem 100. O sistema abre a página de detalhes dessa viagem (Object Page). Dentro dela, você clica na Reserva de Voo 50 e vê os detalhes do voo (Sub-Object Page).  
+* **Cenário:** Você está na lista de todos os pedidos (List Report) do app Pedidos de Compras. Você clica no Pedido 0000000100. O sistema abre a página de detalhes desse pedido (Object Page). Dentro dela, você clica num item da tabela de Itens e vê os detalhes do item (Sub-Object Page).  
 
-* **Configuração:** É praticamente **Automática**. Se você definiu as facetas e associações corretamente nas suas CDS Views e Metadata Extensions, o Fiori Elements "sabe" que a entidade Travel tem uma relação com Booking e cria os links de navegação interna sozinho. O contexto (ID da viagem) é preservado na URL interna do app.
+* **Configuração:** É praticamente **Automática**. Se você definiu as facetas e associações corretamente nas suas CDS Views e Metadata Extensions, o Fiori Elements "sabe" que a entidade Pedido tem uma relação com ItemPedido (a composição `_Itens`) e cria os links de navegação interna sozinho. O contexto (ID do pedido) é preservado na URL interna do app.
 
 ### B. Navegação Externa (Cross-App)
 
 Este é o poder do ecossistema integrado. É quando o usuário muda de "papel" ou de "domínio".
 
-* **Cenário:** Você está no App de "Aprovar Viagens". Você vê que a viagem é para o Cliente "SAP". Você quer ver se esse cliente tem faturas em aberto. Você clica no ID do Cliente e é redirecionado para o **App de Cockpit Financeiro do Cliente** (um aplicativo totalmente diferente, talvez até desenvolvido por outro time).  
+* **Cenário:** Você está no app **Pedidos de Compras**. Você vê que o pedido é da cliente "Ana Souza" e quer conferir os endereços e o cadastro dela. Você clica no nome da cliente e é redirecionado para o app **Gestão de Clientes** (um aplicativo totalmente diferente, com outro serviço OData).  
 
-* **Configuração:** Requer configuração explícita de **Objeto Semântico**. Você precisa dizer ao sistema: "Este campo não é apenas um texto 'SAP'; ele representa a entidade de negócio 'Customer'".
+* **Configuração:** Requer configuração explícita de **Objeto Semântico**. Você precisa dizer ao sistema: "Este campo não é apenas um texto 'Ana Souza'; ele representa a entidade de negócio 'Cliente'". No projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app), esse objeto semântico se chama `ZPCCliente`.
 
 ## 2. O Segredo: Intent-Based Navigation (Navegação Baseada em Intenção)
 
@@ -45,20 +45,20 @@ A Filosofia: O aplicativo de origem não diz "Abra o aplicativo Z_APP_CLIENTE". 
 
 **Exemplos de Intenções Reais:**
 
-* `#SalesOrder-display`: O usuário quer ver detalhes de um pedido. (Pode abrir o App Fiori padrão de Vendas).  
-* `#Customer-manage`: O usuário quer editar/gerenciar um cliente. (Pode abrir o App de Dados Mestres).  
-* `#Travel-analyze`: O usuário quer ver gráficos. (Pode abrir um App Analítico ou Dashboard).
+* `#SalesOrder-display`: O usuário quer ver detalhes de um pedido de venda. (Pode abrir o App Fiori padrão de Vendas).  
+* `#ZPCCliente-manage`: O usuário quer gerenciar um cliente. (No projeto, abre o app Gestão de Clientes).  
+* `#ZPCAnalisePedido-display`: O usuário quer ver gráficos. (No projeto, abre o app Análise de Pedidos de Compras).
 
 Como funciona (Target Mapping): No Launchpad Designer (ou Content Manager), o administrador cria um Target Mapping (Mapeamento de Destino).
 
-* *Regra:* Se alguém chamar `#Customer-display`...  
-* *Ação:* ... abra o aplicativo BSP `z_customer_cockpit`.
+* *Regra:* Se alguém chamar `#ZPCCliente-manage`...  
+* *Ação:* ... abra o aplicativo BSP da Gestão de Clientes.
 
 Isso desacopla os apps. Se amanhã você trocar o app de clientes antigo por um novo, você só muda o Target Mapping. Todos os links em todos os apps do sistema continuam funcionando e agora apontam para o novo app automaticamente.
 
 ## 3. Configurando Navegação na Tabela
 
-Para transformar uma coluna simples (ex: `CustomerID`) em um link clicável (Smart Link) que leva a outro aplicativo, usamos o tipo de linha `#FOR_INTENT_BASED_NAVIGATION` na anotação `@UI.lineItem`.
+Para transformar uma coluna simples (ex: `NomeCliente`) em um botão que leva a outro aplicativo, usamos o tipo de linha `#FOR_INTENT_BASED_NAVIGATION` na anotação `@UI.lineItem`.
 
 ### Sintaxe na Metadata Extension:
 
@@ -72,55 +72,46 @@ Para transformar uma coluna simples (ex: `CustomerID`) em um link clicável (Sma
     type: #FOR_INTENT_BASED_NAVIGATION,   
       
     /* O "Substantivo": Sobre qual objeto de negócio estamos falando? */  
-    semanticObject: 'Customer',      
+    semanticObject: 'ZPCCliente',      
       
     /* O "Verbo": O que queremos fazer com ele? (display, edit, manage) */  
-    semanticObjectAction: 'display'   
+    semanticObjectAction: 'manage'   
   }   
 ]  
-CustomerID;
+ClienteUUID;
 ```
 
 ### O Fluxo de Execução:
 
-1. **Renderização:** O Fiori Elements detecta a anotação e desenha o valor do CustomerID como um hiperlink azul.  
-2. **Clique:** Quando o usuário clica, o framework dispara a intenção #Customer-display.  
-3. **Contexto:** O framework pega automaticamente o valor da linha clicada (ex: CustomerID='0001') e o anexa à intenção.  
-4. **Resolução:** O Launchpad recebe #Customer-display?CustomerID=0001 e abre o aplicativo de destino, já filtrado para o cliente 0001.
+1. **Renderização:** O Fiori Elements detecta a anotação e desenha a navegação para o cliente.  
+2. **Clique:** Quando o usuário clica, o framework dispara a intenção #ZPCCliente-manage.  
+3. **Contexto:** O framework pega automaticamente os valores da linha clicada (ex: ClienteUUID) e os anexa à intenção.  
+4. **Resolução:** O Launchpad recebe #ZPCCliente-manage?ClienteUUID=... e abre o aplicativo de destino, já no cliente certo.
 
 ## 4. Navegação com Mapeamento de Parâmetros
 
-Um problema comum em integração é a divergência de nomes. Imagine que na sua tabela de Viagens, o campo se chama `MyCustID`, mas o aplicativo de destino (Cockpit do Cliente) espera receber um parâmetro chamado PartnerID. Se você apenas disparar a intenção, o destino não entenderá o parâmetro e abrirá a tela inicial sem filtro.
+Um problema comum em integração é a divergência de nomes. No app de pedidos, o CPF do cliente se chama `CpfCliente`, mas o app de destino (Gestão de Clientes) identifica o cliente pelo campo `Cpf`, sua chave semântica. Se você apenas disparar a intenção, o destino não entenderá o parâmetro `CpfCliente`.
 
-O Fiori Elements repassa os campos da linha como parâmetros usando os próprios nomes dos campos; se os nomes forem iguais aos esperados pelo destino, tudo funciona automaticamente. A anotação `@Consumption.semanticObject` marca o campo como representante de um Objeto Semântico (habilitando o Smart Link com os destinos disponíveis), mas **não renomeia** o parâmetro. Se os nomes forem diferentes, é preciso um mapeamento explícito (veja a nota abaixo).
+O Fiori Elements repassa os campos da linha como parâmetros usando os próprios nomes dos campos; se os nomes forem iguais aos esperados pelo destino, tudo funciona automaticamente. A anotação `@Consumption.semanticObject` marca o campo como representante de um Objeto Semântico (habilitando o Smart Link com os destinos disponíveis), mas **não renomeia** o parâmetro. Para isso existe `@Consumption.semanticObjectMapping`.
 
-### Exemplo Completo com Mapeamento:
+### Exemplo Completo com Mapeamento (projeção real do app de pedidos):
 
 ``` CDS
-/* Na CDS View ou Metadata Extension:  
-   A anotação @Consumption.semanticObject diz: "Ei, sistema, embora este campo   
-   se chame 'MyCustID', semanticamente ele representa o Objeto Semântico 'Customer'".  
-   Isso habilita o Smart Link para os apps desse objeto semântico.  
+/* Na projeção ZC_PC_PEDIDO_APP:  
+   @Consumption.semanticObject diz: "Ei, sistema, este campo   
+   representa o Objeto Semântico 'ZPCCliente'", e o nome vira um Smart Link.  
+   additionalBinding manda CpfCliente com o nome Cpf, que o destino entende.  
 */  
-@Consumption.semanticObject: 'Customer'   
-MyCustID;
+@Consumption.semanticObject: 'ZPCCliente'  
+@Consumption.semanticObjectMapping.additionalBinding: [{ localElement: 'CpfCliente',  
+                                                         element:      'Cpf' }]  
+_Cliente.Nome as NomeCliente,
 
-/* Na Metadata Extension (Definição da Coluna) */  
-@Metadata.layer: #CORE  
-annotate view Z_C_TRAVEL with {  
-    @UI.lineItem: [   
-        {   
-          type: #FOR_INTENT_BASED_NAVIGATION,   
-          semanticObject: 'Customer',   
-          semanticObjectAction: 'display',   
-          label: 'Ver Cliente'   
-        }   
-    ]  
-    MyCustID;
-}
+/* O mesmo par de anotações fica em ClienteUUID e em CpfCliente:  
+   qualquer um dos três campos abre o cliente na Gestão de Clientes. */
 ```
 
-*Nota:* Para renomear o parâmetro (`MyCustID` → `PartnerID`), use uma anotação de mapeamento de objeto semântico (`Common.SemanticObjectMapping`, que pode ser adicionada como anotação local no app via SAP Fiori Tools) ou configure o mapeamento de parâmetros diretamente no Target Mapping do Launchpad.
+*Nota:* O mapeamento também pode ser feito como anotação local no app (`Common.SemanticObjectMapping`, via SAP Fiori Tools) ou diretamente no Target Mapping do Launchpad.
 
 ## 5. Navegação para URL (Links da Web)
 
@@ -147,17 +138,17 @@ WebsiteLink;
 
 ### Fluxo da Navegação Externa (Passo a Passo)
 
-1. **Usuário:** Clica no link "Cliente 100" na tabela de Viagens.  
-2. **App de Origem:** Dispara a intenção `#Customer-display` e anexa o contexto `?CustomerID=100`.  
-3. **Fiori Launchpad:** Intercepta a intenção. Verifica nos catálogos do usuário qual _Target Mapping_ corresponde a `#Customer-display`.  
-4. **Resolução:** Encontra que essa intenção aponta para o App "`Z_CUSTOMER_360`".  
-5. **App de Destino:** O Launchpad carrega o App "`Z_CUSTOMER_360`" e repassa o parâmetro `CustomerID=100`. O app inicia já filtrando esse cliente.
+1. **Usuário:** Clica no link "Ana Souza" na tabela de Pedidos.  
+2. **App de Origem:** Dispara a intenção `#ZPCCliente-manage` e anexa o contexto, inclusive `?Cpf=52998224725` (graças ao mapeamento).  
+3. **Fiori Launchpad:** Intercepta a intenção. Verifica nos catálogos do usuário qual _Target Mapping_ corresponde a `#ZPCCliente-manage`.  
+4. **Resolução:** Encontra que essa intenção aponta para o app **Gestão de Clientes**.  
+5. **App de Destino:** O Launchpad carrega a Gestão de Clientes e repassa o parâmetro `Cpf`. O app inicia já no cliente.
 
 ## Glossário Técnico
 
 * **Intent-Based Navigation (Navegação Baseada em Intenção):** Mecanismo central de navegação do SAP Fiori Launchpad que desacopla a aplicação de origem da aplicação de destino. Em vez de links diretos, usa-se uma intenção semântica (#Object-Action), permitindo que o sistema resolva dinamicamente qual app abrir baseando-se nas permissões e configurações do usuário.  
 
-* **Semantic Object (Objeto Semântico):** Representa uma entidade de negócio abstrata (ex: Customer, Product, SalesOrder, CostCenter). É a primeira parte da hashtag de navegação e serve para agrupar todas as aplicações relacionadas a esse conceito.  
+* **Semantic Object (Objeto Semântico):** Representa uma entidade de negócio abstrata (ex: Customer, Product, SalesOrder, CostCenter; no projeto, `ZPCCliente` e `ZPCPedidoCompra`). É a primeira parte da hashtag de navegação e serve para agrupar todas as aplicações relacionadas a esse conceito.  
 
 * **Semantic Action (Ação Semântica):** Representa a intenção do que se deseja fazer com o objeto (ex: display, edit, manage, approve, analyze). Diferentes ações no mesmo objeto podem levar a aplicativos completamente diferentes.  
 

@@ -36,15 +36,15 @@ Podemos definir estruturas baseadas em tipos elementares, tipos de dados globais
 
 ``` ABAP
 " Definição Local (Válida apenas neste programa/classe)  
-TYPES: BEGIN OF ty_flight_info,  
-         airline_code TYPE /dmo/carrier_id,    " Elemento de Dados Global  
-         flight_num   TYPE /dmo/connection_id, " Elemento de Dados Global  
-         price        TYPE /dmo/flight_price,  " Elemento de Dados Global  
-         currency     TYPE /dmo/currency_code, " Elemento de Dados Global  
-         is_cancelled TYPE abap_bool,          " Tipo Embutido  
+TYPES: BEGIN OF ty_item_info,  
+         sku          TYPE zta_pc_item-sku,            " Tipo de um campo da tabela (global)  
+         nome         TYPE zta_pc_item-nome,           " Tipo de um campo da tabela (global)  
+         preco        TYPE zta_pc_item-preco_unitario, " Tipo de um campo da tabela (global)  
+         currency     TYPE zta_pc_item-currency,       " Tipo de um campo da tabela (global)  
+         item_ativo   TYPE abap_bool,                  " Tipo Embutido  
          " Campos técnicos podem ser adicionados livremente  
          _timestamp   TYPE timestampl,  
-       END OF ty_flight_info.
+       END OF ty_item_info.
 ```
 
 ### Criando a "Instância" (DATA)
@@ -53,18 +53,20 @@ Com o molde definido, usamos o comando DATA para alocar espaço na memória RAM 
 
 ``` ABAP
 " Criação da variável baseada no tipo local definido acima  
-DATA: ls_flight TYPE ty_flight_info.
+DATA: ls_item TYPE ty_item_info.
 
 " Também é possível criar estruturas baseadas em tabelas do banco de dados (Global)  
-" A estrutura ls_carrier terá exatamente as mesmas colunas da tabela /dmo/carrier  
-DATA: ls_carrier TYPE /dmo/carrier.
+" A estrutura ls_cliente terá exatamente as mesmas colunas da tabela zta_pc_cliente  
+DATA: ls_cliente TYPE zta_pc_cliente.
 
 " Acesso aos componentes usa o hífen (-)  
-ls_flight-airline_code = 'AA'.  
-ls_flight-flight_num   = '0017'.  
-ls_flight-price        = '500.00'.  
-ls_flight-is_cancelled = abap_false.
+ls_item-sku        = 'SKU-ELE-0000000001'.  
+ls_item-nome       = 'Fone Bluetooth'.  
+ls_item-preco      = '199.90'.  
+ls_item-item_ativo = abap_true.
 ```
+
+Os tipos e as tabelas citados (`zta_pc_item`, `zta_pc_cliente`) são do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app), usado como exemplo nas próximas lições.
 
 *Dica de Nomenclatura:* É uma convenção forte no ABAP usar o prefixo ls_ (*Local Structure*) ou wa_ (*Work Area*) para variáveis de estrutura, e ty_ para definições de tipos. Isso ajuda a identificar rapidamente se estamos lidando com dados ou definições.
 
@@ -109,18 +111,20 @@ ls_destino = CORRESPONDING #(
   * *Atenção:* Operações com estruturas profundas exigem cuidado extra. Sem a adição `DEEP`, o CORRESPONDING atribui componentes profundos de mesmo nome (ex: uma tabela interna aninhada) como um todo, seguindo as regras de conversão; com `CORRESPONDING #( DEEP ... )`, a correspondência por nome é aplicada recursivamente dentro das subestruturas e tabelas aninhadas. Strings e tabelas internas têm semântica de valor (a cópia é independente), enquanto componentes `REF TO` copiam apenas a referência (ambos apontam para o mesmo objeto).
 
 ``` ABAP
-TYPES: BEGIN OF ty_passenger,  
-         name    TYPE string,       " String torna a estrutura profunda (Deep)  
-         address TYPE ty_address,   " Outra estrutura (Nested)  
-         flights TYPE tt_flights,   " Tabela Interna dentro da estrutura  
-       END OF ty_passenger.
+TYPES: BEGIN OF ty_pedido,  
+         cliente  TYPE string,        " String torna a estrutura profunda (Deep)  
+         endereco TYPE ty_endereco,   " Outra estrutura (Nested)  
+         itens    TYPE tt_itens,      " Tabela Interna dentro da estrutura  
+       END OF ty_pedido.
 
 " Acesso aninhado:  
-ls_passenger-address-city = 'New York'.
+ls_pedido-endereco-cidade = 'São Paulo'.
   
 " Acesso a tabela interna dentro da estrutura:  
-ls_passenger-flights[ 1 ]-price = '200.00'.
+ls_pedido-itens[ 1 ]-valor_total = '200.00'.
 ```
+
+No projeto, o resultado da consulta de CEP (`zif_pc_viacep=>ty_resultado`) é uma estrutura assim: tem o componente aninhado `endereco` (lido como `ls_resultado-endereco-localidade`) e é profunda, porque todos os campos do endereço são `string`.
 
 ## 5. Exemplo Prático: Manipulação, Mapeamento e BASE
 
@@ -147,81 +151,81 @@ CLASS zcl_structures_demo IMPLEMENTATION.
     " ---------------------------------------------------------------------  
       
     " Estrutura de Banco de Dados (Nomes técnicos, campos de sistema)  
-    TYPES: BEGIN OF ty_db_flight,  
-             carrier_id    TYPE string,  
-             connection_id TYPE string,  
-             flight_date   TYPE d,  
-             price         TYPE p LENGTH 10 DECIMALS 2,  
-             currency_code TYPE string,  
-             created_by    TYPE string, " Campo de auditoria  
-             created_at    TYPE timestampl,  
-           END OF ty_db_flight.
+    TYPES: BEGIN OF ty_db_item,  
+             sku            TYPE string,  
+             nome           TYPE string,  
+             preco_unitario TYPE p LENGTH 10 DECIMALS 2,  
+             currency       TYPE string,  
+             created_by     TYPE string, " Campo de auditoria  
+             created_at     TYPE timestampl,  
+           END OF ty_db_item.
 
     " Estrutura de UI/Consumo (Nomes amigáveis, sem campos de sistema)  
-    TYPES: BEGIN OF ty_ui_flight,  
-             airline       TYPE string, " Mapeado de carrier_id  
-             connection    TYPE string, " Mapeado de connection_id  
-             price         TYPE p LENGTH 10 DECIMALS 2,  
-             currency      TYPE string,  
-             status_text   TYPE string, " Campo apenas de UI  
-           END OF ty_ui_flight.
+    TYPES: BEGIN OF ty_ui_item,  
+             codigo      TYPE string, " Mapeado de sku  
+             produto     TYPE string, " Mapeado de nome  
+             preco       TYPE p LENGTH 10 DECIMALS 2,  
+             moeda       TYPE string,  
+             status_text TYPE string, " Campo apenas de UI  
+           END OF ty_ui_item.
 
     " ---------------------------------------------------------------------  
     " 2. Cenário A: Leitura (DB -> UI)  
     " ---------------------------------------------------------------------  
       
-    " Populando a origem (Mock de um SELECT)  
-    DATA(ls_db_source) = VALUE ty_db_flight(  
-      carrier_id    = 'LH'  
-      connection_id = '0400'  
-      price         = '1250.50'  
-      currency_code = 'EUR'  
-      created_by    = 'USER_SAP'  
-      created_at    = '20230101120000'  
+    " Populando a origem (Mock de um SELECT em zta_pc_item)  
+    DATA(ls_db_source) = VALUE ty_db_item(  
+      sku            = 'SKU-ELE-0000000001'  
+      nome           = 'Fone Bluetooth'  
+      preco_unitario = '199.90'  
+      currency       = 'BRL'  
+      created_by     = 'USER_SAP'  
+      created_at     = '20260101120000'  
     ).
 
     " Usando CORRESPONDING com MAPPING para traduzir técnico -> amigável  
     " Note que created_by e created_at são ignorados pois não existem no destino  
-    DATA(ls_ui_target) = CORRESPONDING ty_ui_flight(  
+    DATA(ls_ui_target) = CORRESPONDING ty_ui_item(  
       ls_db_source  
-      MAPPING airline    = carrier_id  
-              connection = connection_id  
-              currency   = currency_code  
+      MAPPING codigo  = sku  
+              produto = nome  
+              preco   = preco_unitario  
+              moeda   = currency  
     ).  
       
-    ls_ui_target-status_text = 'Confirmado'. " Enriquecendo dados na UI
+    ls_ui_target-status_text = 'Em estoque'. " Enriquecendo dados na UI
 
     out->write( '--- Cenário A: DB para UI ---' ).  
-    out->write( |DB: { ls_db_source-carrier_id } / { ls_db_source-price }| ).  
-    out->write( |UI: { ls_ui_target-airline } / { ls_ui_target-price } ({ ls_ui_target-status_text })| ).
+    out->write( |DB: { ls_db_source-sku } / { ls_db_source-preco_unitario }| ).  
+    out->write( |UI: { ls_ui_target-codigo } / { ls_ui_target-preco } ({ ls_ui_target-status_text })| ).
 
     " ---------------------------------------------------------------------  
     " 3. Cenário B: Atualização Parcial (UI -> DB) usando BASE e EXCEPT  
     " ---------------------------------------------------------------------  
       
-    " Imagine que a UI mandou uma alteração: Preço mudou, mas airline e connection são chaves (não mudam)  
+    " Imagine que a UI mandou uma alteração: o preço mudou, mas o SKU é a chave (não muda)  
     " E a UI não sabe nada sobre 'created_by'.  
       
     DATA(ls_ui_input) = ls_ui_target.  
-    ls_ui_input-price = '999.00'. " Novo preço vindo da tela
+    ls_ui_input-preco = '179.90'. " Novo preço vindo da tela
 
     " Queremos atualizar ls_db_source com os dados de ls_ui_input  
     " MAS:  
     " 1. Devemos preservar o 'created_by' original (usando BASE)  
     " 2. Não queremos que a UI altere a moeda (usando EXCEPT)  
-    " Obs.: as chaves (carrier_id/connection_id) não são mapeadas de volta,  
-    " então permanecem com os valores do BASE.  
+    " Obs.: o SKU (codigo) não é mapeado de volta, então permanece com o valor do BASE.  
       
-    DATA(ls_db_updated) = CORRESPONDING ty_db_flight(  
-      BASE ( ls_db_source )  " Começa com a cópia dos dados atuais do banco  
-      ls_ui_input            " Aplica as mudanças vindas da UI (price tem o mesmo nome)  
-      EXCEPT currency_code   " Protege a moeda de ser sobrescrita (mantém o valor do BASE)  
+    DATA(ls_db_updated) = CORRESPONDING ty_db_item(  
+      BASE ( ls_db_source )            " Começa com a cópia dos dados atuais do banco  
+      ls_ui_input                      " Aplica as mudanças vindas da UI  
+      MAPPING preco_unitario = preco   " Nomes diferentes: o preço precisa de MAPPING  
+      EXCEPT  currency                 " Protege a moeda (mantém o valor do BASE)  
     ).
 
     out->write( ' ' ).  
     out->write( '--- Cenário B: UI para DB (Update com BASE) ---' ).  
-    out->write( |Original DB Price: { ls_db_source-price } | ).  
-    out->write( |Updated  DB Price: { ls_db_updated-price } (Preço Atualizado)| ).  
+    out->write( |Original DB Price: { ls_db_source-preco_unitario } | ).  
+    out->write( |Updated  DB Price: { ls_db_updated-preco_unitario } (Preço Atualizado)| ).  
     out->write( |Original CreatedBy: { ls_db_source-created_by }| ).  
     out->write( |Updated  CreatedBy: { ls_db_updated-created_by } (Preservado graças ao BASE)| ).
 

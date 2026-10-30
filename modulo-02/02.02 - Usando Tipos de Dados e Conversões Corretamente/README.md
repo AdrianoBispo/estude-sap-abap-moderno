@@ -216,15 +216,15 @@ CONVERT UTCLONG lv_agora
        TIME lv_hora_usuario
   TIME ZONE cl_abap_context_info=>get_user_time_zone( ).
 
-" Data e hora locais (ex.: partida de um voo, no fuso do aeroporto) -> UTC
-" lv_hora_partida TYPE t e lv_fuso_aeroporto (fuso horário) vêm dos dados do voo
+" Data e hora locais (ex.: horário de corte das entregas, no fuso do cliente) -> UTC
+" lv_hora_corte TYPE t e lv_fuso_cliente (fuso horário) vêm do cadastro do cliente
 CONVERT DATE cl_abap_context_info=>get_system_date( )
-        TIME lv_hora_partida
-        TIME ZONE lv_fuso_aeroporto
-  INTO UTCLONG DATA(lv_partida_utc).
+        TIME lv_hora_corte
+        TIME ZONE lv_fuso_cliente
+  INTO UTCLONG DATA(lv_corte_utc).
 ```
 
-> **Exemplo clássico:** a duração de um voo entre aeroportos de fusos diferentes só fica correta depois de converter partida e chegada para UTC e subtrair os dois instantes.
+> **Exemplo clássico:** o prazo entre a criação de um pedido em São Paulo e a entrega em Manaus só fica correto depois de converter os dois horários locais para UTC e subtrair os instantes. Por isso o projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app) grava `CreatedAt` e as demais datas como timestamps em UTC e só converte na leitura (o cubo de pedidos usa `tstmp_to_dats( …, 'UTC', … )`).
 
 ## Regras de Ouro para Tipos
 

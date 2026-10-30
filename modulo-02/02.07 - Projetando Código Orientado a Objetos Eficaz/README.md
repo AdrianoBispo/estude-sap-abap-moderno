@@ -49,30 +49,32 @@ Quando você escreve `DATA(obj) = NEW zcl_calculadora_v1( )`, seu código fica "
 A "Fábrica" é uma classe (ou método estático) cuja única responsabilidade é decidir qual objeto criar e como criá-lo. O consumidor não sabe qual classe concreta está recebendo; ele sabe apenas que receberá alguém que obedece a uma Interface.
 
 ``` ABAP
-CLASS zcl_travel_factory DEFINITION PUBLIC.  
+CLASS zcl_pc_cep_factory DEFINITION PUBLIC.  
   PUBLIC SECTION.  
     " O método retorna a INTERFACE, não a classe concreta.  
     " Isso esconde a complexidade da implementação real.  
-    CLASS-METHODS: get_calculator  
-      IMPORTING iv_country TYPE land1  
-      RETURNING VALUE(ro_calc) TYPE REF TO zif_travel_calc.  
+    CLASS-METHODS: get_consulta  
+      IMPORTING iv_ambiente TYPE string  
+      RETURNING VALUE(ro_consulta) TYPE REF TO zif_pc_consulta_cep.  
 ENDCLASS.
 
-CLASS zcl_travel_factory IMPLEMENTATION.  
-  METHOD get_calculator.  
+CLASS zcl_pc_cep_factory IMPLEMENTATION.  
+  METHOD get_consulta.  
     " Lógica de decisão centralizada:  
-    " Se precisarmos mudar a classe de cálculo para o Brasil, mudamos APENAS aqui.  
-    CASE iv_country.  
-      WHEN 'BR'.  
-        ro_calc = NEW zcl_travel_calc_br( ).  
-      WHEN 'US'.  
-        ro_calc = NEW zcl_travel_calc_us( ).  
+    " Se precisarmos trocar a consulta do On-Premise, mudamos APENAS aqui.  
+    CASE iv_ambiente.  
+      WHEN 'BTP'.  
+        ro_consulta = NEW zcl_pc_cep_btp( ).      " HTTP com APIs liberadas  
+      WHEN 'ONPREMISE'.  
+        ro_consulta = NEW zcl_pc_cep_onpremise( ). " Destination da SM59  
       WHEN OTHERS.  
-        ro_calc = NEW zcl_travel_calc_global( ).  
+        ro_consulta = NEW zcl_pc_cep_simulada( ).  " Respostas fixas para testes  
     ENDCASE.  
   ENDMETHOD.  
 ENDCLASS.
 ```
+
+> **No projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app):** a consulta de CEP tem duas implementações do mesmo contrato `ZIF_PC_VIACEP`, uma para o SAP BTP e outra para o On-Premise, e o behavior pool do cliente não muda ao trocar uma pela outra. Lá a escolha é feita na instalação (só uma das classes é criada); a factory acima mostra como fazer a escolha em tempo de execução.
 
 ## 3. Exceções Baseadas em Classe (CX_*)
 
@@ -103,13 +105,13 @@ No ABAP Moderno, usamos **Classes de Exceção**, que são objetos ricos em info
 Ao disparar uma exceção, podemos passar parâmetros para explicar o erro.
 
 ``` ABAP
-IF iv_amount < 0.  
+IF iv_preco < 0.  
   " RAISE EXCEPTION cria o objeto de erro e interrompe o fluxo imediatamente  
-  RAISE EXCEPTION TYPE zcx_travel_error  
+  RAISE EXCEPTION TYPE zcx_pc_msg  
     EXPORTING  
-      textid    = zcx_travel_error=>negative_amount " Mensagem específica T100  
-      mv_amount = iv_amount  " Passamos o valor inválido para log/análise  
-      previous  = lx_prev_exception. " Encadeamento de erros (opcional)  
+      textid   = zif_pc_msg=>item_preco_invalido " Mensagem T100 029 da classe ZPC_MSG  
+      attr1    = |{ iv_preco }|    " Passamos o valor inválido para log/análise  
+      previous = lx_prev_exception. " Encadeamento de erros (opcional)  
 ENDIF.
 ```
 
@@ -117,7 +119,7 @@ ENDIF.
 
 Vamos transformar um código procedural, cheio de IFs e dependências rígidas, em um design orientado a objetos robusto utilizando o padrão **Strategy**.
 
-* **Cenário:** Precisamos calcular o desconto de uma viagem.
+* **Cenário:** Precisamos calcular o desconto de um pedido de compra.
   * Clientes **VIP** recebem 20% de desconto.  
   * Clientes **Standard** não recebem desconto.  
   * No futuro, novos tipos de clientes (ex: "Partner") podem surgir.
@@ -179,7 +181,7 @@ O programa principal (Consumidor) não contém a lógica de cálculo. Ele apenas
 
 ``` ABAP
 CLASS zcl_main_process IMPLEMENTATION.  
-  METHOD process_booking.  
+  METHOD processar_pedido.  
     " Definimos a variável com o tipo da INTERFACE, não da classe concreta  
     DATA: lo_strategy TYPE REF TO zif_discount_strategy.
 

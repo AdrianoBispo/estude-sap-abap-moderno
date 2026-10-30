@@ -66,7 +66,7 @@ MODIFY ENTITIES OF Nome_Da_Definicao_De_Comportamento
   UPDATE FROM lt_dados_alterados  
     
   " Operação 3: Executar uma Ação (Ex: Aprovar)  
-  EXECUTE aceitar_viagem FROM lt_chaves_acao
+  EXECUTE AprovarPedido FROM lt_chaves_acao
 
   " Retornos Padronizados (Sempre use!)  
   FAILED   DATA(ls_failed)  
@@ -104,9 +104,9 @@ COMMIT ENTITIES
   REPORTED DATA(ls_commit_reported).
 ```
 
-## 5. Exemplo Prático: Criando e Atualizando Viagens via EML
+## 5. Exemplo Prático: Criando e Atualizando Itens de Estoque via EML
 
-Neste exemplo expandido, vamos simular um programa que cria uma viagem e, logo em seguida, tenta atualizar um campo dela, demonstrando a interação completa com o buffer.
+Neste exemplo, usamos o business object `ZR_PC_ITEM` do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app): o programa cria um item de estoque e, logo em seguida, atualiza um campo dele, demonstrando a interação completa com o buffer.
 
 ``` ABAP
 CLASS zcl_eml_demo DEFINITION  
@@ -128,30 +128,24 @@ CLASS zcl_eml_demo IMPLEMENTATION.
     " PASSO 1: Preparação dos Dados para CRIAÇÃO  
     " ---------------------------------------------------------------------  
     " O %cid (Content ID) é um identificador temporário obrigatório
-    " que permite referenciar esta linha antes dela ter um número final.
+    " que permite referenciar esta linha antes dela ter uma chave final.
     " O %control indica quais campos estamos fornecendo.  
     " TABLE FOR CREATE é o tipo derivado (Derived Type) gerado pelo RAP para a entidade.
       
-    DATA lt_travel_create TYPE TABLE FOR CREATE /DMO/I_Travel_M.
+    DATA lt_item_create TYPE TABLE FOR CREATE zr_pc_item.
 
-    lt_travel_create = VALUE #(  
+    lt_item_create = VALUE #(  
       ( %cid = 'TEMP_ID_001'  
-        agency_id     = '070001'  
-        customer_id   = '000001'  
-        begin_date    = cl_abap_context_info=>get_system_date( )  
-        end_date      = cl_abap_context_info=>get_system_date( ) + 10  
-        booking_fee   = '20.00'  
-        currency_code = 'EUR'  
-        description   = 'Viagem criada via EML'  
-        overall_status = 'O' " Open  
-        %control-agency_id     = if_abap_behv=>mk-on  
-        %control-customer_id   = if_abap_behv=>mk-on  
-        %control-begin_date    = if_abap_behv=>mk-on  
-        %control-end_date      = if_abap_behv=>mk-on  
-        %control-booking_fee   = if_abap_behv=>mk-on  
-        %control-currency_code = if_abap_behv=>mk-on  
-        %control-description   = if_abap_behv=>mk-on  
-        %control-overall_status = if_abap_behv=>mk-on  
+        Nome          = 'Mouse sem fio'  
+        Categoria     = 'INFORMATICA'  
+        QtdeEstoque   = 30  
+        PrecoUnitario = '89.90'  
+        Currency      = 'BRL'  
+        %control-Nome          = if_abap_behv=>mk-on  
+        %control-Categoria     = if_abap_behv=>mk-on  
+        %control-QtdeEstoque   = if_abap_behv=>mk-on  
+        %control-PrecoUnitario = if_abap_behv=>mk-on  
+        %control-Currency      = if_abap_behv=>mk-on  
        )  
     ).
 
@@ -159,13 +153,13 @@ CLASS zcl_eml_demo IMPLEMENTATION.
     " PASSO 2: Executar o MODIFY (Interaction Phase)  
     " ---------------------------------------------------------------------  
     " Aqui, o framework executa as verificações da fase de interação
-    " (autorização, feature control, prechecks). Se alguma falhar,
-    " ls_failed será preenchido. Validações "on save" (ex: agência existente)
-    " só rodam no COMMIT ENTITIES.  
+    " (autorização, feature control, prechecks) e as determinações on modify
+    " (no BO Item, DefinirValoresIniciais e RecalcularStatusEstoque).
+    " Validações "on save" (ex: ValidarItem) só rodam no COMMIT ENTITIES.  
       
-    MODIFY ENTITIES OF /DMO/I_Travel_M  
-      ENTITY Travel  
-      CREATE FROM lt_travel_create  
+    MODIFY ENTITIES OF zr_pc_item  
+      ENTITY Item  
+      CREATE FROM lt_item_create  
         
       " Captura de retornos  
       FAILED DATA(ls_failed)  
@@ -175,37 +169,37 @@ CLASS zcl_eml_demo IMPLEMENTATION.
     IF ls_failed IS NOT INITIAL.  
       " Tratamento de Erro na Criação  
       " Leríamos ls_reported para mostrar a mensagem ao usuário.  
-      out->write( 'Erro: Falha na criação da viagem.' ).  
+      out->write( 'Erro: Falha na criação do item.' ).  
         
       " Exemplo de como ler mensagens de erro do REPORTED  
-      LOOP AT ls_reported-travel INTO DATA(ls_msg).  
-         DATA(lv_text) = ls_msg-%msg->get_text( ).  
+      LOOP AT ls_reported-item INTO DATA(ls_msg).  
+         DATA(lv_text) = ls_msg-%msg->if_message~get_text( ).  
          out->write( |Detalhe: { lv_text }| ).  
       ENDLOOP.  
       RETURN.   
     ENDIF.
 
     " Se chegou aqui, a criação foi bem sucedida NO BUFFER.
-    " /DMO/I_Travel_M usa Early Numbering: a chave gerada já está no MAPPED.
+    " ZR_PC_ITEM usa numbering : managed: o UUID gerado já está no MAPPED.
 
-    DATA(lv_new_travel_id) = ls_mapped-travel[ 1 ]-travel_id.  
-    out->write( |Viagem criada no buffer com ID: { lv_new_travel_id }| ).
+    DATA(lv_new_item_uuid) = ls_mapped-item[ 1 ]-ItemUUID.  
+    out->write( |Item criado no buffer com UUID: { lv_new_item_uuid }| ).
 
     " ---------------------------------------------------------------------  
     " PASSO 3: Atualização na mesma transação (Chaining)  
     " ---------------------------------------------------------------------  
-    " Vamos aumentar a taxa de reserva para 50.00.  
+    " Vamos ajustar o preço unitário para 79.90.  
       
-    MODIFY ENTITIES OF /DMO/I_Travel_M  
-      ENTITY Travel  
-      UPDATE FIELDS ( booking_fee ) " Só atualiza este campo  
-      WITH VALUE #( ( travel_id   = lv_new_travel_id  
-                      booking_fee = '50.00' ) )  
+    MODIFY ENTITIES OF zr_pc_item  
+      ENTITY Item  
+      UPDATE FIELDS ( PrecoUnitario ) " Só atualiza este campo  
+      WITH VALUE #( ( ItemUUID      = lv_new_item_uuid  
+                      PrecoUnitario = '79.90' ) )  
       FAILED DATA(ls_update_failed)  
       REPORTED DATA(ls_update_reported).
 
     IF ls_update_failed IS NOT INITIAL.  
-       out->write( 'Erro ao atualizar a taxa.' ).  
+       out->write( 'Erro ao atualizar o preço.' ).  
        RETURN.  
     ENDIF.
 
@@ -213,16 +207,17 @@ CLASS zcl_eml_demo IMPLEMENTATION.
     " PASSO 4: Persistir (Save Phase)  
     " ---------------------------------------------------------------------  
     " Até agora, nada está no banco. O COMMIT efetiva a transação.  
+    " Na Save Phase, a determination GerarSku cria o SKU (ex.: SKU-INF-0000000007).  
       
     COMMIT ENTITIES  
-      RESPONSE OF /DMO/I_Travel_M  
+      RESPONSE OF zr_pc_item  
       FAILED DATA(ls_commit_failed)  
       REPORTED DATA(ls_commit_reported).
 
     IF ls_commit_failed IS INITIAL.  
       out->write( 'Sucesso Total! Dados gravados no banco de dados.' ).  
     ELSE.  
-      " Ex: validações "on save" (agência/cliente inexistente, datas inválidas)  
+      " Ex: validações "on save" (nome ou categoria vazios, quantidade negativa)  
       out->write( 'Erro durante a fase de salvamento (Save Sequence).' ).  
     ENDIF.
 
@@ -245,7 +240,7 @@ ENDCLASS.
 
 * **EML (Entity Manipulation Language):** Extensão da linguagem ABAP utilizada para interagir com Business Objects no modelo RAP. Permite operações transacionais (MODIFY) e leitura transacional (READ ENTITIES), que também enxerga o conteúdo ainda não salvo do buffer.  
 
-* **Business Object (BO):** Representação virtual de uma entidade de negócio (ex: Viagem) que encapsula dados (CDS) e comportamento (Behavior Pool).  
+* **Business Object (BO):** Representação virtual de uma entidade de negócio (ex: Pedido de compra) que encapsula dados (CDS) e comportamento (Behavior Pool).  
 
 * **%cid (Content ID):** Identificador temporário alfanumérico atribuído pelo consumidor (você) durante uma operação de CREATE. Ele serve para identificar a linha no buffer antes que o banco de dados gere a chave primária definitiva.  
 

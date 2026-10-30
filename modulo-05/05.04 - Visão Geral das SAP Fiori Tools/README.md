@@ -50,10 +50,10 @@ Para acessá-lo no VS Code ou BAS, abrimos a paleta de comandos (`F1` ou `Ctrl+S
    * Selecionamos o **Service Binding** (OData V4 - UI) que criamos na Aula 02.  
    * O gerador lê os metadados do serviço para entender as entidades disponíveis.  
 4. **Entity Selection:**  
-   * **Main Entity:** Escolhemos a entidade raiz (ex: Travel). Isso define o que será listado na primeira tela.  
-   * **Navigation Entity:** (Opcional) Define para onde o usuário vai ao clicar na linha (ex: _Booking).  
+   * **Main Entity:** Escolhemos a entidade raiz (ex: Pedido, no app Pedidos de Compras). Isso define o que será listado na primeira tela.  
+   * **Navigation Entity:** (Opcional) Define para onde o usuário vai ao clicar na linha (ex: _Itens).  
 5. **Project Attributes:**  
-   * Definimos o nome do projeto, namespace (ex: z.travel), e configurações de deploy.
+   * Definimos o nome do projeto, namespace (ex: pedidoscompras), e configurações de deploy.
 
 *Resultado:* O gerador cria toda a estrutura de pastas (webapp, manifest.json, ui5.yaml) e configura o proxy para que você possa rodar o app localmente (npm start) consumindo dados do servidor remoto sem problemas de CORS.
 

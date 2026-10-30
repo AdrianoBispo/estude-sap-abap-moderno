@@ -44,7 +44,7 @@ O operador de declaração inline DATA(...) não é mágica; ele instrui o compi
   DATA(ls_result) = lo_objeto->get_complex_data( ).
 
   " Funciona inclusive para tabelas internas  
-  SELECT * FROM flight_schedule INTO TABLE @DATA(lt_flights).
+  SELECT * FROM zta_pc_pedido INTO TABLE @DATA(lt_pedidos).
 ```
 
 * Casting durante a Declaração:  

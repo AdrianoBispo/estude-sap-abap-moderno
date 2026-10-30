@@ -67,7 +67,7 @@ Diferente do `READ TABLE` que apenas define `sy-subrc = 4` quando falha, a expre
 
 * **Antigo (Read Table):**  
 ``` ABAP
-  READ TABLE lt_flights INTO ls_flight WITH KEY carrier_id = 'LH'.  
+  READ TABLE lt_itens INTO ls_item WITH KEY categoria = 'ELETRONICOS'.  
   IF sy-subrc = 0.   
     " Processar  
   ENDIF.
@@ -76,8 +76,8 @@ Diferente do `READ TABLE` que apenas define `sy-subrc = 4` quando falha, a expre
 * **Moderno (Table Expression):**  
 ``` ABAP
   TRY.  
-      DATA(ls_flight) = lt_flights[ carrier_id = 'LH' ].  
-      " Processar ls_flight...  
+      DATA(ls_item) = lt_itens[ categoria = 'ELETRONICOS' ].  
+      " Processar ls_item...  
   CATCH cx_sy_itab_line_not_found.  
       " Tratar erro se não achar (Opcional, se a lógica exigir existência)  
   ENDTRY.
@@ -88,11 +88,11 @@ Diferente do `READ TABLE` que apenas define `sy-subrc = 4` quando falha, a expre
 Uma grande vantagem é poder acessar um campo ou sub-estrutura diretamente, sem precisar copiar a linha inteira para uma work area.
 
 ``` ABAP
-" Acessa o campo 'price' da linha onde id = '123'  
-DATA(lv_price) = lt_products[ id = '123' ]-price.
+" Acessa o campo 'preco_unitario' da linha do SKU informado  
+DATA(lv_preco) = lt_itens[ sku = 'SKU-ELE-0000000001' ]-preco_unitario.
 
 " Acessa uma tabela aninhada dentro da estrutura  
-DATA(lv_seat) = lt_flights[ 1 ]-bookings[ customer = 'SAP' ]-seat_num.
+DATA(lv_qtde) = lt_pedidos[ 1 ]-itens[ sku = 'SKU-ELE-0000000001' ]-quantidade.
 ```
 
 ### Funções Predicativas: line_exists e line_index

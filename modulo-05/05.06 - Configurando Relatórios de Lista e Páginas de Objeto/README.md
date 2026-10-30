@@ -35,14 +35,14 @@ Esta anotação é poderosa porque ela não controla apenas a ordenação, mas t
 
 @UI.presentationVariant: [{   
     sortOrder: [  
-      { by: 'BeginDate', direction: #DESC },  /* Critério 1: Data mais recente primeiro */  
-      { by: 'OverallStatus', direction: #ASC } /* Critério 2: Agrupar status iguais */  
+      { by: 'CreatedAt', direction: #DESC },   /* Critério 1: Pedido mais recente primeiro */  
+      { by: 'StatusPedido', direction: #ASC }  /* Critério 2: Agrupar status iguais */  
     ],   
     visualizations: [{ type: #AS_LINEITEM }]   
 
 }]
 
-annotate view Z_C_TRAVEL with ...
+annotate entity ZC_PC_PEDIDO_APP with ...
 ```
 
 ### Por que usar?
@@ -111,50 +111,51 @@ Esta é a abordagem "simples e direta". Existe um grupo especial de anotações 
 
 Esta é a abordagem "flexível". Ela permite criar quantos grupos de campos você quiser.
 
-* **O que é:** Funciona através de um sistema de etiquetas (tags). Você etiqueta um campo com um qualifier (ex: 'PriceData') e cria uma faceta que busca apenas campos com essa etiqueta.  
+* **O que é:** Funciona através de um sistema de etiquetas (tags). Você etiqueta um campo com um qualifier (ex: 'Cancelamento') e cria uma faceta que busca apenas campos com essa etiqueta.  
 
-* **Vantagem:** Permite layout de múltiplas colunas. Você pode colocar o bloco "Preços" na posição 10 e o bloco "Datas" na posição 20 dentro da mesma seção pai, e o Fiori Elements tentará renderizá-los lado a lado se houver espaço na tela.
+* **Vantagem:** Permite layout de múltiplas colunas. Você pode colocar o bloco "Finalização" na posição 10 e o bloco "Cancelamento" na posição 20 dentro da mesma seção pai, e o Fiori Elements tentará renderizá-los lado a lado se houver espaço na tela.
 
 ``` CDS
 /* 1. Definição da Faceta na lista @UI.facet */  
 {  
 
-  id: 'Prices',  
+  id: 'Cancelamento',  
   type: #FIELDGROUP_REFERENCE,  
-  label: 'Valores Financeiros',  
+  label: 'Cancelamento',  
   parentId: 'GeneralSection',      /* Também vai dentro da aba Geral */  
   position: 20,                    /* Aparece DEPOIS ou AO LADO dos Dados Básicos */  
-  targetQualifier: 'PriceData'     /* O Elo de Ligação: Busca campos com esta tag */  
+  targetQualifier: 'Cancelamento'  /* O Elo de Ligação: Busca campos com esta tag */  
 
 }
 
 /* 2. Anotação nos Campos (Vinculando ao Grupo) */  
-@UI.fieldGroup: [{ qualifier: 'PriceData', position: 10, label: 'Preço Líquido' }]  
-TotalPrice;
+@UI.fieldGroup: [{ qualifier: 'Cancelamento', position: 10, label: 'Motivo do cancelamento' }]  
+MotivoCancelamento;
 
-@UI.fieldGroup: [{ qualifier: 'PriceData', position: 20, label: 'Taxa de Reserva' }]  
-BookingFee;
+@UI.fieldGroup: [{ qualifier: 'Cancelamento', position: 20, label: 'Data do cancelamento' }]  
+DataCancelamento;
 ```
 
 ## 4. Exemplo Prático Completo
 
-Vamos juntar tudo. Abaixo, uma Metadata Extension que cria uma Object Page sofisticada. Ela possui uma aba "Geral" que organiza as informações em duas colunas: "Dados da Viagem" (Esquerda) e "Planejamento" (Direita).
+Vamos juntar tudo. Abaixo, uma Metadata Extension para o app de pedidos do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app) que cria uma Object Page organizada. Ela possui uma aba "Visão Geral" com duas colunas: "Dados do Pedido" (Esquerda) e "Dados do Cliente" (Direita). O app real usa os mesmos field groups (`Cliente`, `Finalizacao`, `Cancelamento`), em seções separadas.
 
 ``` CDS
 @Metadata.layer: #CORE  
-@UI.headerInfo: { typeName: 'Viagem', typeNamePlural: 'Viagens', title: { value: 'TravelID' } }
+@UI.headerInfo: { typeName: 'Pedido de compra', typeNamePlural: 'Pedidos de compras',  
+                  title: { value: 'NumeroPedido' } }
 
-/* Ordenação padrão da lista */  
-@UI.presentationVariant: [{ sortOrder: [{ by: 'BeginDate', direction: #DESC }],
+/* Ordenação padrão da lista (a mesma do app real) */  
+@UI.presentationVariant: [{ sortOrder: [{ by: 'CreatedAt', direction: #DESC }],
                             visualizations: [{ type: #AS_LINEITEM }] }]
 
-annotate view Z_C_TRAVEL with  
+annotate entity ZC_PC_PEDIDO_APP with  
 {  
   /* --- ESTRUTURA VISUAL (FACETAS) --- */  
   @UI.facet: [  
     /* 1. Container Principal (Aba Geral) */  
     {  
-      id: 'General',  
+      id: 'Geral',  
       type: #COLLECTION,  
       label: 'Visão Geral',  
       position: 10  
@@ -163,43 +164,43 @@ annotate view Z_C_TRAVEL with
     /* 2. Bloco Esquerdo: Dados Principais */  
     /* Usa IDENTIFICATION para os dados core */  
     {  
-      id: 'TravelData',  
-      parentId: 'General', /* Filho de 'General' */  
+      id: 'DadosPedido',  
+      parentId: 'Geral',   /* Filho de 'Geral' */  
       type: #IDENTIFICATION_REFERENCE,  
-      label: 'Dados da Viagem',  
+      label: 'Dados do Pedido',  
       position: 10         /* Posição 10 = Primeiro Bloco / Coluna Esquerda */  
     },
 
-    /* 3. Bloco Direito: Datas e Prazos */  
-    /* Usa FIELDGROUP para separar logicamente as datas */  
+    /* 3. Bloco Direito: Dados do Cliente */  
+    /* Usa FIELDGROUP para separar logicamente o cliente */  
     {  
-      id: 'DateData',  
-      parentId: 'General', /* Filho de 'General' */  
+      id: 'DadosCliente',  
+      parentId: 'Geral',   /* Filho de 'Geral' */  
       type: #FIELDGROUP_REFERENCE,  
-      label: 'Planejamento e Datas',  
+      label: 'Dados do Cliente',  
       position: 20,        /* Posição 20 = Segundo Bloco / Coluna Direita */  
-      targetQualifier: 'DatesGroup' /* Busca campos marcados com 'DatesGroup' */  
+      targetQualifier: 'Cliente' /* Busca campos marcados com 'Cliente' */  
     }  
   ]
 
   /* --- CONFIGURAÇÃO DOS CAMPOS --- */
 
   /* Campos do Bloco Esquerdo (Identification) */  
-  @UI.identification: [{ position: 10 }]   
-  TravelID;
+  @UI.identification: [{ position: 10, label: 'Número do pedido' }]   
+  NumeroPedido;
 
-  @UI.identification: [{ position: 20 }]   
-  AgencyID;
+  @UI.identification: [{ position: 40, label: 'Status do pedido' }]   
+  StatusPedido;
 
-  @UI.identification: [{ position: 30 }]   
-  CustomerID;
+  @UI.identification: [{ position: 70, label: 'Valor total' }]   
+  ValorTotal;
 
-  /* Campos do Bloco Direito (FieldGroup: DatesGroup) */  
-  @UI.fieldGroup: [{ qualifier: 'DatesGroup', position: 10 }]   
-  BeginDate;
+  /* Campos do Bloco Direito (FieldGroup: Cliente) */  
+  @UI.fieldGroup: [{ qualifier: 'Cliente', position: 10, label: 'Cliente' }]   
+  ClienteUUID;
 
-  @UI.fieldGroup: [{ qualifier: 'DatesGroup', position: 20 }]  
-  EndDate;  
+  @UI.fieldGroup: [{ qualifier: 'Cliente', position: 20, label: 'CPF' }]  
+  CpfCliente;  
     
   /* Dica: Campos sem anotação identification/fieldGroup não aparecem no detalhe,  
      mesmo que estejam na CDS View. */  
@@ -232,8 +233,8 @@ annotate view Z_C_TRAVEL with
 
 ## Quiz de Fixação
 
-1. Como faço para que a lista de viagens apareça ordenada pela data de início (decrescente) assim que o usuário abrir o aplicativo, sem que ele precise clicar na coluna?  
-  R: Adicionando a anotação @UI.presentationVariant no cabeçalho da Metadata Extension. Dentro dela, deve-se definir a propriedade sortOrder apontando para o campo BeginDate com a direção #DESC.  
+1. Como faço para que a lista de pedidos apareça ordenada pela data de criação (decrescente) assim que o usuário abrir o aplicativo, sem que ele precise clicar na coluna?  
+  R: Adicionando a anotação @UI.presentationVariant no cabeçalho da Metadata Extension. Dentro dela, deve-se definir a propriedade sortOrder apontando para o campo CreatedAt com a direção #DESC, como faz o app de pedidos do projeto.  
 
 2. Se eu quiser criar duas caixas de formulário separadas na mesma aba da Object Page (ex: uma caixa para "Dados do Cliente" e outra para "Dados de Contato"), qual tipo de referência de faceta devo usar e por quê?  
   R: Devo usar #FIELDGROUP_REFERENCE. O tipo #IDENTIFICATION_REFERENCE renderiza o bloco principal de identificação, pensado para ser único. Com #FIELDGROUP_REFERENCE, posso usar qualificadores diferentes (ex: qualifier: 'Cliente' e qualifier: 'Contato') para agrupar os campos em blocos distintos e criar duas facetas separadas apontando para cada qualificador.  

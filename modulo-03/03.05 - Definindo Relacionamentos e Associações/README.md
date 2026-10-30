@@ -45,7 +45,7 @@ A definição de uma associação ocorre logo após a cláusula `FROM` e antes d
   ```
 ### Detalhes da Sintaxe:
 
-* **Convenção de Nome:** É uma forte recomendação da SAP (e padrão de mercado) iniciar o alias de associações com um underscore (ex: `_Customer`, `_Currency`). Isso permite distinguir visualmente o que é uma coluna física de um relacionamento navegável.
+* **Convenção de Nome:** É uma forte recomendação da SAP (e padrão de mercado) iniciar o alias de associações com um underscore (ex: `_Cliente`, `_Itens`). Isso permite distinguir visualmente o que é uma coluna física de um relacionamento navegável.
  
 * **$projection:** Esta palavra-chave refere-se a um campo (Alias) definido na lista de seleção da própria view. Usar $projection em vez do nome do campo da tabela base é preferível pois torna a associação resiliente a mudanças na tabela física, desde que o alias da view se mantenha.
   
@@ -59,103 +59,101 @@ A definição de uma associação ocorre logo após a cláusula `FROM` e antes d
 
 A cardinalidade é uma instrução para o otimizador do banco de dados. Ela informa quantos registros podem existir na tabela de destino para cada registro da tabela de origem. A sintaxe é `[min..max]`.
 
-* **`[0..1]` (Zero ou Um):** Relacionamento "Para Um" opcional. Exemplo: Uma Viagem *pode* ter uma Agência. Se não tiver, retorna nulo. Comporta-se como um `LEFT OUTER JOIN` quando executado. Este é o padrão se a cardinalidade for omitida.  
+* **`[0..1]` (Zero ou Um):** Relacionamento "Para Um" opcional. Exemplo: Um Pedido *pode* ainda não ter um Pagamento. Se não tiver, retorna nulo. Comporta-se como um `LEFT OUTER JOIN` quando executado. Este é o padrão se a cardinalidade for omitida.  
 * **`[1..1]` (Exatamente Um):** Relacionamento "Para Um" obrigatório. Exemplo: Um Item de Pedido *deve* ter um Cabeçalho. A cardinalidade documenta essa regra e ajuda o otimizador, mas o join gerado por uma expressão de caminho continua sendo `LEFT OUTER JOIN` por padrão; para forçar um `INNER JOIN`, usa-se o atributo de caminho `[inner]` (ex: `_Header[inner].Field`).  
-* **`[0..*]` ou `[*]` (Zero ou Muitos):** Relacionamento "Para Muitos". Exemplo: Uma Viagem tem *muitas* Reservas. Isso altera a granularidade dos dados se campos da associação forem selecionados (pode duplicar linhas da origem).
+* **`[0..*]` ou `[*]` (Zero ou Muitos):** Relacionamento "Para Muitos". Exemplo: Um Pedido tem *muitos* Itens. Isso altera a granularidade dos dados se campos da associação forem selecionados (pode duplicar linhas da origem).
 
 *Nota Técnica:* Definir a cardinalidade correta não é apenas documentação; ajuda o SAP HANA a escolher o melhor plano de execução SQL.
 
-## 4. Exemplo Prático: Enriquecendo a View de Viagens
+## 4. Exemplo Prático: As Associações da View de Pedidos
 
-Vamos atualizar nossa Z_I_TRAVEL para conectar com as tabelas padrão de Agência, Cliente e Moeda. Observe como as associações enriquecem o modelo sem poluir a lista de dados principal.
+A view `ZR_PC_PEDIDO` do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app) se conecta ao cliente, ao endereço de entrega e à lista de códigos que traduz os status. Observe como as associações enriquecem o modelo sem poluir a lista de dados principal (versão simplificada do arquivo real; as composições com itens e pagamento ficam para o RAP).
 
 ``` CDS
 @AccessControl.authorizationCheck: #NOT_REQUIRED  
-@EndUserText.label: 'Interface View de Viagens'  
-define view entity Z_I_TRAVEL  
-  as select from zrap_travel as Travel
+@EndUserText.label: 'Pedido de compra - BO root'  
+define root view entity ZR_PC_PEDIDO  
+  as select from zta_pc_pedido
 
   /* Definição das Associações (Relacionamentos Lógicos) */  
     
-  /* [0..1] Uma viagem pode ou não ter uma agência definida no momento */  
-  association [0..1] to /DMO/I_Agency   as _Agency     
-    on $projection.AgencyID = _Agency.AgencyID  
+  /* [0..1] O cliente é escolhido na criação do pedido */  
+  association [0..1] to ZR_PC_CLIENTE  as _Cliente  
+    on $projection.ClienteUUID = _Cliente.ClienteUUID  
       
-  /* [0..1] O cliente é opcional no rascunho, mas obrigatório depois */  
-  association [0..1] to /DMO/I_Customer as _Customer   
-    on $projection.CustomerID = _Customer.CustomerID  
+  /* [0..1] O endereço de entrega vem do endereço principal do cliente */  
+  association [0..1] to ZR_PC_ENDERECO as _Endereco  
+    on $projection.EnderecoUUID = _Endereco.EnderecoUUID  
       
-  /* [0..1] A moeda deve existir na tabela de moedas */  
-  association [0..1] to I_Currency      as _Currency   
-    on $projection.CurrencyCode = _Currency.Currency  
+  /* [0..1] Associação filtrada: só a lista STATUS_PEDIDO da tabela de códigos */  
+  association [0..1] to ZR_PC_CODELIST as _StatusPedidoTxt  
+    on  _StatusPedidoTxt.Lista  = 'STATUS_PEDIDO'  
+    and _StatusPedidoTxt.Codigo = $projection.StatusPedido
 
 {  
 
-  key travel_uuid           as TravelUUID,  
-      travel_id             as TravelID,  
-      agency_id             as AgencyID,  
-      customer_id           as CustomerID,  
-      begin_date            as BeginDate,  
-      end_date              as EndDate,  
+  key pedido_uuid           as PedidoUUID,  
+      numero_pedido         as NumeroPedido,  
+      cliente_uuid          as ClienteUUID,  
+      endereco_uuid         as EnderecoUUID,  
+      status_pedido         as StatusPedido,  
         
-      @Semantics.amount.currencyCode: 'CurrencyCode'  
-      total_price           as TotalPrice,  
+      @Semantics.amount.currencyCode: 'Currency'  
+      valor_total           as ValorTotal,  
         
-      currency_code         as CurrencyCode,  
-      description           as Description,  
-      overall_status        as OverallStatus,
+      currency              as Currency,
 
       /* --- Exposição das Associações (Publicação) --- */  
       /* Ao incluir o alias da associação aqui, transformamos */  
       /* o relacionamento "privado" em uma "Navegação Pública". */  
         
-      _Agency,  
-      _Customer,  
-      _Currency  
+      _Cliente,  
+      _Endereco,  
+      _StatusPedidoTxt  
 }
 ```
 
 ## 5. Exposição de Associações: O Poder da Navegação
 
-Definir a associação (association to...) permite usá-la dentro da própria view (ex: para buscar o nome do cliente: _Customer.LastName as CustomerName).
+Definir a associação (association to...) permite usá-la dentro da própria view (ex: para buscar o nome do cliente: _Cliente.Nome as NomeCliente).
 
-Porém, para que consumidores externos (como um App Fiori ou outra CDS View) possam usar esse relacionamento, precisamos **Expô-lo**. Isso é feito adicionando o alias (`_Customer`) na lista de campos `{ }`.
+Porém, para que consumidores externos (como um App Fiori ou outra CDS View) possam usar esse relacionamento, precisamos **Expô-lo**. Isso é feito adicionando o alias (`_Cliente`) na lista de campos `{ }`.
 
 ### Por que Expor?
 
-1. **Reutilização:** Outra view que leia Z_I_TRAVEL pode acessar os campos do cliente sem precisar refazer o join: select from Z_I_TRAVEL { _Customer.EmailAddress }.
+1. **Reutilização:** Outra view que leia ZR_PC_PEDIDO pode acessar os campos do cliente sem precisar refazer o join. É o que faz a projeção do app: `_Cliente.Nome as NomeCliente`, e o cubo analítico vai ainda mais longe com `_Cliente._EnderecoPrincipal.Uf as Uf`.
   
 2. **OData Navigation:** No mundo OData, uma associação exposta vira uma **Navigation Property**. Isso permite que o Fiori Elements navegue de uma tela para outra automaticamente.  
-   * *URL OData V4:* `.../Travel(TravelUUID=...)/_Customer` (no OData V2, o framework gera a navegação com o prefixo `to_`, ex: `to_Customer`)  
-   * Isso habilita o usuário a clicar no ID do Cliente na tela de Viagem e abrir um pop-over com os dados do contato do cliente, tudo gerenciado pelo framework através da associação.
+   * *URL OData V4:* `.../Pedido(PedidoUUID=...,IsActiveEntity=true)/_Itens` (no OData V2, o framework gera a navegação com o prefixo `to_`, ex: `to_Itens`)  
+   * É assim que, na Object Page do pedido, a seção **Itens** lista os itens pela composição `_Itens`, e um clique numa linha abre o detalhe do item, tudo gerenciado pelo framework através da associação.
 
 ## 6. Relacionamentos no Dicionário: Chaves Estrangeiras
 
-Associações relacionam **CDS views**. No Dicionário, a relação entre **tabelas** é declarada por uma **foreign key dependency**: a *foreign key table* aponta para a *check table*, ligando seus campos a todos os campos-chave dela.
+Associações relacionam **CDS views**. No Dicionário, a relação entre **tabelas** é declarada por uma **foreign key dependency**: a *foreign key table* aponta para a *check table*, ligando seus campos a todos os campos-chave dela. O projeto não declara chaves estrangeiras; o exemplo abaixo mostra como `zta_pc_pedido` declararia a relação com o cliente.
 
 ``` ABAP
-@EndUserText.label : 'Funcionários'
+@EndUserText.label : 'Pedido de compra'
 @AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
 @AbapCatalog.tableCategory : #TRANSPARENT
 @AbapCatalog.deliveryClass : #A
 @AbapCatalog.dataMaintenance : #RESTRICTED
-define table zemployee {
+define table zta_pc_pedido {
   key client        : abap.clnt not null;
-  key employee_id   : zde_employee_id not null;
+  key pedido_uuid   : sysuuid_x16 not null;
   @AbapCatalog.foreignKey.keyType : #NON_KEY
   @AbapCatalog.foreignKey.screenCheck : false
-  department_id     : zde_department_id
-    with foreign key [0..*,1] zdepartment
-      where client        = zemployee.client
-        and department_id = zemployee.department_id;
+  cliente_uuid      : sysuuid_x16
+    with foreign key [0..*,1] zta_pc_cliente
+      where client       = zta_pc_pedido.client
+        and cliente_uuid = zta_pc_pedido.cliente_uuid;
 }
 ```
 
-* **Cardinalidade:** Declarada no próprio `with foreign key` (no exemplo, muitos funcionários para um departamento).
+* **Cardinalidade:** Declarada no próprio `with foreign key` (no exemplo, muitos pedidos para um cliente).
 
 * **`keyType`:** `#KEY` se todos os campos da chave estrangeira são chave da tabela, `#NON_KEY` caso contrário, e `#TEXT_KEY` para tabelas de texto.
 
-> **Importante:** chaves estrangeiras ficam na camada ABAP e **não** viram constraints no banco. No desenvolvimento moderno, seu papel é principalmente de documentação. As validações de entrada e as value helps que elas geravam nas telas clássicas são feitas hoje com associações CDS e com o RAP.
+> **Importante:** chaves estrangeiras ficam na camada ABAP e **não** viram constraints no banco. No desenvolvimento moderno, seu papel é principalmente de documentação. As validações de entrada e as value helps que elas geravam nas telas clássicas são feitas hoje com associações CDS e com o RAP; no projeto, a validação `ValidarCliente` do BO Pedido garante que o cliente existe e está ativo.
 
 ## Comparativo: Join vs Association
 
@@ -182,5 +180,5 @@ define table zemployee {
 2. O que significa tecnicamente a cardinalidade [0..*] em uma associação?  
   R: Significa que para cada registro da tabela origem, podem existir zero, um ou muitos registros na tabela destino (Relacionamento "Um para Muitos"). O uso incorreto dessa cardinalidade ao acessar dados pode causar a duplicação de linhas na tabela de origem (explosão cartesiana).  
 
-3. Para que uma aplicação Fiori (OData) possa navegar de uma entidade "Viagem" para os detalhes do "Cliente" associado (Drill-down), o que deve ser feito na CDS View?  
-  R: A associação _Customer deve ser definida com a condição correta e, crucialmente, deve ser exposta (adicionada) na lista de seleção de campos da view (dentro das chaves {}). Sem a exposição, a associação é apenas interna e não visível para o serviço OData.
+3. Para que uma aplicação Fiori (OData) possa navegar de uma entidade "Pedido" para os detalhes do "Cliente" associado (Drill-down), o que deve ser feito na CDS View?  
+  R: A associação _Cliente deve ser definida com a condição correta e, crucialmente, deve ser exposta (adicionada) na lista de seleção de campos da view (dentro das chaves {}). Sem a exposição, a associação é apenas interna e não visível para o serviço OData.
