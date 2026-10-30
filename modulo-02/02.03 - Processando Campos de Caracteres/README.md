@@ -162,13 +162,13 @@ Quando um literal com texto de negócio chega à UI, substitua-o por um **text s
 
 ``` ABAP
 " Literal: nunca é traduzido
-out->write( 'Voos encontrados:' ).
+out->write( 'Pedidos encontrados:' ).
 
 " Text symbol isolado
 out->write( TEXT-001 ).
 
 " Literal com text symbol: usa o texto traduzido se existir; o literal é o fallback
-out->write( 'Voos encontrados:'(001) ).
+out->write( 'Pedidos encontrados:'(001) ).
 ```
 
 **Dicas:** Use o *quick fix* (`Ctrl+1`) sobre o literal para criar o text symbol automaticamente. Mantenha o literal e o text symbol idênticos: a verificação estendida (SLIN) do ATC avisa quando eles divergem. O idioma original do objeto aparece na aba **Properties** do ADT.

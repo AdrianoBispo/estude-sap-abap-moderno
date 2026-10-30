@@ -67,11 +67,11 @@ O Fiori Elements oferece vários modelos (Overview Page, Analytical List Page), 
 
 ### B. Object Page (Página de Objeto)
 
-É a tela de detalhes de um único registro (ex: "Detalhes da Viagem 1023").
+É a tela de detalhes de um único registro (ex: "Detalhes do Pedido 0000001023").
 
 * **Header (Cabeçalho):** A área superior fixa. Exibe o título do objeto, status críticos e KPIs resumidos (ex: "Valor Total"). Configurado via @UI.headerInfo.  
 * **Sections (Seções):** O corpo da página é dividido em abas ou seções de rolagem (Anchor Navigation). Cada seção agrupa campos relacionados (ex: "Dados Gerais", "Participantes").  
-* **Função:** Visualizar todos os detalhes, editar dados (com rascunho automático), e navegar para sub-itens (ex: ver a lista de Voos dentro de uma Viagem).
+* **Função:** Visualizar todos os detalhes, editar dados (com rascunho automático), e navegar para sub-itens (ex: ver a lista de Itens dentro de um Pedido).
 
 ## 5. Vantagens do Fiori Elements no RAP
 

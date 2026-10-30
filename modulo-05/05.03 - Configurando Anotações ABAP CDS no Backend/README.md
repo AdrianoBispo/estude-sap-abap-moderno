@@ -32,22 +32,22 @@ Esta anotação é aplicada no **cabeçalho da CDS View** (ou da _Metadata Exten
 
 ``` CDS
 @UI.headerInfo: {   
-    typeName: 'Viagem',   
-    typeNamePlural: 'Viagens',   
-    title: { type: #STANDARD, value: 'TravelID' },  
-    description: { type: #STANDARD, value: 'Description' },  
-    imageUrl: 'Attachment' // Opcional: Mostra imagem no cabeçalho se houver  
+    typeName: 'Pedido de compra',   
+    typeNamePlural: 'Pedidos de compras',   
+    title: { type: #STANDARD, value: 'NumeroPedido' },  
+    description: { type: #STANDARD, value: 'NomeCliente' },  
+    imageUrl: 'FotoCliente' // Opcional: Mostra imagem no cabeçalho se houver  
 
 }  
 
-annotate view Z_C_TRAVEL with ...
+annotate entity ZC_PC_PEDIDO_APP with ...
 ```
 
 ### Impacto Visual na Tela:
 
-1. **List Report:** O texto definido em typeNamePlural aparece no topo da tabela de resultados, geralmente acompanhado da contagem de registros (ex: "Viagens (50)").  
+1. **List Report:** O texto definido em typeNamePlural aparece no topo da tabela de resultados, geralmente acompanhado da contagem de registros (ex: "Pedidos de compras (50)").  
 
-2. **Object Page:** O campo definido em title.value (neste caso, `TravelID`) é exibido com fonte grande e destaque no topo da página de detalhes. O campo description.value aparece logo abaixo, com fonte menor e cor cinza, fornecendo contexto adicional.
+2. **Object Page:** O campo definido em title.value (neste caso, `NumeroPedido`) é exibido com fonte grande e destaque no topo da página de detalhes. O campo description.value aparece logo abaixo, com fonte menor e cor cinza, fornecendo contexto adicional.
 
 ## 3. A Lista de Relatório (@UI.lineItem)
 
@@ -66,11 +66,11 @@ A anotação `@UI.lineItem` é responsável por desenhar as colunas da tabela pr
 
 ``` CDS
 @UI.lineItem: [   
-  { position: 10, label: 'ID da Viagem', importance: #HIGH, cssDefault: { width: '10rem' } }   
+  { position: 10, label: 'Pedido', importance: #HIGH, cssDefault: { width: '10rem' } }   
 
 ]
 
-TravelID;
+NumeroPedido;
 ```
 
 ## 4. A Barra de Filtros (`@UI.selectionField`)
@@ -84,7 +84,7 @@ A anotação `@UI.selectionField` promove um campo para a **Smart Filter Bar** (
 ``` CDS
 @UI.selectionField: [ { position: 10 } ]  
 
-TravelID;
+ClienteUUID;
 ```
 
 ## 5. A Página de Objeto (`@UI.identification`)
@@ -96,14 +96,14 @@ Enquanto o lineItem cuida da tabela, o `@UI.identification` cuida do formulário
 * **Edição:** Se a entidade for editável, esses campos se tornam inputs (caixas de texto, date pickers) automaticamente.
 
 ``` CDS
-@UI.identification: [ { position: 10, label: 'Viagem ID' } ]  
+@UI.identification: [ { position: 10, label: 'Número do pedido' } ]  
 
-TravelID;
+NumeroPedido;
 ```
 
 ## 6. Exemplo Prático Completo (Metadata Extension)
 
-Abaixo, apresentamos um arquivo de _Metadata Extension_ (`.ddlx`) completo para a entidade "Agência de Viagens" (`Z_C_AGENCY`). Observe como combinamos todas as anotações para criar uma experiência rica.
+Abaixo, apresentamos a _Metadata Extension_ (`.ddlx`) do app **Gestão de Estoque** do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app), para a entidade `ZC_PC_ITEM_APP` (versão simplificada do arquivo real). Observe como combinamos todas as anotações para criar uma experiência rica.
 
 ``` CDS
 @Metadata.layer: #CORE
@@ -111,61 +111,62 @@ Abaixo, apresentamos um arquivo de _Metadata Extension_ (`.ddlx`) completo para 
 
 /* 1. Configuração do Cabeçalho Geral */
 @UI.headerInfo: {   
-    typeName: 'Agência',   
-    typeNamePlural: 'Agências',   
-    title: { type: #STANDARD, value: 'Name' },      // Nome da Agência como destaque  
-    description: { type: #STANDARD, value: 'AgencyID' } // ID como subtítulo  
+    typeName: 'Item',   
+    typeNamePlural: 'Itens de estoque',   
+    title: { type: #STANDARD, value: 'Nome' },      // Nome do item como destaque  
+    description: { type: #STANDARD, value: 'Sku' }, // SKU como subtítulo  
+    imageUrl: 'FotoItem'                            // Foto do item no cabeçalho
 
 }
 
-annotate view Z_C_AGENCY with  
+annotate entity ZC_PC_ITEM_APP with  
 {  
   /* 2. Faceta (Estrutura da Object Page) */  
   /* Cria uma seção visual para agrupar os campos de identificação */  
 
-  @UI.facet: [ { id: 'GeneralInfo',   
+  @UI.facet: [ { id: 'DadosItem',   
                  purpose: #STANDARD,  
                  type: #IDENTIFICATION_REFERENCE,   
-                 label: 'Informações Gerais',   
+                 label: 'Dados do item',   
                  position: 10 } ]
 
   /* 3. Campos */  
     
   /* UUID Técnico: Deve estar na projeção para funcionar, mas escondido do usuário */  
   @UI.hidden: true  
-  AgencyUUID;
+  ItemUUID;
 
-  /* ID da Agência: Filtro #1, Coluna #1, Campo #1 no detalhe */  
+  /* SKU: Filtro #1, Coluna #1, Campo #1 no detalhe */  
   @UI: {   
-    lineItem:       [ { position: 10, importance: #HIGH } ],   
+    lineItem:       [ { position: 10, label: 'SKU', importance: #HIGH } ],   
     selectionField: [ { position: 10 } ],  
-    identification: [ { position: 10 } ]   
+    identification: [ { position: 10, label: 'SKU (gerado automaticamente)' } ]   
   }  
-  AgencyID;
+  Sku;
 
   /* Nome: Filtro #2, Coluna #2, Campo #2 no detalhe */  
   @UI: {   
-    lineItem:       [ { position: 20, importance: #HIGH } ],   
+    lineItem:       [ { position: 20, label: 'Nome', importance: #HIGH } ],   
     selectionField: [ { position: 20 } ],  
-    identification: [ { position: 20 } ]   
+    identification: [ { position: 20, label: 'Nome' } ]   
   }  
-  Name;
+  Nome;
 
-  /* Telefone: Apenas na lista e detalhe, sem filtro */  
+  /* Preço: Apenas na lista e detalhe, sem filtro */  
   @UI: {   
-    lineItem:       [ { position: 30, importance: #MEDIUM } ],  
-    identification: [ { position: 30 } ]   
+    lineItem:       [ { position: 60, label: 'Preço unitário' } ],  
+    identification: [ { position: 50, label: 'Preço unitário' } ]   
   }  
-  PhoneNumber;
+  PrecoUnitario;
 
-  /* Cidade: Filtro #3, Coluna #4 com Label manual */  
+  /* Categoria: Filtro #3, Coluna #3 com Label manual */  
   @UI: {   
-    lineItem:       [ { position: 40, label: 'Cidade Sede' } ],   
+    lineItem:       [ { position: 30, label: 'Categoria' } ],   
     selectionField: [ { position: 30 } ],  
-    identification: [ { position: 40 } ]   
+    identification: [ { position: 40, label: 'Categoria' } ]   
   }  
   
-  City;  
+  Categoria;  
 
 }
 ```
@@ -191,7 +192,7 @@ Algumas famílias (como `@Semantics` e `@AccessControl`) aparecem nos dois grupo
 
 | Anotação | Componente UI | Localização Típica |
 | :---- | :---- | :---- |
-| typeNamePlural | Título da Tabela | Topo do List Report (ex: "Viagens") |
+| typeNamePlural | Título da Tabela | Topo do List Report (ex: "Pedidos de compras") |
 | title.value | Título do Objeto | Cabeçalho da Object Page (Fonte Grande) |
 | lineItem | Coluna de Tabela | Corpo do List Report |
 | selectionField | Campo de Input | Barra Superior (Filter Bar) |

@@ -64,48 +64,42 @@ O "miolo" da view, dentro das chaves `{ }`. Aqui selecionamos campos, criamos c�
 
 O VDM organiza as milhares de views do S/4HANA.
 
-* **Interface Views (`I_`):** A base da pirâmide. Devem ser agnósticas de UI, reutilizáveis e estáveis. Espelham os dados do negócio. Ex: `Z_I_Travel`.  
-* **Consumption Views (`C_`):** O topo da pirâmide. Específicas para um aplicativo ou relatório. Consomem as Interface Views. Ex: `Z_C_Travel_Analytics`.
+* **Interface Views (`I_`):** A base da pirâmide. Devem ser agnósticas de UI, reutilizáveis e estáveis. Espelham os dados do negócio. Ex: `I_SalesOrder`; no RAP, as views `R_` do business object, como `ZR_PC_PEDIDO`.  
+* **Consumption Views (`C_`):** O topo da pirâmide. Específicas para um aplicativo ou relatório. Consomem as Interface Views. Ex: `ZC_PC_PEDIDO_APP` (app de pedidos) e `ZC_PC_PEDIDO_ANALISE` (análise).
 
-## 3. Exemplo Prático: Criando a Interface de Viagens
+## 3. Exemplo Prático: A View Base dos Pedidos
 
-Vamos criar a view `Z_I_TRAVEL`. O objetivo é ler a tabela física `ZRAP_TRAVEL` e transformar seus campos técnicos em uma interface de negócio limpa.
+A view `ZR_PC_PEDIDO` do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app) lê a tabela física `ZTA_PC_PEDIDO` e transforma seus campos técnicos em uma interface de negócio limpa. No RAP ela é a view `R_` (root) do business object, mas cumpre o papel de interface view descrito acima.
 
-**Atenção ao CamelCase:** Note como usamos `TravelUUID` em vez de deixar `travel_uuid`. Interfaces modernas (_Fiori_, _React_, _APIs REST_) padronizam o uso de CamelCase. Se mandarmos `TRAVEL_UUID`, o frontend _JavaScript_ terá que lidar com nomes fora do padrão. O CDS resolve isso na fonte.
+**Atenção ao CamelCase:** Note como usamos `PedidoUUID` em vez de deixar `pedido_uuid`. Interfaces modernas (_Fiori_, _React_, _APIs REST_) padronizam o uso de CamelCase. Se mandarmos `PEDIDO_UUID`, o frontend _JavaScript_ terá que lidar com nomes fora do padrão. O CDS resolve isso na fonte.
 
 ``` CDS
 @AccessControl.authorizationCheck: #NOT_REQUIRED  
-@EndUserText.label: 'Interface View para Viagens'  
+@EndUserText.label: 'Pedido de compra - BO root'  
 @Metadata.ignorePropagatedAnnotations: true 
 
-define view entity Z_I_TRAVEL  
-  as select from zrap_travel as Travel
+define root view entity ZR_PC_PEDIDO  
+  as select from zta_pc_pedido
 {  
   /* Chaves: Essenciais para o funcionamento do OData e navegação */  
-  key travel_uuid           as TravelUUID,
+  key pedido_uuid           as PedidoUUID,
 
   /* Campos de Identificação de Negócio */  
-  travel_id             as TravelID,  
-  agency_id             as AgencyID,  
-  customer_id           as CustomerID,  
-    
-  /* Datas */  
-  begin_date            as BeginDate,  
-  end_date              as EndDate,  
-    
-  /* Valores Monetários: A ligação Semântica é feita aqui ou na tabela */  
-  @Semantics.amount.currencyCode: 'CurrencyCode'  
-  booking_fee           as BookingFee,  
-    
-  @Semantics.amount.currencyCode: 'CurrencyCode'  
-  total_price           as TotalPrice,  
-    
-  /* Moeda e Descrições */  
-  currency_code         as CurrencyCode,  
-  description           as Description,  
+  numero_pedido         as NumeroPedido,  
+  cliente_uuid          as ClienteUUID,  
     
   /* Status do Processo */  
-  overall_status        as OverallStatus,
+  status_pedido         as StatusPedido,  
+  status_pagamento      as StatusPagamento,  
+    
+  /* Valores Monetários: A ligação Semântica é feita aqui ou na tabela */  
+  currency              as Currency,  
+  @Semantics.amount.currencyCode: 'Currency'  
+  valor_total           as ValorTotal,  
+    
+  /* Descrições e Datas */  
+  observacao            as Observacao,  
+  data_finalizacao      as DataFinalizacao,
 
   /* --- Campos de Auditoria (Admin Data) --- */  
   /* Estas anotações permitem que o RAP preencha os dados automaticamente */  
@@ -119,7 +113,10 @@ define view entity Z_I_TRAVEL
   last_changed_by       as LastChangedBy,  
     
   @Semantics.systemDateTime.lastChangedAt: true  
-  last_changed_at       as LastChangedAt
+  last_changed_at       as LastChangedAt,
+
+  @Semantics.systemDateTime.localInstanceLastChangedAt: true  
+  local_last_changed_at as LocalLastChangedAt
 }
 ```
 
@@ -129,9 +126,9 @@ No código acima, as anotações @Semantics não são decorativas; elas alteram 
 
 ### Semântica de Moeda e Quantidade
 
-* `@Semantics.amount.currencyCode: 'CurrencyCode'` 
-  * **O que faz:** Vincula o campo de valor (TotalPrice) ao campo de moeda (CurrencyCode).  
-  * **Impacto na UI:** O Fiori Elements sabe que não deve apenas mostrar "100", mas sim "100,00 EUR" ou "100 JPY" (sem decimais), aplicando a formatação correta baseada na moeda.
+* `@Semantics.amount.currencyCode: 'Currency'` 
+  * **O que faz:** Vincula o campo de valor (ValorTotal) ao campo de moeda (Currency).  
+  * **Impacto na UI:** O Fiori Elements sabe que não deve apenas mostrar "100", mas sim "100,00 BRL" ou "100 JPY" (sem decimais), aplicando a formatação correta baseada na moeda.
 
 ### Semântica de Auditoria (RAP Managed)
 
@@ -184,7 +181,7 @@ cast(total_price as abap.dec(17,2)) as PriceDecimal
 
 * **Alias (Apelido):** Nome alternativo dado a um campo na lista de seleção (usando as NovoNome). No VDM, usamos Aliases para converter nomes técnicos do banco (MATNR) para nomes legíveis e padronizados (MaterialID).  
 
-* **CamelCase:** Estilo de escrita onde as palavras são unidas sem espaços e cada palavra subsequente começa com maiúscula (ex: FlightDate). É o padrão para nomes de campos em CDS Views modernas para facilitar o consumo por JavaScript/UI5.  
+* **CamelCase:** Estilo de escrita onde as palavras são unidas sem espaços e cada palavra subsequente começa com maiúscula (ex: DataFinalizacao). É o padrão para nomes de campos em CDS Views modernas para facilitar o consumo por JavaScript/UI5.  
 
 * **Key (Chave):** Palavra-chave obrigatória em CDS Views. Define quais campos identificam unicamente um registro. Sem chaves definidas corretamente, o framework OData não consegue realizar operações de leitura (Read) ou navegação em registros individuais.  
 
@@ -195,7 +192,7 @@ cast(total_price as abap.dec(17,2)) as PriceDecimal
 1. Qual é a principal diferença técnica entre usar `DEFINE VIEW` e `DEFINE VIEW ENTITY`?  
   R: `DEFINE VIEW` cria uma View CDS e uma View de Banco de Dados clássica (`SE11`) duplicada, o que pode causar conflitos de nome e overhead. `DEFINE VIEW ENTITY` cria apenas a entidade CDS, sendo processada inteiramente pelo runtime do CDS e otimizada para o HANA, sem gerar artefatos desnecessários no dicionário.
 
-2. Por que renomeamos os campos usando Aliases (ex: `travel_id` as `TravelID`) nas Interface Views?  
+2. Por que renomeamos os campos usando Aliases (ex: `numero_pedido` as `NumeroPedido`) nas Interface Views?  
   R: Para padronizar os nomes seguindo a convenção CamelCase. Isso torna o modelo de dados semanticamente mais rico e amigável para o desenvolvimento de interfaces web (UI5/Fiori) e APIs OData, que naturalmente utilizam esse padrão de nomenclatura.
 
 3. O que acontece se eu esquecer de marcar um campo com a palavra-chave key na CDS View?  

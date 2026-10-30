@@ -32,12 +32,12 @@ A lógica de decisão ("Este registro é crítico?") deve residir no Backend (CD
 
 ``` CDS
 /* Exemplo na CDS View */  
-case overall_status  
-  when 'A' then 3  -- Aceito = Verde  
-  when 'X' then 1  -- Cancelado = Vermelho  
-  when 'O' then 2  -- Aberto = Amarelo  
-  else 0           -- Outros = Cinza  
-end as StatusCriticality
+case status_pedido  
+  when 'FINALIZADO'           then 3  -- Finalizado = Verde  
+  when 'CANCELADO'            then 1  -- Cancelado = Vermelho  
+  when 'AGUARDANDO_APROVACAO' then 2  -- Aguardando aprovação = Amarelo  
+  else 0                              -- Aberto e outros = Cinza  
+end as StatusPedidoCriticality
 ```
 
 ### Passo 2: A Anotação (Metadata Extension)
@@ -45,14 +45,14 @@ end as StatusCriticality
 Na Metadata Extension, vinculamos a coluna visual ao campo de cálculo técnico.
 
 ``` CDS
-/* Na coluna OverallStatus */  
+/* Na coluna StatusPedido */  
 @UI.lineItem: [   
   {   
-    position: 50,   
-    label: 'Status',  
+    position: 40,   
+    label: 'Status do pedido',  
       
     /* Vínculo Mágico: O Fiori lê o valor deste campo para colorir o valor da coluna (não a linha inteira) */  
-    criticality: 'StatusCriticality',   
+    criticality: 'StatusPedidoCriticality',   
       
     /* Opcional: Adiciona ícone além da cor (Check, X, Exclamação) */  
     /* Recomendado para Acessibilidade (Daltônicos) */  
@@ -60,10 +60,12 @@ Na Metadata Extension, vinculamos a coluna visual ao campo de cálculo técnico.
   }   
 
 ]  
-OverallStatus;
+StatusPedido;
 ```
 
-**Resultado:** Se o status for 'A' (Aceito), o campo StatusCriticality será 3. O Fiori pintará o texto "Aceito" de verde e adicionará um ícone de "check" ao lado.
+**Resultado:** Se o status for 'FINALIZADO', o campo StatusPedidoCriticality será 3. O Fiori pintará o texto "Finalizado" de verde e adicionará um ícone de "check" ao lado.
+
+> **No projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app):** em vez do `case`, o valor 0–3 de cada status fica na lista de códigos `ZTA_PC_CODELIST`, e a projeção o lê pela associação: `_StatusPedidoTxt.Criticality as StatusPedidoCriticality`. Mudar uma cor passa a ser um ajuste de dados, não de código.
 
 ## 2. Botões de Ação na Tabela
 
@@ -85,7 +87,7 @@ Usamos anotações de cabeçalho:
 
 ### B. Ações Customizadas (Botões de Negócio)
 
-Para ações específicas como "Aceitar Viagem" ou "Copiar", usamos a anotação `#FOR_ACTION`.
+Para ações específicas como "Aprovar pedido" ou "Cancelar pedido", usamos a anotação `#FOR_ACTION`.
 
 #### Tipos de Posicionamento
 
@@ -96,29 +98,29 @@ Para ações específicas como "Aceitar Viagem" ou "Copiar", usamos a anotação
 ``` CDS
 @UI.lineItem: [  
   /* Coluna de Dados Normal */  
-  { position: 10, label: 'Viagem' },
+  { position: 10, label: 'Pedido' },
 
-  /* Ação na Toolbar: Aceitar */  
+  /* Ação na Toolbar: Aprovar */  
   /* Requer seleção de uma ou mais linhas */  
   {   
     type: #FOR_ACTION,   
-    dataAction: 'acceptTravel',   /* Nome exato da ação no BDEF */  
-    label: 'Aceitar Viagem',  
+    dataAction: 'AprovarPedido',  /* Nome exato da ação no BDEF */  
+    label: 'Aprovar pedido',  
     position: 15   
   },  
     
-  /* Ação Inline: Rejeitar */  
+  /* Ação Inline: Cancelar */  
   /* inline: true faz o botão aparecer dentro de cada linha */  
   {   
     type: #FOR_ACTION,   
-    dataAction: 'rejectTravel',   
-    label: 'Rejeitar',  
+    dataAction: 'CancelarPedido',   
+    label: 'Cancelar',  
     inline: true,  
     position: 16   
   }  
 
 ]  
-TravelID;
+NumeroPedido;
 ```
 
 ## 3. Responsividade e Importância
@@ -134,64 +136,70 @@ O framework usa a propriedade importance para decidir o destino de cada coluna:
 **O Conceito de "Pop-in":** Quando uma coluna é escondida por falta de espaço, o Fiori não apaga os dados. Ele cria uma seta na linha que, ao ser clicada, expande a linha para baixo mostrando os campos ocultos em formato de lista (Label: Valor).
 
 ``` CDS
-/* Descrição é longa, então só mostramos em telas grandes */  
-@UI.lineItem: [ { position: 30, importance: #LOW } ]  
-Description;
+/* Observação é longa, então só mostramos em telas grandes */  
+@UI.lineItem: [ { position: 90, importance: #LOW } ]  
+Observacao;
 ```
 
 ## 4. Exemplo Prático Completo
 
-Vamos configurar uma tabela de viagens rica, com cores, ícones e ações estratégicas.
+Vamos configurar a tabela de pedidos do projeto [Pedidos de Compras](https://github.com/AdrianoBispo/sap-abap-rap-pedidos-de-compras-app), com cores, ícones e as ações do ciclo de vida do pedido (versão simplificada da Metadata Extension real).
 
 ``` CDS
 @Metadata.layer: #CORE  
-annotate view Z_C_TRAVEL with  
+annotate entity ZC_PC_PEDIDO_APP with  
 {  
-  /* --- AÇÕES GLOBAIS E COLUNA CHAVE --- */  
+  /* --- AÇÕES E COLUNA CHAVE --- */  
 
   @UI.lineItem: [   
-    /* Botão de Ação Global (Toolbar): Copiar */  
-    /* Posição baixa (5) coloca o botão à esquerda na toolbar */  
-    { type: #FOR_ACTION, dataAction: 'copyTravel', label: 'Copiar Viagem', position: 5 },  
-      
-    /* Coluna ID: Sempre visível (#HIGH) */  
-    { position: 10, importance: #HIGH }   
+    /* Coluna Número: Sempre visível (#HIGH) */  
+    { position: 10, label: 'Pedido', importance: #HIGH },  
+
+    /* Menu "Ações" na toolbar, agrupando as ações do pedido */  
+    { type: #FOR_ACTION_GROUP, actionGroupId: 'AcoesPedido', label: 'Ações', position: 100 },  
+    { type: #FOR_ACTION, dataAction: 'SimularPagamento', label: 'Efetuar Pagamento',  
+      actionGroupId: 'AcoesPedido', position: 10 },  
+    { type: #FOR_ACTION, dataAction: 'AprovarPedido',    label: 'Aprovar pedido',  
+      actionGroupId: 'AcoesPedido', position: 20 },  
+    { type: #FOR_ACTION, dataAction: 'CancelarPedido',   label: 'Cancelar pedido',  
+      actionGroupId: 'AcoesPedido', position: 30 },  
+
+    /* Ação estática (não depende de linha selecionada) */  
+    { type: #FOR_ACTION, dataAction: 'ImportarPlanilha', label: 'Importar planilha' }  
   ]  
-  TravelID;
+  NumeroPedido;
 
   /* --- DADOS SECUNDÁRIOS --- */  
-  @UI.lineItem: [ { position: 20, importance: #HIGH } ]  
-  AgencyID;
+  @UI.lineItem: [ { position: 20, label: 'CPF' } ]  
+  CpfCliente;
 
-  @UI.lineItem: [ { position: 30, importance: #MEDIUM } ]  
-  CustomerID;
+  @UI.lineItem: [ { position: 30, label: 'Cliente', importance: #HIGH } ]  
+  NomeCliente;
 
-  @UI.lineItem: [ { position: 40, importance: #MEDIUM } ]  
-  BeginDate;
+  @UI.lineItem: [ { position: 70, label: 'Data do pedido' } ]  
+  CreatedAt;
 
   /* --- STATUS COLORIDO --- */  
-  /* Criticality aponta para o campo calculado StatusCriticality (0-3) */  
+  /* Criticality aponta para StatusPedidoCriticality (0-3), lido da lista de códigos */  
   /* Representation #WITH_ICON adiciona ícones visuais */  
   @UI.lineItem: [   
     {   
-      position: 50,   
+      position: 40,   
       importance: #HIGH,  
-      criticality: 'StatusCriticality',  
+      criticality: 'StatusPedidoCriticality',  
       criticalityRepresentation: #WITH_ICON,  
-      label: 'Status Aprovação'  
+      label: 'Status do pedido'  
     }   
   ]  
-  OverallStatus;  
+  StatusPedido;  
     
-  /* --- AÇÃO INLINE --- */  
-  /* Com inline: true, este botão aparece em cada linha, na posição 60 */  
-  /* Ideal para ações contextuais rápidas */  
-  @UI.lineItem: [   
-    { type: #FOR_ACTION, dataAction: 'deductFee', label: 'Deduzir Taxa', inline: true, position: 60 }   
-  ]  
-  BookingFee;   
+  /* --- VALOR --- */  
+  @UI.lineItem: [ { position: 60, label: 'Total', importance: #HIGH } ]  
+  ValorTotal;   
 }
 ```
+
+> **Quando cada botão fica ativo:** a disponibilidade das ações não é decidida na anotação, e sim no BO, por *feature control* (lição 05.09). No projeto, **Efetuar Pagamento** só é habilitado para pedidos `ABERTO`, **Aprovar** só para `AGUARDANDO_APROVACAO` e **Cancelar** para esses dois status.
 
 ## Tabela de Cores (Criticality)
 
