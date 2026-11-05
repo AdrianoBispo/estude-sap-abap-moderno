@@ -1,0 +1,533 @@
+
+<style>
+.f1{fill:var(--ill1)}.f2{fill:var(--ill2)}.f3{fill:var(--ill3)}.f4{fill:var(--ill4)}.f5{fill:var(--ill5)}.f6{fill:var(--ill6)}.f7{fill:var(--ill7)}.f8{fill:var(--ill8)}.f9{fill:var(--ill9)}
+.f13{fill:var(--ill13)}.f14{fill:var(--ill14)}.f18{fill:var(--ill18)}.f19{fill:var(--ill19)}.f20{fill:var(--ill20)}.f21{fill:var(--ill21)}.f24{fill:var(--ill24)}.f26{fill:var(--ill26)}.f27{fill:var(--ill27)}
+.fb{fill:var(--sapBaseColor)}.fbg{fill:var(--sapBackgroundColor)}.fsel{fill:var(--sapList_SelectionBackgroundColor)}.fok{fill:var(--sapSuccessBackground)}.finfo{fill:var(--sapInformationBackground)}.fwarn{fill:var(--sapWarningBackground)}.ferr{fill:var(--sapErrorBackground)}.fneu{fill:var(--sapNeutralBackground)}
+.s4{stroke:var(--ill4)}.s13{stroke:var(--ill13)}.s5{stroke:var(--ill5)}.sb{stroke:var(--sapGroup_ContentBorderColor)}.sl{stroke:var(--sapContent_LabelColor)}.ssel{stroke:var(--sapSelectedColor)}.sok{stroke:var(--sapSuccessBorderColor)}.sinfo{stroke:var(--sapInformationBorderColor)}.swarn{stroke:var(--sapWarningBorderColor)}.serr{stroke:var(--sapErrorBorderColor)}
+.tx{fill:var(--sapTextColor)}.tl{fill:var(--sapContent_LabelColor)}.tsel{fill:var(--sapSelectedColor)}.tok{fill:var(--sapPositiveColor)}.terr{fill:var(--sapNegativeColor)}.twarn{fill:var(--sapCriticalColor)}.tmk{fill:var(--sapContent_MarkerTextColor)}
+.nf{fill:none}
+.illu text{font-size:12px}.illu .h{font-weight:700;font-size:13px}.illu .sm{font-size:10.5px}.illu .mono{font-family:var(--mono);font-size:11px}
+</style>
+
+<!-- ===================== CURSO 1 · UNIDADE 1 ===================== -->
+<template id="L-primeiros-passos">
+<section class="sec" id="s-abap-cloud" data-anchor="ABAP Cloud">
+  <h2><span class="ic" aria-hidden="true">&#xe21d;</span>O que muda com o ABAP Cloud</h2>
+  <div class="prose">
+    <p>ABAP é a linguagem de negócio da SAP. Hoje ela roda em três cenários: o <b>SAP BTP, ABAP environment</b> (conhecido como “Steampunk”), o <b>SAP S/4HANA Cloud Public Edition</b> e o S/4HANA privado ou on-premise. A trilha <i>Acquiring Core ABAP Skills</i> ensina o modelo <b>ABAP Cloud</b>, que vale para todos eles.</p>
+    <p>No ABAP Cloud você programa com a versão de linguagem <b>ABAP for Cloud Development</b>: um subconjunto moderno da linguagem, que só usa APIs liberadas (<i>released</i>) pela SAP. Isso mantém o núcleo do sistema limpo (<i>clean core</i>) e torna as extensões seguras para upgrade.</p>
+  </div>
+  <figure class="figure card">
+    <div class="svg-scroll">
+    <svg class="illu" viewBox="0 0 680 270" role="img" aria-labelledby="fig1t">
+      <title id="fig1t">ADT no Eclipse conectado a um sistema ABAP, que contém componente de software, pacote e objetos de desenvolvimento</title>
+      <rect x="10" y="30" width="230" height="200" rx="14" class="fb sb" stroke-width="1.5"/>
+      <rect x="10" y="30" width="230" height="30" rx="14" class="f14"/><rect x="10" y="46" width="230" height="14" class="f14"/>
+      <circle cx="28" cy="45" r="4" class="f3"/><circle cx="42" cy="45" r="4" class="f26"/><circle cx="56" cy="45" r="4" class="f2"/>
+      <text x="74" y="49" class="sm" fill="#fff">Eclipse · ABAP Development Tools</text>
+      <rect x="22" y="72" width="64" height="146" rx="6" class="fneu"/>
+      <text x="30" y="90" class="sm tl">Project</text><text x="30" y="108" class="sm tl">Explorer</text>
+      <rect x="30" y="118" width="46" height="6" rx="3" class="f5"/><rect x="36" y="132" width="40" height="6" rx="3" class="f5"/><rect x="36" y="146" width="30" height="6" rx="3" class="f20"/>
+      <rect x="96" y="72" width="134" height="146" rx="6" class="fbg"/>
+      <text x="106" y="92" class="mono f13">CLASS</text><text x="148" y="92" class="mono tx">zcl_hello</text>
+      <rect x="106" y="104" width="96" height="6" rx="3" class="f20"/><rect x="116" y="118" width="80" height="6" rx="3" class="f2"/><rect x="116" y="132" width="60" height="6" rx="3" class="f3"/>
+      <rect x="106" y="146" width="40" height="6" rx="3" class="f20"/>
+      <rect x="106" y="176" width="114" height="32" rx="6" class="f4"/><text x="114" y="196" class="mono" fill="#fff">› Hello World</text>
+      <path d="M252 130 H330" class="s13" stroke-width="2.5" stroke-dasharray="6 5" fill="none"/><path d="M322 123 l10 7 -10 7" class="s13 nf" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="262" y="118" class="sm tl">HTTP(S)</text><text x="262" y="152" class="sm tl">ADT</text>
+      <rect x="340" y="14" width="330" height="244" rx="16" class="f7"/>
+      <text x="358" y="40" class="h tx">Sistema ABAP</text><text x="358" y="56" class="sm tl">BTP ABAP environment · S/4HANA Cloud</text>
+      <rect x="358" y="70" width="294" height="174" rx="12" class="fb"/>
+      <text x="372" y="92" class="sm tmk" font-weight="700">COMPONENTE DE SOFTWARE  ZLOCAL</text>
+      <rect x="372" y="102" width="266" height="128" rx="10" class="fsel ssel" stroke-width="1"/>
+      <text x="386" y="122" class="sm tsel" font-weight="700">PACOTE  Z_TRILHA_ABAP</text>
+      <g transform="translate(386 134)"><rect width="74" height="80" rx="8" class="fb sb"/><rect x="25" y="12" width="24" height="24" rx="6" class="f13"/><text x="37" y="29" text-anchor="middle" fill="#fff" font-weight="700">C</text><text x="37" y="56" text-anchor="middle" class="sm tx">Classe</text><text x="37" y="70" text-anchor="middle" class="sm tl">ZCL_…</text></g>
+      <g transform="translate(468 134)"><rect width="74" height="80" rx="8" class="fb sb"/><rect x="25" y="12" width="24" height="24" rx="6" class="f9"/><text x="37" y="29" text-anchor="middle" fill="#fff" font-weight="700">T</text><text x="37" y="56" text-anchor="middle" class="sm tx">Tabela</text><text x="37" y="70" text-anchor="middle" class="sm tl">ZTRAVEL</text></g>
+      <g transform="translate(550 134)"><rect width="74" height="80" rx="8" class="fb sb"/><rect x="25" y="12" width="24" height="24" rx="6" class="f1"/><text x="37" y="29" text-anchor="middle" fill="#fff" font-weight="700">V</text><text x="37" y="56" text-anchor="middle" class="sm tx">CDS View</text><text x="37" y="70" text-anchor="middle" class="sm tl">ZI_…</text></g>
+    </svg>
+    </div>
+    <figcaption>Você escreve código no Eclipse (ADT). Todo objeto de desenvolvimento vive dentro de um pacote, e o pacote pertence a um componente de software.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="s-setup" data-anchor="Projeto e pacote">
+  <h2><span class="ic" aria-hidden="true">&#xe1c9;</span>Projeto ABAP Cloud e pacote</h2>
+  <div class="grid2">
+    <div class="card obj">
+      <h3>Passo a passo no ADT</h3>
+      <ol class="prose" style="font-size:.875rem">
+        <li><b>File › New › ABAP Cloud Project</b> e informe a URL do sistema (ou a chave de serviço do trial no BTP).</li>
+        <li>Clique com o botão direito no projeto: <b>New › ABAP Package</b>. Nome iniciando com <code>Z</code> ou <code>Y</code>, superpacote <code>ZLOCAL</code> para estudos.</li>
+        <li>Adicione o pacote aos <b>Favorite Packages</b> para encontrá-lo rápido.</li>
+        <li>Crie objetos com <b>New › ABAP Class</b> e ative com <kbd>Ctrl+F3</kbd>.</li>
+      </ol>
+    </div>
+    <div class="card obj">
+      <h3>Atalhos que você vai usar todo dia</h3>
+      <div class="tbl-wrap"><table class="t">
+        <tbody>
+          <tr><td><kbd>Ctrl+F3</kbd></td><td>Ativar objeto</td></tr>
+          <tr><td><kbd>F9</kbd></td><td>Executar classe como aplicação de console</td></tr>
+          <tr><td><kbd>Ctrl+Espaço</kbd></td><td>Completar código</td></tr>
+          <tr><td><kbd>Ctrl+1</kbd></td><td>Quick fix (ex.: criar método)</td></tr>
+          <tr><td><kbd>Shift+F1</kbd></td><td>Pretty printer (formatar)</td></tr>
+          <tr><td><kbd>F2</kbd></td><td>Element info (documentação do elemento)</td></tr>
+          <tr><td><kbd>Ctrl+Shift+A</kbd></td><td>Abrir objeto de desenvolvimento</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="s-hello" data-anchor="Hello World">
+  <h2><span class="ic" aria-hidden="true">&#xe09b;</span>Sua primeira classe: Hello World</h2>
+  <div class="prose"><p>No ABAP Cloud não há relatórios com <code>WRITE</code>. Para ver uma saída, a classe implementa a interface <code>IF_OO_ADT_CLASSRUN</code> e escreve no console do Eclipse através do objeto <code>out</code>.</p></div>
+<pre data-abap data-title="ZCL_HELLO_WORLD">CLASS zcl_hello_world DEFINITION
+  PUBLIC FINAL CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+ENDCLASS.
+
+CLASS zcl_hello_world IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    " Saída no console do ADT (F9)
+    out->write( `Hello World` ).
+  ENDMETHOD.
+ENDCLASS.</pre>
+  <div class="card flush" data-widget="hello"></div>
+</section>
+
+<section class="sec" id="s-regras" data-anchor="Regras">
+  <h2><span class="ic" aria-hidden="true">&#xe13c;</span>Regras do jogo no ABAP Cloud</h2>
+  <div class="grid3">
+    <div class="card obj"><span class="tag ok"><span class="ic">&#xe05b;</span>Permitido</span><p>Classes, CDS, tabelas, RAP, ABAP SQL e APIs com contrato de liberação (C1).</p></div>
+    <div class="card obj"><span class="tag err"><span class="ic">&#xe03e;</span>Fora do escopo</span><p>Dynpro, <code>WRITE</code>, <code>CALL TRANSACTION</code>, acesso direto a tabelas SAP não liberadas.</p></div>
+    <div class="card obj"><span class="tag info"><span class="ic">&#xe289;</span>Verificação</span><p>O compilador e o ATC bloqueiam o que não é liberado. Veja as APIs em <i>Released Objects</i> no Project Explorer.</p></div>
+  </div>
+</section>
+</template>
+
+<!-- ===================== CURSO 1 · UNIDADE 2 ===================== -->
+<template id="L-tecnicas-basicas">
+<section class="sec" id="s-dados" data-anchor="Objetos de dados">
+  <h2><span class="ic" aria-hidden="true">&#xe080;</span>Objetos de dados e tipos</h2>
+  <div class="prose">
+    <p>Um <b>objeto de dados</b> é uma área de memória com nome e tipo. Você declara variáveis com <code>DATA</code>, tipos próprios com <code>TYPES</code> e valores fixos com <code>CONSTANTS</code>. A <b>declaração inline</b> <code>DATA( )</code> deixa o compilador deduzir o tipo pelo lado direito.</p>
+  </div>
+<pre data-abap data-title="Declarações">TYPES ty_price TYPE p LENGTH 8 DECIMALS 2.
+
+DATA carrier   TYPE c LENGTH 3.          " texto de tamanho fixo
+DATA seats     TYPE i VALUE 180.          " inteiro com valor inicial
+DATA price     TYPE ty_price.
+CONSTANTS c_max_seats TYPE i VALUE 300.
+
+DATA(city)  = `Recife`.                   " string (crase)
+DATA(count) = 10.                         " i
+DATA(code)  = 'LH'.                       " c LENGTH 2 (aspas simples)</pre>
+  <div class="card flush">
+    <div class="card-h"><span class="ic">&#xe0ba;</span><div><h3>Tipos ABAP embutidos mais usados</h3><p>Valor inicial é o que a variável contém antes de qualquer atribuição.</p></div></div>
+    <div class="tbl-wrap"><table class="t">
+      <thead><tr><th>Tipo</th><th>Uso</th><th>Tamanho</th><th>Valor inicial</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">i</td><td>Inteiro de 4 bytes</td><td>±2.147.483.647</td><td class="mono">0</td></tr>
+        <tr><td class="mono">int8</td><td>Inteiro de 8 bytes</td><td>±9,2 × 10¹⁸</td><td class="mono">0</td></tr>
+        <tr><td class="mono">p</td><td>Número decimal compactado (valores monetários)</td><td>1–16 bytes, até 14 decimais</td><td class="mono">0</td></tr>
+        <tr><td class="mono">decfloat34</td><td>Ponto flutuante decimal</td><td>34 dígitos</td><td class="mono">0</td></tr>
+        <tr><td class="mono">c</td><td>Texto de tamanho fixo</td><td>1–262.143 caracteres</td><td>espaços</td></tr>
+        <tr><td class="mono">string</td><td>Texto de tamanho variável</td><td>dinâmico</td><td>string vazia</td></tr>
+        <tr><td class="mono">n</td><td>Texto numérico (só dígitos)</td><td>1–262.143</td><td class="mono">'000…'</td></tr>
+        <tr><td class="mono">d / t</td><td>Data AAAAMMDD / hora HHMMSS</td><td>8 / 6 caracteres</td><td class="mono">'00000000'</td></tr>
+        <tr><td class="mono">abap_bool</td><td>Booleano (<code>abap_true</code> = 'X')</td><td>c LENGTH 1</td><td>espaço (falso)</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section class="sec" id="s-calc" data-anchor="Cálculos">
+  <h2><span class="ic" aria-hidden="true">&#xe151;</span>Expressões aritméticas</h2>
+  <div class="prose">
+    <p>Os operadores são <code>+ - * / **</code>, além de <code>DIV</code> (divisão inteira) e <code>MOD</code> (resto). Uma pegadinha clássica: quando o resultado vai para um inteiro, <code>/</code> <b>arredonda</b> em vez de truncar. E em ABAP o resultado de <code>MOD</code> nunca é negativo.</p>
+  </div>
+  <div class="card flush" data-widget="divcalc"></div>
+</section>
+
+<section class="sec" id="s-controle" data-anchor="Controle">
+  <h2><span class="ic" aria-hidden="true">&#xe0c7;</span>Estruturas de controle</h2>
+  <div class="grid2">
+<pre data-abap data-title="Condições">IF seats > c_max_seats.
+  out->write( `Lotado` ).
+ELSEIF seats IS INITIAL.
+  out->write( `Sem reservas` ).
+ELSE.
+  out->write( |Livres: { c_max_seats - seats }| ).
+ENDIF.
+
+CASE carrier.
+  WHEN 'LH' OR 'LX'.
+    out->write( `Grupo Lufthansa` ).
+  WHEN OTHERS.
+    out->write( `Outra companhia` ).
+ENDCASE.</pre>
+<pre data-abap data-title="Repetições">DO 3 TIMES.
+  out->write( |Volta { sy-index }| ).
+ENDDO.
+
+DATA(n) = 0.
+WHILE n &lt; 5.
+  n += 1.
+  IF n = 2.
+    CONTINUE.        " pula para a próxima volta
+  ENDIF.
+  IF n = 4.
+    EXIT.            " sai do laço
+  ENDIF.
+ENDWHILE.
+
+" Condição como valor booleano
+DATA(is_full) = xsdbool( seats >= c_max_seats ).</pre>
+  </div>
+  <div class="strip"><span class="ic">&#xe289;</span><p><b>sy-index</b> conta as voltas de <code>DO</code> e <code>WHILE</code>. Em <code>LOOP AT</code> sobre tabelas internas o contador é <b>sy-tabix</b>.</p></div>
+</section>
+
+<section class="sec" id="s-debug" data-anchor="Debugger">
+  <h2><span class="ic" aria-hidden="true">&#xe22d;</span>Depurando no ADT</h2>
+  <div class="grid2">
+    <div class="card obj"><h3>Breakpoints</h3><p class="prose" style="font-size:.875rem">Dê duplo clique na régua à esquerda do código (ou <kbd>Ctrl+Shift+B</kbd>). Ao executar com <kbd>F9</kbd>, o ADT pergunta se deseja abrir a perspectiva <b>Debug</b>.</p></div>
+    <div class="card obj"><h3>Navegação</h3>
+      <dl class="kv"><dt><kbd>F5</kbd></dt><dd>Step into (entra no método)</dd><dt><kbd>F6</kbd></dt><dd>Step over (próxima instrução)</dd><dt><kbd>F7</kbd></dt><dd>Step return (volta ao chamador)</dd><dt><kbd>F8</kbd></dt><dd>Resume (até o próximo breakpoint)</dd></dl>
+    </div>
+  </div>
+</section>
+</template>
+
+<!-- ===================== CURSO 1 · UNIDADE 3 ===================== -->
+<template id="L-classes-locais">
+<section class="sec" id="s-oo" data-anchor="Conceitos">
+  <h2><span class="ic" aria-hidden="true">&#xe0c6;</span>Classes, objetos e encapsulamento</h2>
+  <div class="prose">
+    <p>Uma <b>classe</b> é o molde; um <b>objeto</b> (instância) é criado na memória a partir dele com <code>NEW</code>. Variáveis do tipo <code>REF TO</code> guardam <b>referências</b> para os objetos. Classes locais ficam dentro de uma classe global, na aba <b>Local Types</b> do ADT.</p>
+    <p>Cada classe tem uma parte de <b>definição</b> (o que existe) e uma de <b>implementação</b> (como funciona). As seções <code>PUBLIC</code>, <code>PROTECTED</code> e <code>PRIVATE</code> controlam quem enxerga cada componente.</p>
+  </div>
+<pre data-abap data-title="Local Types · lcl_connection">CLASS lcl_connection DEFINITION.
+  PUBLIC SECTION.
+    CLASS-DATA conn_counter TYPE i READ-ONLY.   " estático: um por classe
+
+    METHODS constructor
+      IMPORTING i_carrier_id    TYPE /dmo/carrier_id
+                i_connection_id TYPE /dmo/connection_id
+      RAISING   cx_abap_invalid_value.
+
+    METHODS get_output RETURNING VALUE(r_output) TYPE string.
+
+  PRIVATE SECTION.
+    DATA carrier_id    TYPE /dmo/carrier_id.        " instância
+    DATA connection_id TYPE /dmo/connection_id.
+ENDCLASS.
+
+CLASS lcl_connection IMPLEMENTATION.
+  METHOD constructor.
+    IF i_carrier_id IS INITIAL OR i_connection_id IS INITIAL.
+      RAISE EXCEPTION TYPE cx_abap_invalid_value.
+    ENDIF.
+    me->carrier_id    = i_carrier_id.
+    me->connection_id = i_connection_id.
+    conn_counter += 1.
+  ENDMETHOD.
+
+  METHOD get_output.
+    r_output = |{ carrier_id } { connection_id }|.
+  ENDMETHOD.
+ENDCLASS.</pre>
+</section>
+
+<section class="sec" id="s-heap" data-anchor="Laboratório">
+  <h2><span class="ic" aria-hidden="true">&#xe0d1;</span>Laboratório: referências e instâncias</h2>
+  <div class="prose"><p>Crie objetos, aponte duas referências para o mesmo objeto e limpe referências. Observe que o atributo estático <code>conn_counter</code> é compartilhado, e que um objeto sem nenhuma referência é recolhido pelo <i>garbage collector</i>.</p></div>
+  <div class="card flush" data-widget="objlab"></div>
+</section>
+
+<section class="sec" id="s-metodos" data-anchor="Métodos">
+  <h2><span class="ic" aria-hidden="true">&#xe244;</span>Assinaturas e chamadas de métodos</h2>
+  <div class="grid2">
+    <div class="card obj">
+      <h3>Tipos de parâmetro</h3>
+      <dl class="kv">
+        <dt><code>IMPORTING</code></dt><dd>Entrada; não pode ser alterado no método.</dd>
+        <dt><code>EXPORTING</code></dt><dd>Saída; o chamador recebe o valor.</dd>
+        <dt><code>CHANGING</code></dt><dd>Entrada e saída.</dd>
+        <dt><code>RETURNING</code></dt><dd>Um único retorno, sempre <code>VALUE( )</code>. Torna o método <b>funcional</b>.</dd>
+        <dt><code>RAISING</code></dt><dd>Exceções baseadas em classe que o método pode propagar.</dd>
+      </dl>
+    </div>
+<pre data-abap data-title="Usando a classe">TRY.
+    DATA(connection) = NEW lcl_connection(
+                         i_carrier_id    = 'LH'
+                         i_connection_id = '0400' ).
+
+    " Chamada funcional: o retorno é usado direto
+    out->write( connection->get_output( ) ).
+
+    " Componente estático: classe=>componente
+    out->write( lcl_connection=>conn_counter ).
+
+  CATCH cx_abap_invalid_value.
+    out->write( `Dados de entrada inválidos` ).
+ENDTRY.</pre>
+  </div>
+</section>
+</template>
+
+<!-- ===================== CURSO 1 · UNIDADE 4 ===================== -->
+<template id="L-ler-dados">
+<section class="sec" id="s-sql" data-anchor="ABAP SQL">
+  <h2><span class="ic" aria-hidden="true">&#xe080;</span>Lendo a base de dados com ABAP SQL</h2>
+  <div class="prose">
+    <p>ABAP SQL é o SQL integrado à linguagem. Ele é independente do banco, verificado em tempo de compilação e lê tanto tabelas do dicionário quanto <b>CDS view entities</b>. Variáveis ABAP dentro do comando levam o prefixo <code>@</code> (<i>host variables</i>).</p>
+  </div>
+  <div class="grid2">
+<pre data-abap data-title="Uma linha">SELECT SINGLE
+  FROM /dmo/connection
+  FIELDS airport_from_id, airport_to_id
+  WHERE carrier_id    = @i_carrier_id
+    AND connection_id = @i_connection_id
+  INTO ( @airport_from_id, @airport_to_id ).
+
+IF sy-subrc &lt;> 0.
+  RAISE EXCEPTION TYPE cx_abap_invalid_value.
+ENDIF.</pre>
+<pre data-abap data-title="Várias linhas">SELECT FROM /dmo/connection
+  FIELDS carrier_id, connection_id,
+         airport_from_id, airport_to_id
+  WHERE carrier_id = 'LH'
+  ORDER BY connection_id
+  INTO TABLE @DATA(connections)
+  UP TO 10 ROWS.
+
+out->write( |Lidas: { sy-dbcnt }| ).</pre>
+  </div>
+  <div class="strip"><span class="ic">&#xe289;</span><p><b>sy-subrc</b> = 0 quando pelo menos uma linha foi encontrada, 4 quando nenhuma. <b>sy-dbcnt</b> traz quantas linhas foram lidas. No ADT, <kbd>F8</kbd> sobre uma tabela ou CDS abre o <b>Data Preview</b>.</p></div>
+</section>
+
+<section class="sec" id="s-builder" data-anchor="Construtor de SELECT">
+  <h2><span class="ic" aria-hidden="true">&#xe076;</span>Construtor de SELECT</h2>
+  <div class="prose"><p>Monte a consulta e veja o comando ABAP SQL gerado e o resultado sobre um extrato de dados de exemplo inspirado no modelo de voos <code>/DMO/</code> que a SAP usa nos cursos.</p></div>
+  <div class="card flush" data-widget="sqlbuilder"></div>
+</section>
+
+<section class="sec" id="s-cdsread" data-anchor="CDS como fonte">
+  <h2><span class="ic" aria-hidden="true">&#xe1d8;</span>Lendo de uma CDS view</h2>
+  <div class="prose"><p>O ABAP Cloud não permite ler tabelas SAP não liberadas. Em vez disso, você lê <b>CDS views liberadas</b> (por exemplo, <code>I_Country</code>), que expõem os dados com nomes semânticos em CamelCase.</p></div>
+<pre data-abap data-title="Lendo uma CDS view liberada">SELECT FROM I_Country
+  FIELDS Country, CountryThreeLetterISOCode
+  WHERE Country IN ('BR', 'PT', 'DE')
+  INTO TABLE @DATA(countries).</pre>
+</section>
+</template>
+
+<!-- ===================== CURSO 1 · UNIDADE 5 ===================== -->
+<template id="L-estruturas">
+<section class="sec" id="s-struct" data-anchor="Estruturas">
+  <h2><span class="ic" aria-hidden="true">&#xe0ba;</span>Estruturas: vários campos, um nome</h2>
+  <div class="prose"><p>Uma <b>estrutura</b> agrupa componentes de tipos diferentes, como uma linha de tabela. Você acessa cada componente com o seletor <code>-</code>. Estruturas podem ser aninhadas e podem herdar componentes com <code>INCLUDE TYPE</code>.</p></div>
+  <figure class="figure card">
+    <div class="svg-scroll">
+    <svg class="illu" viewBox="0 0 640 170" role="img" aria-labelledby="fig5t">
+      <title id="fig5t">Estrutura connection com componentes carrier_id, connection_id, airport_from_id e distance lado a lado na memória</title>
+      <text x="16" y="28" class="h tx">connection</text><text x="104" y="28" class="sm tl">TYPE ty_connection</text>
+      <g transform="translate(16 44)">
+        <rect width="130" height="64" rx="10" class="f18"/><text x="12" y="24" class="sm tl">carrier_id · c(3)</text><text x="12" y="48" class="mono tx" font-size="16">LH</text>
+        <rect x="138" width="150" height="64" rx="10" class="f19"/><text x="150" y="24" class="sm tl">connection_id · n(4)</text><text x="150" y="48" class="mono tx" font-size="16">0400</text>
+        <rect x="296" width="160" height="64" rx="10" class="f18"/><text x="308" y="24" class="sm tl">airport_from_id · c(3)</text><text x="308" y="48" class="mono tx" font-size="16">FRA</text>
+        <rect x="464" width="144" height="64" rx="10" class="f20"/><text x="476" y="24" class="sm tl">distance · i</text><text x="476" y="48" class="mono tx" font-size="16">6162</text>
+      </g>
+      <path d="M81 122 v14 h0" class="s13" stroke-width="2"/>
+      <text x="16" y="156" class="mono tx">connection<tspan class="f13" font-weight="700">-</tspan>carrier_id</text>
+      <text x="200" y="156" class="sm tl">o hífen seleciona o componente</text>
+    </svg>
+    </div>
+  </figure>
+<pre data-abap data-title="Tipos estruturados">TYPES: BEGIN OF ty_connection,
+         carrier_id      TYPE /dmo/carrier_id,
+         connection_id   TYPE /dmo/connection_id,
+         airport_from_id TYPE /dmo/airport_from_id,
+         distance        TYPE /dmo/flight_distance,
+       END OF ty_connection.
+
+DATA connection TYPE ty_connection.
+
+connection-carrier_id = 'LH'.
+connection = VALUE #( carrier_id      = 'LH'
+                      connection_id   = '0400'
+                      airport_from_id = 'FRA'
+                      distance        = 6162 ).
+
+" Estrutura direto do SELECT
+SELECT SINGLE FROM /dmo/connection
+  FIELDS carrier_id, connection_id, airport_from_id, distance
+  WHERE carrier_id = 'LH' AND connection_id = '0400'
+  INTO @connection.</pre>
+</section>
+
+<section class="sec" id="s-corr" data-anchor="CORRESPONDING">
+  <h2><span class="ic" aria-hidden="true">&#xe088;</span>Copiando entre estruturas diferentes</h2>
+  <div class="prose"><p><code>CORRESPONDING #( )</code> copia apenas os componentes com o <b>mesmo nome</b>. Com <code>MAPPING</code> você liga nomes diferentes; com <code>EXCEPT</code> você exclui componentes. Marque as opções e veja o que chega no destino.</p></div>
+  <div class="card flush" data-widget="corr"></div>
+</section>
+</template>
+
+<!-- ===================== CURSO 1 · UNIDADE 6 ===================== -->
+<template id="L-tabelas-internas">
+<section class="sec" id="s-tipos-tab" data-anchor="Tipos de tabela">
+  <h2><span class="ic" aria-hidden="true">&#xe0a5;</span>Tabelas internas: standard, sorted e hashed</h2>
+  <div class="prose"><p>Uma <b>tabela interna</b> guarda várias linhas do mesmo tipo na memória do programa. O tipo de tabela define como as linhas são organizadas e, por consequência, quanto custa encontrar uma linha pela chave.</p></div>
+  <div class="tbl-wrap card flush"><table class="t">
+    <thead><tr><th>Tipo</th><th>Organização</th><th>Chave</th><th>Leitura pela chave</th><th>Quando usar</th></tr></thead>
+    <tbody>
+      <tr><td><b>STANDARD</b></td><td>Ordem de inserção</td><td>NON-UNIQUE (opcional)</td><td><span class="tag warn">linear · n</span></td><td>Listas pequenas, acesso por índice, APPEND</td></tr>
+      <tr><td><b>SORTED</b></td><td>Sempre ordenada pela chave</td><td>UNIQUE ou NON-UNIQUE</td><td><span class="tag info">binária · log₂ n</span></td><td>Leituras parciais pela chave, LOOP WHERE</td></tr>
+      <tr><td><b>HASHED</b></td><td>Função hash, sem índice</td><td>Sempre UNIQUE</td><td><span class="tag ok">constante · 1</span></td><td>Muitas leituras pela chave completa</td></tr>
+    </tbody>
+  </table></div>
+<pre data-abap data-title="Declarações">TYPES ty_flights TYPE STANDARD TABLE OF /dmo/flight
+                 WITH NON-UNIQUE KEY carrier_id connection_id flight_date.
+
+DATA flights  TYPE ty_flights.
+DATA by_id    TYPE SORTED TABLE OF /dmo/connection
+                   WITH UNIQUE KEY carrier_id connection_id.
+DATA carriers TYPE HASHED TABLE OF /dmo/carrier
+                   WITH UNIQUE KEY carrier_id.</pre>
+</section>
+
+<section class="sec" id="s-itablab" data-anchor="Laboratório">
+  <h2><span class="ic" aria-hidden="true">&#xe1b7;</span>Laboratório: inserir e ler pela chave</h2>
+  <div class="prose"><p>Insira chaves e depois procure uma delas. Compare como cada tipo guarda as linhas, o que acontece com duplicatas e quantas comparações a leitura precisa.</p></div>
+  <div class="card flush" data-widget="itab"></div>
+</section>
+
+<section class="sec" id="s-ops" data-anchor="Operações">
+  <h2><span class="ic" aria-hidden="true">&#xe244;</span>Operações essenciais</h2>
+  <div class="grid2">
+<pre data-abap data-title="Preencher e ler">" Preencher
+APPEND VALUE #( carrier_id = 'LH' connection_id = '0400' )
+       TO flights.
+INSERT VALUE #( carrier_id = 'AA' connection_id = '0017' )
+       INTO TABLE by_id.
+
+" Ler uma linha (READ TABLE define sy-subrc)
+READ TABLE by_id INTO DATA(conn)
+     WITH TABLE KEY carrier_id = 'AA' connection_id = '0017'.
+
+" Expressão de tabela (lança exceção se não achar)
+TRY.
+    DATA(lh) = by_id[ carrier_id = 'LH' connection_id = '0400' ].
+  CATCH cx_sy_itab_line_not_found.
+ENDTRY.
+
+IF line_exists( by_id[ carrier_id = 'UA' ] ).
+ENDIF.
+DATA(total) = lines( flights ).</pre>
+<pre data-abap data-title="Percorrer e alterar">" Cópia em work area
+LOOP AT flights INTO DATA(flight)
+     WHERE carrier_id = 'LH'.
+  out->write( flight-flight_date ).
+ENDLOOP.
+
+" Acesso direto à linha com field-symbol
+LOOP AT flights ASSIGNING FIELD-SYMBOL(&lt;flight>).
+  &lt;flight>-price = &lt;flight>-price * '1.1'.
+ENDLOOP.
+
+SORT flights BY flight_date DESCENDING.
+DELETE flights WHERE seats_occupied = 0.
+
+" Construir tabela a partir de outra
+DATA(dates) = VALUE string_table(
+  FOR f IN flights ( CONV string( f-flight_date ) ) ).</pre>
+  </div>
+</section>
+</template>
+
+<!-- ===================== CURSO 1 · UNIDADE 7 ===================== -->
+<template id="L-business-objects">
+<section class="sec" id="s-bo" data-anchor="Business objects">
+  <h2><span class="ic" aria-hidden="true">&#xe011;</span>Por que não usar UPDATE direto?</h2>
+  <div class="prose">
+    <p>No ABAP Cloud, dados de negócio pertencem a <b>business objects RAP</b>. Um BO junta validações, determinações, autorizações e bloqueios. Se você escrever na tabela com <code>UPDATE</code> você pula todas essas regras. Por isso as alterações passam pela <b>EML</b> (<i>Entity Manipulation Language</i>).</p>
+    <p>A EML trabalha em duas fases: <code>MODIFY ENTITIES</code> grava no <b>buffer transacional</b>; <code>COMMIT ENTITIES</code> valida e persiste tudo de uma vez no banco (a SAP LUW).</p>
+  </div>
+  <div class="card flush" data-widget="eml"></div>
+</section>
+
+<section class="sec" id="s-eml" data-anchor="Sintaxe EML">
+  <h2><span class="ic" aria-hidden="true">&#xe244;</span>Sintaxe EML</h2>
+  <div class="grid2">
+<pre data-abap data-title="Ler e alterar">READ ENTITIES OF /dmo/r_agencytp
+  ENTITY /dmo/agency
+  FIELDS ( name city ) WITH
+    VALUE #( ( agencyid = '070050' ) )
+  RESULT DATA(agencies)
+  FAILED DATA(failed_read).
+
+MODIFY ENTITIES OF /dmo/r_agencytp
+  ENTITY /dmo/agency
+  UPDATE FIELDS ( name ) WITH
+    VALUE #( ( agencyid = '070050'
+               name     = 'Agência Recife' ) )
+  FAILED DATA(failed)
+  REPORTED DATA(reported).</pre>
+<pre data-abap data-title="Gravar">COMMIT ENTITIES
+  RESPONSE OF /dmo/r_agencytp
+  FAILED   DATA(failed_commit)
+  REPORTED DATA(reported_commit).
+
+IF failed_commit IS INITIAL.
+  out->write( `Agência atualizada` ).
+ELSE.
+  " Mensagens de validação ficam em reported_commit
+  ROLLBACK ENTITIES.
+ENDIF.</pre>
+  </div>
+  <div class="strip warn"><span class="ic">&#xe201;</span><p>Dentro de implementações de comportamento (behavior pool) você <b>não</b> chama <code>COMMIT ENTITIES</code>: quem controla a transação é o framework RAP.</p></div>
+</section>
+</template>
+
+<!-- ===================== CURSO 1 · UNIDADE 8 ===================== -->
+<template id="L-rap">
+<section class="sec" id="s-camadas" data-anchor="Camadas">
+  <h2><span class="ic" aria-hidden="true">&#xe0cf;</span>As camadas de uma aplicação RAP</h2>
+  <div class="prose"><p>O <b>ABAP RESTful Application Programming Model</b> organiza uma aplicação Fiori em camadas, da tabela ao navegador. Clique em cada camada para ver o artefato correspondente.</p></div>
+  <div class="card flush" data-widget="rap"></div>
+</section>
+
+<section class="sec" id="s-comport" data-anchor="Comportamento">
+  <h2><span class="ic" aria-hidden="true">&#xe0e5;</span>Comportamento transacional</h2>
+  <div class="grid3">
+    <div class="card obj"><span class="tag c5">Managed</span><p>O framework implementa create, update, delete e bloqueios. Você só adiciona a lógica específica. É o caminho para aplicações novas.</p></div>
+    <div class="card obj"><span class="tag c7">Unmanaged</span><p>Você implementa a persistência, geralmente reaproveitando código legado (BAPIs, funções de update).</p></div>
+    <div class="card obj"><span class="tag info">Draft</span><p>Salva rascunhos no servidor enquanto o usuário edita, com tabela própria de rascunho e ações <code>Edit</code>/<code>Activate</code>.</p></div>
+  </div>
+  <div class="grid2">
+    <div class="card obj"><h3>Determinations</h3><p>Calculam valores automaticamente, ex.: preencher o status inicial ao criar.</p></div>
+    <div class="card obj"><h3>Validations</h3><p>Verificam consistência antes de salvar, ex.: data final depois da inicial.</p></div>
+    <div class="card obj"><h3>Actions</h3><p>Operações de negócio que o usuário dispara, ex.: <code>acceptTravel</code>.</p></div>
+    <div class="card obj"><h3>Feature control</h3><p>Ativa ou desativa campos e botões conforme o estado do registro.</p></div>
+  </div>
+<pre data-abap data-lang="BDL" data-title="Behavior definition · ZR_TRAVEL">managed implementation in class zbp_r_travel unique;
+strict ( 2 );
+
+define behavior for ZR_Travel alias Travel
+persistent table ztravel
+lock master
+authorization master ( instance )
+etag master LocalLastChanged
+{
+  create; update; delete;
+  field ( readonly, numbering : managed ) TravelUUID;
+
+  determination setStatusNew on modify { create; }
+  validation validateDates on save { create; field BeginDate, EndDate; }
+  action acceptTravel result [1] $self;
+}</pre>
+</section>
+</template>
