@@ -1,0 +1,491 @@
+
+<!-- ===================== CURSO 2 · UNIDADE 1 ===================== -->
+<template id="L-analise-testes">
+<section class="sec" id="s-atc" data-anchor="ATC">
+  <h2><span class="ic" aria-hidden="true">&#xe06e;</span>Análise estática com o ATC</h2>
+  <div class="prose"><p>O <b>ABAP Test Cockpit</b> roda verificações estáticas sobre o código: sintaxe, performance, segurança e prontidão para cloud. No ADT, clique com o botão direito no objeto e escolha <b>Run As › ABAP Test Cockpit</b> (<kbd>Ctrl+Shift+F2</kbd>). Uma <b>variante de verificação</b> define quais checks rodam.</p></div>
+  <div class="card flush">
+    <div class="card-h"><span class="ic">&#xe25e;</span><div><h3>ATC Problems · exemplo de resultado</h3><p>Prioridade 1 bloqueia o transporte na maioria das configurações.</p></div></div>
+    <div class="tbl-wrap"><table class="t">
+      <thead><tr><th>Prioridade</th><th>Verificação</th><th>Achado</th><th>Objeto</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag err"><span class="ic">&#xe0b1;</span>1</span></td><td>Cloud readiness</td><td>Uso de objeto não liberado <code>MARA</code></td><td class="mono">ZCL_MATERIAL_INFO</td></tr>
+        <tr><td><span class="tag warn"><span class="ic">&#xe201;</span>2</span></td><td>Performance</td><td>SELECT dentro de LOOP</td><td class="mono">ZCL_FLIGHT_REPORT</td></tr>
+        <tr><td><span class="tag info"><span class="ic">&#xe202;</span>3</span></td><td>Clean code</td><td>Variável declarada e nunca usada</td><td class="mono">ZCL_FLIGHT_REPORT</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section class="sec" id="s-unit" data-anchor="ABAP Unit">
+  <h2><span class="ic" aria-hidden="true">&#xe203;</span>Testes unitários com ABAP Unit</h2>
+  <div class="prose"><p>Classes de teste são locais, ficam na aba <b>Test Classes</b> e levam <code>FOR TESTING</code>. O método <code>setup</code> roda antes de cada teste; as asserções vêm de <code>CL_ABAP_UNIT_ASSERT</code>. Execute com <kbd>Ctrl+Shift+F10</kbd>.</p></div>
+  <div class="grid2">
+<pre data-abap data-title="Código testado · ZCL_PRICE_CALC">METHOD apply_discount.
+  " Desconto em %: 10 => 10%
+  IF i_percent &lt; 0 OR i_percent > 100.
+    RAISE EXCEPTION TYPE cx_abap_invalid_value.
+  ENDIF.
+  r_price = i_price - i_price * i_percent / 100.
+ENDMETHOD.</pre>
+<pre data-abap data-title="Test Classes">CLASS ltc_price_calc DEFINITION FINAL
+  FOR TESTING DURATION SHORT RISK LEVEL HARMLESS.
+
+  PRIVATE SECTION.
+    DATA cut TYPE REF TO zcl_price_calc. " class under test
+    METHODS setup.
+    METHODS ten_percent       FOR TESTING RAISING cx_static_check.
+    METHODS zero_percent      FOR TESTING RAISING cx_static_check.
+    METHODS invalid_percent   FOR TESTING.
+ENDCLASS.
+
+CLASS ltc_price_calc IMPLEMENTATION.
+  METHOD setup.
+    cut = NEW #( ).
+  ENDMETHOD.
+
+  METHOD ten_percent.
+    cl_abap_unit_assert=>assert_equals(
+      exp = '90.00'
+      act = cut->apply_discount( i_price = 100 i_percent = 10 ) ).
+  ENDMETHOD.
+
+  METHOD zero_percent.
+    cl_abap_unit_assert=>assert_equals(
+      exp = '100.00'
+      act = cut->apply_discount( i_price = 100 i_percent = 0 ) ).
+  ENDMETHOD.
+
+  METHOD invalid_percent.
+    TRY.
+        cut->apply_discount( i_price = 100 i_percent = 120 ).
+        cl_abap_unit_assert=>fail( `Esperava exceção` ).
+      CATCH cx_abap_invalid_value.
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.</pre>
+  </div>
+  <div class="card flush" data-widget="unitrunner"></div>
+</section>
+
+<section class="sec" id="s-profiling" data-anchor="Profiling e SQL trace">
+  <h2><span class="ic" aria-hidden="true">&#xe02d;</span>Profiling e SQL trace</h2>
+  <div class="grid2">
+    <div class="card obj"><h3>ABAP Profiler</h3><p>Em <b>Profile As › ABAP Application</b> o ADT mede tempo por método e por acesso ao banco. A visão <i>Hit List</i> mostra onde o tempo foi gasto e a <i>Call Timeline</i> revela leituras sequenciais repetidas.</p></div>
+    <div class="card obj"><h3>SQL trace</h3><p>Ative pela aplicação <b>ABAP Trace Requests</b> ou pela transação ST05 em sistemas on-premise. O trace lista cada comando enviado ao banco, com duração e quantidade de registros; comandos idênticos repetidos são o sinal de SELECT em loop.</p></div>
+  </div>
+</section>
+
+<section class="sec" id="s-abapdoc" data-anchor="ABAP Doc">
+  <h2><span class="ic" aria-hidden="true">&#xe1b4;</span>Documentando com ABAP Doc</h2>
+  <div class="prose"><p>Comentários que começam com <code>"!</code> logo antes de uma declaração viram documentação: aparecem no <b>Element Info</b> (<kbd>F2</kbd>) para quem usa sua classe. Use <code>@parameter</code> e <code>@raising</code> para descrever a assinatura.</p></div>
+<pre data-abap data-title="ABAP Doc">"! &lt;p class="shorttext synchronized">Calcula preço com desconto&lt;/p>
+"! @parameter i_price   | Preço original
+"! @parameter i_percent | Desconto entre 0 e 100
+"! @parameter r_price   | Preço final
+"! @raising cx_abap_invalid_value | Percentual fora da faixa
+METHODS apply_discount
+  IMPORTING i_price        TYPE /dmo/total_price
+            i_percent      TYPE i
+  RETURNING VALUE(r_price) TYPE /dmo/total_price
+  RAISING   cx_abap_invalid_value.</pre>
+</section>
+</template>
+
+<!-- ===================== CURSO 2 · UNIDADE 2 ===================== -->
+<template id="L-tipos-conversoes">
+<section class="sec" id="s-regras-conv" data-anchor="Regras de conversão">
+  <h2><span class="ic" aria-hidden="true">&#xe204;</span>Conversões implícitas</h2>
+  <div class="prose">
+    <p>Quando você atribui um valor a uma variável de outro tipo, o ABAP <b>converte automaticamente</b> seguindo regras fixas. Elas são práticas, mas podem surpreender: textos são cortados sem aviso, números são arredondados, e datas não são validadas.</p>
+  </div>
+  <div class="card flush" data-widget="convlab"></div>
+</section>
+
+<section class="sec" id="s-conv-op" data-anchor="CONV e EXACT">
+  <h2><span class="ic" aria-hidden="true">&#xe245;</span>Conversão explícita e sem perdas</h2>
+  <div class="grid2">
+<pre data-abap data-title="Operadores de construção">DATA(amount) = CONV decfloat34( '1234.565' ).
+
+" Força o tipo de um parâmetro na chamada
+out->write( CONV string( 42 ) ).
+
+" EXACT: lança exceção se houver perda
+TRY.
+    DATA(rounded) = EXACT i( '3.5' ).
+  CATCH cx_sy_conversion_rounding.
+    out->write( `Haveria arredondamento` ).
+ENDTRY.
+
+TRY.
+    DATA(day) = EXACT d( '20261332' ).
+  CATCH cx_sy_conversion_no_date.
+    out->write( `Data inválida` ).
+ENDTRY.</pre>
+    <div class="card obj">
+      <h3>Tipo deduzido na declaração inline</h3>
+      <div class="tbl-wrap"><table class="t">
+        <thead><tr><th>Código</th><th>Tipo resultante</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">DATA(a) = 5.</td><td class="mono">i</td></tr>
+          <tr><td class="mono">DATA(b) = '5'.</td><td class="mono">c LENGTH 1</td></tr>
+          <tr><td class="mono">DATA(c) = `5`.</td><td class="mono">string</td></tr>
+          <tr><td class="mono">DATA(d) = '3.14'.</td><td class="mono">c LENGTH 4 (texto!)</td></tr>
+          <tr><td class="mono">DATA(e) = CONV decfloat34( '3.14' ).</td><td class="mono">decfloat34</td></tr>
+          <tr><td class="mono">DATA(f) = cl_abap_context_info=&gt;get_system_date( ).</td><td class="mono">d</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="s-calc-type" data-anchor="Tipo de cálculo">
+  <h2><span class="ic" aria-hidden="true">&#xe151;</span>Tipo de cálculo em expressões</h2>
+  <div class="prose">
+    <p>Antes de calcular, o ABAP escolhe um <b>tipo de cálculo</b> com base em todos os operandos <i>e</i> no destino. A hierarquia é <code>i</code> → <code>int8</code> → <code>p</code> → <code>decfloat34</code>: vale o tipo mais “forte” presente. Isso explica por que <code>DATA(x) = 7 / 2.</code> resulta em 4 e não em 3,5.</p>
+  </div>
+<pre data-abap data-title="Exemplos">DATA int  TYPE i.
+DATA pack TYPE p LENGTH 8 DECIMALS 2.
+
+int  = 7 / 2.                    " 4    (cálculo em i, arredondado)
+pack = 7 / 2.                    " 3.50 (cálculo em p por causa do destino)
+DATA(x) = 7 / 2.                 " 4    (tipo deduzido: i)
+DATA(y) = CONV decfloat34( 7 ) / 2.  " 3.5</pre>
+</section>
+</template>
+
+<!-- ===================== CURSO 2 · UNIDADE 3 ===================== -->
+<template id="L-strings">
+<section class="sec" id="s-tpl" data-anchor="String templates">
+  <h2><span class="ic" aria-hidden="true">&#xe27b;</span>String templates</h2>
+  <div class="prose"><p>Entre barras verticais <code>|…|</code> você mistura texto e expressões dentro de <code>{ }</code>. As opções de formatação substituem o antigo <code>WRITE TO</code>.</p></div>
+<pre data-abap data-title="Formatação em templates">DATA(carrier) = `LH`.
+DATA(price)   = CONV decfloat34( '1234.5' ).
+DATA(today)   = cl_abap_context_info=>get_system_date( ).
+
+out->write( |Voo { carrier } custa { price NUMBER = USER }| ).
+out->write( |{ carrier WIDTH = 8 ALIGN = RIGHT PAD = '.' }| ).  " ......LH
+out->write( |{ `abap` CASE = UPPER }| ).                       " ABAP
+out->write( |Data: { today DATE = ISO }| ).                    " 2026-10-27
+out->write( |{ 7 / 2 DECIMALS = 2 }| ).
+out->write( |Linha 1\nLinha 2| ).                              " quebra de linha</pre>
+</section>
+
+<section class="sec" id="s-funcs" data-anchor="Laboratório de funções">
+  <h2><span class="ic" aria-hidden="true">&#xe139;</span>Laboratório de funções de texto</h2>
+  <div class="prose"><p>Funções embutidas recebem parâmetros nomeados como <code>val</code>, <code>sub</code>, <code>off</code> e <code>len</code>. Escolha uma função, altere o texto e os parâmetros e veja a expressão ABAP e o resultado.</p></div>
+  <div class="card flush" data-widget="strlab"></div>
+</section>
+
+<section class="sec" id="s-regex" data-anchor="Regex">
+  <h2><span class="ic" aria-hidden="true">&#xe00d;</span>Expressões regulares</h2>
+  <div class="prose"><p>No ABAP Cloud, use a sintaxe PCRE com <code>PCRE =</code> nas funções e comandos, ou as classes <code>CL_ABAP_REGEX</code> e <code>CL_ABAP_MATCHER</code>.</p></div>
+<pre data-abap data-title="PCRE">DATA(email) = `ana.souza@exemplo.com.br`.
+
+IF matches( val = email pcre = `^[\w.+-]+@[\w-]+(\.[\w-]+)+$` ).
+  out->write( `E-mail válido` ).
+ENDIF.
+
+DATA(digits) = replace( val = `(81) 3333-4444` pcre = `\D` with = `` occ = 0 ).
+" 8133334444
+
+FIND ALL OCCURRENCES OF PCRE `\d{4}` IN `Voos 0400 e 0401`
+     RESULTS DATA(hits).
+out->write( lines( hits ) ).   " 2</pre>
+</section>
+</template>
+
+<!-- ===================== CURSO 2 · UNIDADE 4 ===================== -->
+<template id="L-sql-pushdown">
+<section class="sec" id="s-pushdown" data-anchor="Code pushdown">
+  <h2><span class="ic" aria-hidden="true">&#xe0c7;</span>Leve o código até os dados</h2>
+  <div class="prose"><p>Com o SAP HANA, o banco é muito mais rápido para agregar e filtrar do que o servidor de aplicação. <b>Code pushdown</b> significa calcular no banco e trazer só o resultado, em vez de ler milhares de linhas e somar em ABAP.</p></div>
+  <figure class="figure card">
+    <div class="svg-scroll">
+    <svg class="illu" viewBox="0 0 660 230" role="img" aria-labelledby="figpd">
+      <title id="figpd">Comparação: abordagem clássica transfere muitas linhas do banco para o servidor; code pushdown transfere apenas o resultado agregado</title>
+      <text x="16" y="24" class="h tx">Clássico: dados até o código</text>
+      <g transform="translate(16 40)">
+        <rect width="120" height="150" rx="12" class="f7"/><text x="60" y="24" text-anchor="middle" class="sm tx" font-weight="700">Banco</text>
+        <g class="f20"><rect x="16" y="38" width="88" height="10" rx="3"/><rect x="16" y="54" width="88" height="10" rx="3"/><rect x="16" y="70" width="88" height="10" rx="3"/><rect x="16" y="86" width="88" height="10" rx="3"/><rect x="16" y="102" width="88" height="10" rx="3"/><rect x="16" y="118" width="88" height="10" rx="3"/></g>
+        <g class="f20" opacity=".9"><rect x="140" y="40" width="40" height="8" rx="3"/><rect x="140" y="56" width="40" height="8" rx="3"/><rect x="140" y="72" width="40" height="8" rx="3"/><rect x="140" y="88" width="40" height="8" rx="3"/><rect x="140" y="104" width="40" height="8" rx="3"/><rect x="140" y="120" width="40" height="8" rx="3"/></g>
+        <path d="M128 140 H186" class="swarn" stroke-width="2.5"/><path d="M180 134 l8 6 -8 6" class="swarn nf" stroke-width="2.5"/>
+        <text x="136" y="168" class="sm twarn">100 mil linhas</text>
+        <rect x="196" y="20" width="110" height="130" rx="12" class="fneu"/><text x="251" y="44" text-anchor="middle" class="sm tx" font-weight="700">Servidor ABAP</text>
+        <text x="251" y="84" text-anchor="middle" class="mono tl">LOOP AT…</text><text x="251" y="102" text-anchor="middle" class="mono tl">sum += …</text>
+      </g>
+      <text x="350" y="24" class="h tx">Pushdown: código até os dados</text>
+      <g transform="translate(350 40)">
+        <rect width="150" height="150" rx="12" class="f7"/><text x="75" y="24" text-anchor="middle" class="sm tx" font-weight="700">Banco (HANA)</text>
+        <rect x="16" y="40" width="118" height="70" rx="8" class="f13"/><text x="75" y="70" text-anchor="middle" class="mono" fill="#fff">SUM( )</text><text x="75" y="88" text-anchor="middle" class="mono" fill="#fff">GROUP BY</text>
+        <path d="M156 75 H202" class="sok" stroke-width="2.5"/><path d="M196 69 l8 6 -8 6" class="sok nf" stroke-width="2.5"/>
+        <rect x="160" y="88" width="34" height="8" rx="3" class="f26"/>
+        <text x="152" y="122" class="sm tok">8 linhas</text>
+        <rect x="212" y="20" width="96" height="130" rx="12" class="fneu"/><text x="260" y="44" text-anchor="middle" class="sm tx" font-weight="700">Servidor</text>
+        <text x="260" y="84" text-anchor="middle" class="mono tl">exibe</text>
+      </g>
+    </svg>
+    </div>
+  </figure>
+</section>
+
+<section class="sec" id="s-agg" data-anchor="Agregações">
+  <h2><span class="ic" aria-hidden="true">&#xe0cf;</span>Agregações, GROUP BY e CASE</h2>
+  <div class="prose"><p>Escolha a função de agregação, a condição <code>HAVING</code> e a classificação por <code>CASE</code>. O resultado é calculado sobre os voos de exemplo exatamente como o banco faria.</p></div>
+  <div class="card flush" data-widget="agglab"></div>
+</section>
+
+<section class="sec" id="s-joins" data-anchor="Joins e expressões">
+  <h2><span class="ic" aria-hidden="true">&#xe088;</span>Joins e expressões SQL</h2>
+  <div class="grid2">
+<pre data-abap data-title="INNER e LEFT OUTER JOIN">SELECT FROM /dmo/connection AS c
+         INNER JOIN /dmo/carrier AS a
+           ON c~carrier_id = a~carrier_id
+         LEFT OUTER JOIN /dmo/airport AS ap
+           ON c~airport_to_id = ap~airport_id
+  FIELDS c~carrier_id, a~name AS carrier_name,
+         c~connection_id, ap~city AS destination
+  WHERE c~carrier_id IN ('LH', 'AA')
+  INTO TABLE @DATA(routes).</pre>
+<pre data-abap data-title="Expressões no SELECT">SELECT FROM /dmo/flight
+  FIELDS carrier_id, connection_id, flight_date,
+         seats_max - seats_occupied AS seats_free,
+         CAST( seats_occupied AS FLTP ) * 100
+           / CAST( seats_max AS FLTP ) AS load_pct,
+         concat_with_space( carrier_id,
+                            connection_id, 1 ) AS flight_code,
+         CASE WHEN seats_occupied >= seats_max THEN 'X'
+              ELSE ' ' END AS is_full
+  WHERE flight_date >= @( cl_abap_context_info=>get_system_date( ) )
+  INTO TABLE @DATA(flights).</pre>
+  </div>
+</section>
+</template>
+
+<!-- ===================== CURSO 2 · UNIDADE 5 ===================== -->
+<template id="L-performance-tabelas">
+<section class="sec" id="s-complex" data-anchor="Custo de leitura">
+  <h2><span class="ic" aria-hidden="true">&#xe0cf;</span>Quanto custa encontrar uma linha</h2>
+  <div class="prose"><p>Arraste o controle para mudar o tamanho da tabela e veja o número médio de comparações para ler uma linha pela chave. A diferença entre linear e binário é pequena com 20 linhas e enorme com 100 mil.</p></div>
+  <div class="card flush" data-widget="perfchart"></div>
+</section>
+
+<section class="sec" id="s-keys" data-anchor="Chaves secundárias">
+  <h2><span class="ic" aria-hidden="true">&#xe20e;</span>Chaves secundárias</h2>
+  <div class="prose"><p>Uma tabela pode ter uma chave primária e várias <b>chaves secundárias</b>, sorted ou hashed. Assim você lê rápido por critérios diferentes sem manter cópias da tabela.</p></div>
+<pre data-abap data-title="Chave secundária">DATA flights TYPE STANDARD TABLE OF /dmo/flight
+  WITH NON-UNIQUE KEY carrier_id connection_id flight_date
+  WITH NON-UNIQUE SORTED KEY by_plane COMPONENTS plane_type_id.
+
+" Leitura usando a chave secundária
+LOOP AT flights INTO DATA(f) USING KEY by_plane
+     WHERE plane_type_id = 'A380-800'.
+ENDLOOP.
+
+DATA(first_a380) = flights[ KEY by_plane plane_type_id = 'A380-800' ].</pre>
+</section>
+
+<section class="sec" id="s-access" data-anchor="Acesso às linhas">
+  <h2><span class="ic" aria-hidden="true">&#xe1aa;</span>Work area, field-symbol ou referência</h2>
+  <div class="grid3">
+    <div class="card obj"><span class="tag warn">INTO wa</span><p>Copia a linha. Simples, mas caro para linhas largas e não altera a tabela sem <code>MODIFY</code>.</p></div>
+    <div class="card obj"><span class="tag ok">ASSIGNING &lt;fs&gt;</span><p>Aponta direto para a linha na tabela. Sem cópia; alterações refletem na hora.</p></div>
+    <div class="card obj"><span class="tag info">REFERENCE INTO ref</span><p>Como field-symbol, mas a referência pode ser guardada ou passada adiante.</p></div>
+  </div>
+  <div class="strip warn"><span class="ic">&#xe201;</span><p>Evite <code>SELECT</code> dentro de <code>LOOP</code>. Leia tudo de uma vez com JOIN ou <code>FOR ALL ENTRIES</code> e depois combine em memória com tabelas sorted ou hashed.</p></div>
+<pre data-abap data-title="Antes e depois">" Lento: uma ida ao banco por linha
+LOOP AT connections INTO DATA(c).
+  SELECT SINGLE name FROM /dmo/carrier
+    WHERE carrier_id = @c-carrier_id INTO @DATA(name).
+ENDLOOP.
+
+" Rápido: uma leitura + tabela hashed
+SELECT FROM /dmo/carrier FIELDS carrier_id, name
+  INTO TABLE @DATA(carriers).
+DATA carrier_by_id TYPE HASHED TABLE OF /dmo/carrier
+     WITH UNIQUE KEY carrier_id.
+carrier_by_id = CORRESPONDING #( carriers ).
+
+LOOP AT connections ASSIGNING FIELD-SYMBOL(&lt;c>).
+  DATA(carrier_name) = VALUE #( carrier_by_id[ carrier_id = &lt;c>-carrier_id ]-name OPTIONAL ).
+ENDLOOP.</pre>
+</section>
+</template>
+
+<!-- ===================== CURSO 2 · UNIDADE 6 ===================== -->
+<template id="L-autorizacoes">
+<section class="sec" id="s-auth" data-anchor="Conceito">
+  <h2><span class="ic" aria-hidden="true">&#xe13c;</span>Como o SAP decide quem pode o quê</h2>
+  <div class="prose"><p>Um <b>objeto de autorização</b> agrupa até dez campos, como país e atividade. Uma <b>role</b> atribuída ao usuário concede valores para esses campos. O código pergunta ao sistema com <code>AUTHORITY-CHECK</code> e decide com base em <code>sy-subrc</code>.</p></div>
+  <figure class="figure card">
+    <div class="svg-scroll">
+    <svg class="illu" viewBox="0 0 660 190" role="img" aria-labelledby="figauth">
+      <title id="figauth">Usuário recebe role que contém autorizações para o objeto /DMO/TRVL com campos /DMO/CNTRY e ACTVT</title>
+      <g transform="translate(14 40)"><circle cx="46" cy="36" r="24" class="f20"/><circle cx="46" cy="28" r="10" class="f13"/><path d="M28 52 q18 -18 36 0" class="f13"/><text x="46" y="88" text-anchor="middle" class="h tx">Usuário</text><text x="46" y="104" text-anchor="middle" class="sm tl">ANA.SOUZA</text></g>
+      <path d="M118 76 H170" class="sl" stroke-width="2"/><path d="M164 70 l8 6 -8 6" class="sl nf" stroke-width="2"/>
+      <g transform="translate(176 30)"><rect width="150" height="96" rx="12" class="f7"/><text x="16" y="26" class="sm tmk" font-weight="700">ROLE</text><text x="16" y="48" class="h tx">Z_TRAVEL_AGENT_BR</text><text x="16" y="72" class="sm tl">mantida no app</text><text x="16" y="86" class="sm tl">Business Roles</text></g>
+      <path d="M332 76 H384" class="sl" stroke-width="2"/><path d="M378 70 l8 6 -8 6" class="sl nf" stroke-width="2"/>
+      <g transform="translate(390 10)"><rect width="256" height="150" rx="12" class="fb sb" stroke-width="1.5"/><text x="16" y="26" class="sm tmk" font-weight="700">OBJETO DE AUTORIZAÇÃO</text><text x="16" y="48" class="h tx">/DMO/TRVL</text>
+        <rect x="16" y="62" width="224" height="34" rx="8" class="fneu"/><text x="28" y="84" class="mono tx">/DMO/CNTRY</text><text x="226" y="84" text-anchor="end" class="mono tsel">BR, PT</text>
+        <rect x="16" y="102" width="224" height="34" rx="8" class="fneu"/><text x="28" y="124" class="mono tx">ACTVT</text><text x="226" y="124" text-anchor="end" class="mono tsel">03 (exibir)</text></g>
+    </svg>
+    </div>
+  </figure>
+</section>
+
+<section class="sec" id="s-check" data-anchor="Simulador">
+  <h2><span class="ic" aria-hidden="true">&#xe20e;</span>Simulador de AUTHORITY-CHECK</h2>
+  <div class="prose"><p>Configure o que a role do usuário concede e o que o código pede. Os códigos de atividade padrão são <code>01</code> criar, <code>02</code> alterar, <code>03</code> exibir e <code>06</code> eliminar.</p></div>
+  <div class="card flush" data-widget="authsim"></div>
+</section>
+
+<section class="sec" id="s-dcl" data-anchor="CDS access control">
+  <h2><span class="ic" aria-hidden="true">&#xe1d8;</span>Autorização declarativa em CDS</h2>
+  <div class="prose"><p>Para leituras via CDS, um <b>access control</b> (DCL) filtra as linhas automaticamente em todo <code>SELECT</code> na view. Você não precisa repetir a verificação em cada programa.</p></div>
+<pre data-abap data-lang="DCL" data-title="Access control · ZI_TRAVEL">@EndUserText.label: 'Viagens por país autorizado'
+@MappingRole: true
+define role ZI_TRAVEL {
+  grant select on ZI_Travel
+    where ( CountryCode ) =
+          aspect pfcg_auth( /DMO/TRVL, /DMO/CNTRY, ACTVT = '03' );
+}</pre>
+</section>
+</template>
+
+<!-- ===================== CURSO 2 · UNIDADE 7 ===================== -->
+<template id="L-oo-avancado">
+<section class="sec" id="s-heranca" data-anchor="Herança e interfaces">
+  <h2><span class="ic" aria-hidden="true">&#xe0f4;</span>Herança, interfaces e polimorfismo</h2>
+  <div class="prose">
+    <p><b>Herança</b> (<code>INHERITING FROM</code>) reaproveita implementação: a subclasse recebe tudo da superclasse e pode <b>redefinir</b> métodos com <code>REDEFINITION</code>. <b>Interfaces</b> definem um contrato sem implementação; uma classe pode implementar várias.</p>
+    <p><b>Polimorfismo</b>: uma referência do tipo da superclasse ou interface pode apontar para qualquer subclasse. O método chamado é decidido em tempo de execução pelo tipo real do objeto.</p>
+  </div>
+  <figure class="figure card">
+    <div class="svg-scroll">
+    <svg class="illu uml" viewBox="0 0 640 240" role="img" aria-labelledby="figuml">
+      <title id="figuml">Diagrama de classes: interface lif_partner, superclasse abstrata lcl_plane e subclasses lcl_cargo_plane e lcl_passenger_plane</title>
+      <g transform="translate(226 8)"><rect width="188" height="62" rx="10" class="finfo sinfo" stroke-width="1.2"/><text x="94" y="20" text-anchor="middle" class="sm tl">«abstract»</text><text x="94" y="38" text-anchor="middle" class="h tx">lcl_plane</text><line x1="0" y1="46" x2="188" y2="46" class="sinfo"/><text x="12" y="58" class="mono tx" font-size="10">get_attributes( ) abstract</text></g>
+      <g transform="translate(470 8)"><rect width="160" height="62" rx="10" class="fwarn swarn" stroke-width="1.2" stroke-dasharray="4 3"/><text x="80" y="20" text-anchor="middle" class="sm tl">«interface»</text><text x="80" y="38" text-anchor="middle" class="h tx">lif_partner</text><line x1="0" y1="46" x2="160" y2="46" class="swarn"/><text x="12" y="58" class="mono tx" font-size="10">get_partner_info( )</text></g>
+      <g transform="translate(60 150)"><rect width="200" height="72" rx="10" class="fb sb" stroke-width="1.2"/><text x="100" y="22" text-anchor="middle" class="h tx">lcl_cargo_plane</text><line x1="0" y1="32" x2="200" y2="32" class="sb"/><text x="12" y="48" class="mono tx" font-size="10">cargo_kg TYPE i</text><text x="12" y="62" class="mono tx" font-size="10">get_attributes( ) REDEFINITION</text></g>
+      <g transform="translate(380 150)"><rect width="220" height="72" rx="10" class="fb sb" stroke-width="1.2"/><text x="110" y="22" text-anchor="middle" class="h tx">lcl_passenger_plane</text><line x1="0" y1="32" x2="220" y2="32" class="sb"/><text x="12" y="48" class="mono tx" font-size="10">seats TYPE i</text><text x="12" y="62" class="mono tx" font-size="10">get_attributes( ) REDEFINITION</text></g>
+      <path d="M160 150 V110 H320 V82" class="sl nf" stroke-width="1.5"/><path d="M490 150 V110 H320" class="sl nf" stroke-width="1.5"/>
+      <path d="M312 84 l8 -14 8 14 z" class="fb sl" stroke-width="1.5"/>
+      <path d="M560 150 V82" class="sl nf" stroke-width="1.5" stroke-dasharray="5 4"/><path d="M552 84 l8 -14 8 14 z" class="fb sl" stroke-width="1.5"/>
+      <text x="170" y="104" class="sm tl">herança</text><text x="566" y="120" class="sm tl">implementa</text>
+    </svg>
+    </div>
+  </figure>
+</section>
+
+<section class="sec" id="s-poly" data-anchor="Polimorfismo">
+  <h2><span class="ic" aria-hidden="true">&#xe0c6;</span>Polimorfismo na prática</h2>
+  <div class="card flush" data-widget="poly"></div>
+</section>
+
+<section class="sec" id="s-patterns" data-anchor="Padrões">
+  <h2><span class="ic" aria-hidden="true">&#xe0c7;</span>Factory e singleton</h2>
+  <div class="prose"><p>Com <code>CREATE PRIVATE</code> só a própria classe instancia objetos. Isso permite um método de fábrica que valida os dados antes de criar, ou um singleton que garante uma única instância.</p></div>
+  <div class="grid2">
+<pre data-abap data-title="Factory">CLASS lcl_connection DEFINITION CREATE PRIVATE.
+  PUBLIC SECTION.
+    CLASS-METHODS create
+      IMPORTING i_carrier_id    TYPE /dmo/carrier_id
+                i_connection_id TYPE /dmo/connection_id
+      RETURNING VALUE(r_result) TYPE REF TO lcl_connection
+      RAISING   cx_abap_invalid_value.
+ENDCLASS.
+
+CLASS lcl_connection IMPLEMENTATION.
+  METHOD create.
+    " valida antes de existir o objeto
+    IF i_carrier_id IS INITIAL.
+      RAISE EXCEPTION TYPE cx_abap_invalid_value.
+    ENDIF.
+    r_result = NEW #( ).
+  ENDMETHOD.
+ENDCLASS.</pre>
+<pre data-abap data-title="Singleton">CLASS lcl_config DEFINITION CREATE PRIVATE.
+  PUBLIC SECTION.
+    CLASS-METHODS get_instance
+      RETURNING VALUE(r_instance) TYPE REF TO lcl_config.
+  PRIVATE SECTION.
+    CLASS-DATA instance TYPE REF TO lcl_config.
+ENDCLASS.
+
+CLASS lcl_config IMPLEMENTATION.
+  METHOD get_instance.
+    IF instance IS NOT BOUND.
+      instance = NEW #( ).
+    ENDIF.
+    r_instance = instance.
+  ENDMETHOD.
+ENDCLASS.</pre>
+  </div>
+</section>
+</template>
+
+<!-- ===================== CURSO 2 · UNIDADE 8 ===================== -->
+<template id="L-excecoes">
+<section class="sec" id="s-hier" data-anchor="Hierarquia">
+  <h2><span class="ic" aria-hidden="true">&#xe0f4;</span>Classes de exceção</h2>
+  <div class="prose"><p>Toda exceção baseada em classe herda de <code>CX_ROOT</code>, por uma de três superclasses. A escolha define se o compilador obriga você a tratar ou declarar a exceção.</p></div>
+  <figure class="figure card">
+    <div class="svg-scroll">
+    <svg class="illu" viewBox="0 0 660 250" role="img" aria-labelledby="figcx">
+      <title id="figcx">Hierarquia: CX_ROOT com filhas CX_STATIC_CHECK, CX_DYNAMIC_CHECK e CX_NO_CHECK e exemplos de subclasses</title>
+      <g transform="translate(270 8)"><rect width="120" height="40" rx="10" class="f4"/><text x="60" y="25" text-anchor="middle" class="mono" fill="#fff" font-weight="700">CX_ROOT</text></g>
+      <path d="M330 48 V68 M100 68 H560 M100 68 V86 M330 68 V86 M560 68 V86" class="sl nf" stroke-width="1.5"/>
+      <g transform="translate(10 86)"><rect width="180" height="64" rx="10" class="fok sok" stroke-width="1.2"/><text x="90" y="24" text-anchor="middle" class="mono tx" font-weight="700">CX_STATIC_CHECK</text><text x="90" y="44" text-anchor="middle" class="sm tl">verificada na compilação:</text><text x="90" y="58" text-anchor="middle" class="sm tl">tratar ou declarar RAISING</text></g>
+      <g transform="translate(240 86)"><rect width="180" height="64" rx="10" class="fwarn swarn" stroke-width="1.2"/><text x="90" y="24" text-anchor="middle" class="mono tx" font-weight="700">CX_DYNAMIC_CHECK</text><text x="90" y="44" text-anchor="middle" class="sm tl">verificada em execução;</text><text x="90" y="58" text-anchor="middle" class="sm tl">evitável com checagem prévia</text></g>
+      <g transform="translate(470 86)"><rect width="180" height="64" rx="10" class="ferr serr" stroke-width="1.2"/><text x="90" y="24" text-anchor="middle" class="mono tx" font-weight="700">CX_NO_CHECK</text><text x="90" y="44" text-anchor="middle" class="sm tl">pode ocorrer em qualquer lugar;</text><text x="90" y="58" text-anchor="middle" class="sm tl">declaração implícita</text></g>
+      <path d="M100 150 V170 M330 150 V170 M560 150 V170" class="sl nf" stroke-width="1.5"/>
+      <g transform="translate(0 172)"><rect width="200" height="66" rx="10" class="fb sb"/><text x="12" y="22" class="mono tx" font-size="10">ZCX_TRAVEL_INVALID</text><text x="12" y="40" class="mono tx" font-size="10">CX_ABAP_INVALID_VALUE</text><text x="12" y="58" class="sm tl">exceções da sua aplicação</text></g>
+      <g transform="translate(230 172)"><rect width="200" height="66" rx="10" class="fb sb"/><text x="12" y="22" class="mono tx" font-size="10">CX_SY_ZERODIVIDE</text><text x="12" y="40" class="mono tx" font-size="10">CX_SY_ITAB_LINE_NOT_FOUND</text><text x="12" y="58" class="mono tx" font-size="10">CX_SY_CONVERSION_NO_NUMBER</text></g>
+      <g transform="translate(459 172)"><rect width="200" height="66" rx="10" class="fb sb"/><text x="12" y="22" class="mono tx" font-size="10">CX_SY_EXPORT_BUFFER_NO_MEMORY</text><text x="12" y="40" class="sm tl">falhas de recursos do</text><text x="12" y="56" class="sm tl">sistema</text></g>
+    </svg>
+    </div>
+  </figure>
+</section>
+
+<section class="sec" id="s-trysim" data-anchor="TRY … CATCH">
+  <h2><span class="ic" aria-hidden="true">&#xe09b;</span>Simulador de TRY … CATCH</h2>
+  <div class="prose"><p>Digite um divisor e acompanhe qual bloco é executado. O primeiro <code>CATCH</code> compatível vence, então coloque as exceções mais específicas primeiro.</p></div>
+  <div class="card flush" data-widget="trysim"></div>
+</section>
+
+<section class="sec" id="s-own" data-anchor="Exceção própria">
+  <h2><span class="ic" aria-hidden="true">&#xe0e6;</span>Criando sua própria classe de exceção</h2>
+<pre data-abap data-title="ZCX_TRAVEL_INVALID">CLASS zcx_travel_invalid DEFINITION PUBLIC
+  INHERITING FROM cx_static_check FINAL CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES if_t100_message.
+    INTERFACES if_t100_dyn_msg.
+
+    CONSTANTS:
+      BEGIN OF dates_inconsistent,
+        msgid TYPE symsgid VALUE 'ZTRAVEL',
+        msgno TYPE symsgno VALUE '001',
+        attr1 TYPE scx_attrname VALUE 'BEGIN_DATE',
+        attr2 TYPE scx_attrname VALUE 'END_DATE',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF dates_inconsistent.
+
+    DATA begin_date TYPE /dmo/begin_date READ-ONLY.
+    DATA end_date   TYPE /dmo/end_date READ-ONLY.
+
+    METHODS constructor
+      IMPORTING textid     LIKE if_t100_message=>t100key OPTIONAL
+                previous   LIKE previous OPTIONAL
+                begin_date TYPE /dmo/begin_date OPTIONAL
+                end_date   TYPE /dmo/end_date OPTIONAL.
+ENDCLASS.
+
+" Lançando:
+RAISE EXCEPTION NEW zcx_travel_invalid(
+  textid     = zcx_travel_invalid=>dates_inconsistent
+  begin_date = begin
+  end_date   = end ).</pre>
+</section>
+</template>
