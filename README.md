@@ -18,10 +18,6 @@ Os módulos estão numerados na ordem de estudo recomendada pela SAP: os módulo
 
 A jornada prepara para a certificação **SAP Certified – Back-End Developer – ABAP Cloud (C_ABAPD)**, que também avalia o uso do **Joule for Developers** (veja as lições 01.01 e 02.01).
 
-## Site de Estudo Interativo
-
-A pasta **[`site/`](./site/README.md)** traz um site de estudo com visual SAP Horizon que cobre os módulos 1 a 3 em 22 lições, com ilustrações, laboratórios interativos, quizzes, referência rápida e um simulado de certificação. Basta abrir o arquivo `site/index.html` no navegador.
-
 ## Organização e Nomenclatura dos Arquivos
 
 Para garantir a organização, a rastreabilidade e a sequência lógica de leitura dos arquivos do projeto, foi então definida a seguinte **Regra de Nomenclatura Hierárquica**: **`DD.SS_Slug_Descritivo`**
